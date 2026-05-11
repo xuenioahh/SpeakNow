@@ -75,32 +75,13 @@ The current version includes authentication, protected routes, report generation
 
 ![Voice practice report](./docs/images/voice-report.png)
 
-## Local Development
+## Access
 
-```bash
-npm install
-npm run dev
-```
+Use the live website directly:
 
-`npm run dev` starts both the Vite frontend and the local Node backend for `/api/*`.
+- `https://omniverse-ent208.vercel.app`
 
-If needed, the two sides can also be started separately:
-
-```bash
-npm run dev:frontend
-npm run dev:backend
-```
-
-## Available Scripts
-
-- `npm run dev` starts local development
-- `npm run dev:frontend` starts only the frontend
-- `npm run dev:backend` starts only the local backend
-- `npm run build` creates a production build
-- `npm run lint` runs ESLint
-- `npm run lint:fix` auto-fixes lint issues where possible
-- `npm run typecheck` runs configured type checking
-- `npm run preview` previews the production build locally
+No local setup is required for review. The source code is provided for inspection only, and reviewers are not expected to run the project locally. All normal access, testing, and demonstration should be completed through the deployed website.
 
 ## Repository Structure
 
@@ -114,23 +95,12 @@ npm run dev:backend
 - `supabase/` schema files for hosted persistence
 - `docs/images/` README screenshot assets
 
-## Environment Notes
+## Access Notes
 
-- `.env.example` is included as a setup reference
-- browser media permissions matter for microphone and camera features
-- local backend port defaults to `8787` and can be changed with `BACKEND_PORT`
-- hosted storage uses Supabase when configured
-- local fallback storage is available for coursework review and development
-
-## Admin Access
-
-To create multiple admin accounts locally:
-
-1. Add one or more seed emails to `VITE_ADMIN_EMAILS`.
-2. Start the app with `npm run dev`.
-3. Register or sign in using one of those emails.
-4. Open `/admin`.
-5. Add more admin emails from the Admin Dashboard UI if needed.
+- browser microphone permission is required for voice practice
+- camera permission is required only for camera-based features
+- a text-based PDF is recommended for presentation rehearsal testing
+- the deployed website may require a VPN in mainland China
 
 ## Additional Documents
 
