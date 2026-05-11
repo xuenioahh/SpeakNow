@@ -3,7 +3,7 @@ import path from "node:path";
 
 function resolveDataDir() {
   if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-    return path.join("/tmp", "omniverse-data");
+    return path.join("/tmp", "speaknow-data");
   }
   return path.join(process.cwd(), "data");
 }

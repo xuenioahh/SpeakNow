@@ -38,11 +38,11 @@ export default function AdminPage() {
       setError("");
       const headers = adminKey
         ? {
-            "x-user-id": sessionStorage.getItem("omniverse_current_user_id") || "",
+            "x-user-id": sessionStorage.getItem("speaknow_current_user_id") || "",
             "x-admin-key": adminKey,
           }
         : {
-            "x-user-id": sessionStorage.getItem("omniverse_current_user_id") || "",
+            "x-user-id": sessionStorage.getItem("speaknow_current_user_id") || "",
           };
       const [dashboardResponse, settings] = await Promise.all([
         fetch("/api/admin-track", { headers }),
@@ -127,7 +127,7 @@ export default function AdminPage() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `omniverse-admin-export-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.json`;
+    link.download = `speaknow-admin-export-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.json`;
     document.body.appendChild(link);
     link.click();
     link.remove();

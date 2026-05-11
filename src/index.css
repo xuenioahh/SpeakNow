@@ -139,17 +139,17 @@
   transform: translateY(1px) scale(0.985);
 }
 
-.omniverse-text-cta-shell {
+.speaknow-text-cta-shell {
   width: 100%;
 }
 
-.omniverse-entry-card {
+.speaknow-entry-card {
   box-shadow:
     0 26px 48px rgba(15, 23, 42, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
-.omniverse-entry-card::before {
+.speaknow-entry-card::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -159,7 +159,7 @@
   pointer-events: none;
 }
 
-.omniverse-entry-meta {
+.speaknow-entry-meta {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -168,7 +168,7 @@
   letter-spacing: 0.01em;
 }
 
-.omniverse-entry-meta::before {
+.speaknow-entry-meta::before {
   content: "";
   width: 6px;
   height: 6px;
@@ -178,7 +178,7 @@
   box-shadow: 0 0 14px rgba(255, 255, 255, 0.14);
 }
 
-.omniverse-entry-action {
+.speaknow-entry-action {
   position: relative;
   display: flex;
   align-items: center;
@@ -200,7 +200,7 @@
     box-shadow 220ms ease;
 }
 
-.omniverse-entry-action-arrow {
+.speaknow-entry-action-arrow {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -212,7 +212,7 @@
   transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
 }
 
-.omniverse-entry-card:hover .omniverse-entry-action {
+.speaknow-entry-card:hover .speaknow-entry-action {
   transform: translateY(-1px);
   border-color: rgba(255, 255, 255, 0.16);
   background:
@@ -223,7 +223,7 @@
     0 20px 36px rgba(15, 23, 42, 0.22);
 }
 
-.omniverse-entry-card:hover .omniverse-entry-action-arrow {
+.speaknow-entry-card:hover .speaknow-entry-action-arrow {
   transform: translateX(2px);
   background: rgba(255, 255, 255, 0.13);
   color: rgba(255, 255, 255, 0.92);
@@ -730,12 +730,12 @@
   to { transform: rotate(0deg); }
 }
 
-@keyframes omniverseCursorBlink {
+@keyframes speaknowCursorBlink {
   0%, 49% { opacity: 1; }
   50%, 100% { opacity: 0; }
 }
 
-@keyframes omniverseCtaReveal {
+@keyframes speaknowCtaReveal {
   from {
     opacity: 0;
     transform: translateY(8px);

@@ -4,7 +4,7 @@ This project now supports two admin storage modes:
 
 1. `local-json`
    - Default fallback
-   - Writes backend data into `Omniverse/data/admin-db.json`
+   - Writes backend data into `SpeakNow/data/admin-db.json`
    - Good for local development and demos
 
 2. `supabase`

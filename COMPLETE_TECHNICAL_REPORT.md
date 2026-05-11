@@ -1,7 +1,7 @@
-# Omniverse Complete Technical Report
+# SpeakNow Complete Technical Report
 
 Module: ENT208TC Session 4 Group 25  
-Project: Omniverse / SpeakNow  
+Project: SpeakNow  
 Academic Year: 2025-2026
 
 Team Members  
@@ -231,8 +231,8 @@ The third risk was voice UX instability. Browser speech recognition and speech s
 1. Clone the repository.
 
 ```bash
-git clone https://github.com/xuenioahh/Omniverse.git
-cd Omniverse
+git clone https://github.com/xuenioahh/SpeakNow.git
+cd SpeakNow
 ```
 
 2. Install dependencies.
@@ -333,9 +333,9 @@ After deployment, verify the following:
 
 ### 4.1 Novelty Analysis
 
-The genuine novelty of Omniverse is not the isolated use of an LLM, a PDF uploader, or a speaking chatbot. The novel contribution is the integration of multiple speaking-practice modes inside one continuous learner workflow: scenario conversation, presentation rehearsal, persistent progress tracking, and an admin-observable evaluation pipeline. Instead of treating speaking as one generic chat interface, the system adapts prompting, feedback structure, timing, and stored outputs to the practice context.
+The genuine novelty of SpeakNow is not the isolated use of an LLM, a PDF uploader, or a speaking chatbot. The novel contribution is the integration of multiple speaking-practice modes inside one continuous learner workflow: scenario conversation, presentation rehearsal, persistent progress tracking, and an admin-observable evaluation pipeline. Instead of treating speaking as one generic chat interface, the system adapts prompting, feedback structure, timing, and stored outputs to the practice context.
 
-Compared with many single-purpose speaking tools, Omniverse combines low-latency dialogue coaching and slide-aware presentation feedback under the same account model and reporting structure. The project also implements a pragmatic dual-storage architecture that supports both local-first demonstration and hosted production persistence, which was essential for maintainability and classroom evaluation.
+Compared with many single-purpose speaking tools, SpeakNow combines low-latency dialogue coaching and slide-aware presentation feedback under the same account model and reporting structure. The project also implements a pragmatic dual-storage architecture that supports both local-first demonstration and hosted production persistence, which was essential for maintainability and classroom evaluation.
 
 The strongest product-level novelty is therefore workflow integration rather than a single algorithmic breakthrough. The system unifies:
 - guided scenario speaking
@@ -346,11 +346,11 @@ The strongest product-level novelty is therefore workflow integration rather tha
 
 ### 4.2 Prior Art
 
-| Existing product / patent | What it does | How Omniverse differs |
+| Existing product / patent | What it does | How SpeakNow differs |
 | --- | --- | --- |
-| IELTS Speaking Simulator (JoeSpeaking) | An LLM-based speaking simulator with voice dialogue and score-style feedback for IELTS practice. | Omniverse is broader in task design: it supports both scenario speaking and presentation rehearsal, not only IELTS-style dialogue. It also includes built-in admin telemetry and a unified learner history layer. |
-| Real-Time AI-Driven Speaking Suggestions During Asynchronous Video Capture (US Patent App. 20240330380) | Uses AI suggestions during video capture, mainly for one-way recorded speaking contexts. | Omniverse focuses on interactive, bidirectional practice and slide-linked coaching rather than asynchronous overlay suggestions during recording. It is optimized for conversational response loops and presentation rehearsal workflows. |
-| Intelligent English-Speaking Training System Using Generative AI and Speech Recognition (MDPI, 2025) | Uses generative AI and speech recognition to support language speaking practice and feedback generation. | Omniverse differs by combining practical web deployment, session persistence, admin review capability, and scenario-specific feature modules tailored to user workflows rather than only describing a generalized training pipeline. |
+| IELTS Speaking Simulator (JoeSpeaking) | An LLM-based speaking simulator with voice dialogue and score-style feedback for IELTS practice. | SpeakNow is broader in task design: it supports both scenario speaking and presentation rehearsal, not only IELTS-style dialogue. It also includes built-in admin telemetry and a unified learner history layer. |
+| Real-Time AI-Driven Speaking Suggestions During Asynchronous Video Capture (US Patent App. 20240330380) | Uses AI suggestions during video capture, mainly for one-way recorded speaking contexts. | SpeakNow focuses on interactive, bidirectional practice and slide-linked coaching rather than asynchronous overlay suggestions during recording. It is optimized for conversational response loops and presentation rehearsal workflows. |
+| Intelligent English-Speaking Training System Using Generative AI and Speech Recognition (MDPI, 2025) | Uses generative AI and speech recognition to support language speaking practice and feedback generation. | SpeakNow differs by combining practical web deployment, session persistence, admin review capability, and scenario-specific feature modules tailored to user workflows rather than only describing a generalized training pipeline. |
 
 ### 4.3 Patent Decision
 

@@ -1,8 +1,8 @@
-# Omniverse / SpeakNow Technical Report
-# Omniverse / SpeakNow 技术报告（中英双语版）
+# SpeakNow Technical Report
+# SpeakNow 技术报告（中英双语版）
 
 Module: ENT208TC Session 4 Group 25  
-Project: Omniverse / SpeakNow  
+Project: SpeakNow  
 Academic Year: 2025-2026
 
 Team Members / 团队成员  
@@ -19,12 +19,12 @@ Team Members / 团队成员
 ### 1.1 Architecture Overview / 架构概述
 
 English:  
-Omniverse is a web-based speaking practice platform built as a single-page React application with serverless-style API routes. The system supports two main learning workflows: scenario-based voice conversation and slide-based presentation rehearsal. Around these core functions, the project also includes authentication, user history, profile tracking, and an admin dashboard.
+SpeakNow is a web-based speaking practice platform built as a single-page React application with serverless-style API routes. The system supports two main learning workflows: scenario-based voice conversation and slide-based presentation rehearsal. Around these core functions, the project also includes authentication, user history, profile tracking, and an admin dashboard.
 
 The architecture is intentionally hybrid. On the client side, React handles rendering, navigation, microphone interaction, PDF upload, and browser text-to-speech. On the server side, API routes handle authentication, persistence, LLM orchestration, and admin analytics. For storage, the system supports both Supabase-backed hosted persistence and local JSON fallback, allowing the project to remain usable in both production and coursework demo environments.
 
 中文：  
-Omniverse 是一个基于 Web 的口语训练平台，采用 React 单页应用加类 serverless API 路由的方式构建。系统主要支持两条核心学习流程：情景口语对话训练和基于幻灯片的演讲训练。在这两个核心功能之外，项目还包含登录认证、历史记录、个人进度追踪以及管理员后台。
+SpeakNow 是一个基于 Web 的口语训练平台，采用 React 单页应用加类 serverless API 路由的方式构建。系统主要支持两条核心学习流程：情景口语对话训练和基于幻灯片的演讲训练。在这两个核心功能之外，项目还包含登录认证、历史记录、个人进度追踪以及管理员后台。
 
 整体架构是有意设计成混合式的。前端 React 负责界面渲染、页面跳转、麦克风交互、PDF 上传和浏览器语音播报；后端 API 路由负责认证、数据持久化、大模型调度以及后台事件分析。数据存储同时支持 Supabase 线上持久化和本地 JSON 回退，因此既能部署上线，也能在课程展示环境中稳定运行。
 
@@ -169,8 +169,8 @@ The third risk was browser voice instability. We mitigated this by shortening si
 1. Clone the repository / 克隆仓库
 
 ```bash
-git clone https://github.com/xuenioahh/Omniverse.git
-cd Omniverse
+git clone https://github.com/xuenioahh/SpeakNow.git
+cd SpeakNow
 ```
 
 2. Install dependencies / 安装依赖
@@ -234,14 +234,14 @@ npx vercel --prod
 ### Novelty / 创新点
 
 English:  
-The novelty of Omniverse lies in integrating two distinct speaking-learning workflows inside one coherent product architecture: short-turn scenario dialogue and slide-aware presentation rehearsal. The system also combines these user-facing flows with persistent records, admin visibility, and resilient multi-provider LLM orchestration.
+The novelty of SpeakNow lies in integrating two distinct speaking-learning workflows inside one coherent product architecture: short-turn scenario dialogue and slide-aware presentation rehearsal. The system also combines these user-facing flows with persistent records, admin visibility, and resilient multi-provider LLM orchestration.
 
 中文：  
-Omniverse 的创新点不在于单独用了某个模型或某种上传方式，而在于把两种性质不同的口语训练流程整合进同一个统一产品架构中：一类是短轮次情景对话，另一类是与幻灯片绑定的演讲排练。同时，系统还把这些前台学习流程和持久化记录、后台可视化管理、多模型回退能力整合在了一起。
+SpeakNow 的创新点不在于单独用了某个模型或某种上传方式，而在于把两种性质不同的口语训练流程整合进同一个统一产品架构中：一类是短轮次情景对话，另一类是与幻灯片绑定的演讲排练。同时，系统还把这些前台学习流程和持久化记录、后台可视化管理、多模型回退能力整合在了一起。
 
 ### Prior Art / 现有产品与先例
 
-| Existing product / patent | What it does | How Omniverse differs | 中文差异说明 |
+| Existing product / patent | What it does | How SpeakNow differs | 中文差异说明 |
 | --- | --- | --- | --- |
 | JoeSpeaking / IELTS Speaking Simulator | LLM-driven speaking simulator | Focuses mainly on oral dialogue | 我们不仅有口语对话，还有演讲排练、后台和历史记录体系 |
 | US Patent App. 20240330380 | AI speaking suggestions during video capture | More one-way and recording-oriented | 我们更强调双向交互式练习与 slide-aware 反馈 |

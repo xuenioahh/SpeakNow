@@ -1,4 +1,4 @@
-const CURRENT_USER_KEY = "omniverse_current_user_id";
+const CURRENT_USER_KEY = "speaknow_current_user_id";
 
 function canUseStorage() {
   return typeof window !== "undefined" && Boolean(window.sessionStorage);

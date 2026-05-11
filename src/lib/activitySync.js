@@ -1,4 +1,4 @@
-const EVENT_NAME = "omniverse:activity-updated";
+const EVENT_NAME = "speaknow:activity-updated";
 
 export function emitActivitySync(detail = {}) {
   if (typeof window === "undefined") return;

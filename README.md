@@ -5,7 +5,7 @@ SpeakNow is a speaking-practice web application built for `ENT208TC Session 4 Gr
 ## Live Demo
 
 - Website: `https://omniverse-ent208.vercel.app`
-- Repository: `https://github.com/xuenioahh/Omniverse`
+- Repository: `https://github.com/xuenioahh/SpeakNow`
 
 ## Project Scope
 

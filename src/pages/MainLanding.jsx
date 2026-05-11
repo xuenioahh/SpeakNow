@@ -187,7 +187,7 @@ export default function MainLanding() {
               transition={{ delay: showContent ? 0.08 * (index + 1) : 0 }}
             >
               <Link to={to} className="block">
-                <div className={`glass rounded-[32px] p-5 relative overflow-hidden min-h-[282px] bg-gradient-to-b ${panel} ${border} omniverse-entry-card`}>
+                <div className={`glass rounded-[32px] p-5 relative overflow-hidden min-h-[282px] bg-gradient-to-b ${panel} ${border} speaknow-entry-card`}>
                   <div className={`absolute inset-0 ${glow} opacity-70`} />
                   <div className="absolute inset-x-5 top-4 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
                   <div className="absolute right-[-10%] top-[-8%] w-40 h-40 rounded-full bg-white/8 blur-3xl" />
@@ -219,17 +219,17 @@ export default function MainLanding() {
                     <div className="mt-auto pt-7 space-y-5">
                       <div className="flex flex-wrap gap-x-4 gap-y-2">
                         {highlights.map((item) => (
-                          <span key={item} className="omniverse-entry-meta">
+                          <span key={item} className="speaknow-entry-meta">
                             {item}
                           </span>
                         ))}
                       </div>
-                      <div className="omniverse-entry-action">
+                      <div className="speaknow-entry-action">
                         <span className="inline-flex items-center gap-2 text-[15px] font-medium text-white">
                           <Sparkles className="h-4 w-4 text-white/82" />
                           {cta}
                         </span>
-                        <span className="omniverse-entry-action-arrow">
+                        <span className="speaknow-entry-action-arrow">
                           <ChevronRight className="h-5 w-5" />
                         </span>
                       </div>

@@ -43,7 +43,7 @@ This release presents the project as a standalone coursework deliverable focused
 ### Demo
 
 - Live demo: `https://omniverse-ent208.vercel.app`
-- Repository: `https://github.com/xuenioahh/Omniverse`
+- Repository: `https://github.com/xuenioahh/SpeakNow`
 
 ### Notes
 

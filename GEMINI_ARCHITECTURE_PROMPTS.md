@@ -4,7 +4,7 @@
 ## Prompt 1: Clean Academic Architecture Diagram
 
 Create a clean, professional system architecture diagram for a university technical report.  
-The product name is **Omniverse / SpeakNow**, a web-based speaking practice platform.
+The product name is **SpeakNow**, a web-based speaking practice platform.
 
 Style requirements:
 - white background
@@ -63,7 +63,7 @@ Layout instruction:
 - Group related modules visually
 
 Add a title at the top:
-**System Architecture of Omniverse / SpeakNow**
+**System Architecture of SpeakNow**
 
 ## Prompt 2: Higher-Scoring Coursework Version
 
@@ -122,7 +122,7 @@ Make the final diagram easy to explain in a report section.
 ## Prompt 3: Chinese Version
 
 请为一个大学课程技术报告生成一张专业、清晰、可直接插入 Word 的系统架构图。  
-项目名称是 **Omniverse / SpeakNow**，这是一个基于 Web 的口语训练平台。
+项目名称是 **SpeakNow**，这是一个基于 Web 的口语训练平台。
 
 风格要求：
 - 白色背景
@@ -164,7 +164,7 @@ Make the final diagram easy to explain in a report section.
 - 演讲练习模块连接 PDF 处理模块
 
 图标题请写：
-**Omniverse / SpeakNow 系统架构图**
+**SpeakNow 系统架构图**
 
 ## Prompt 4: If You Want Gemini To Draw A More Beautiful Version
 
