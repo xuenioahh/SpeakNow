@@ -1,0 +1,14 @@
+{
+  "templateOnly":true,
+  "offerId":"",
+  "participantId":"",
+  "planId":"",
+  "offeredAt":"",
+  "outcome":"",
+  "decidedAt":"",
+  "reason":"",
+  "amountUsd":null,
+  "transactionId":"",
+  "paymentEvidenceRef":"",
+  "verifiedBy":""
+}

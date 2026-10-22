@@ -38,13 +38,16 @@ const port = Number(process.env.BACKEND_PORT || 8787);
 const host = process.env.BACKEND_HOST || "127.0.0.1";
 
 function setCorsHeaders(res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type,x-admin-key");
+  res.setHeader('X-Content-Type-Options', 'nosniff');
 }
 
 function createResponse(res) {
   return {
+    setHeader(name, value) { res.setHeader(name, value); },
+    get headersSent() { return res.headersSent; },
+    get statusCode() { return res.statusCode; },
+    set statusCode(code) { res.statusCode = code; },
+    end(body) { res.end(body); },
     status(code) {
       res.statusCode = code;
       return this;
@@ -64,7 +67,11 @@ async function readJsonBody(req) {
   }
 
   const chunks = [];
+  let bytes = 0;
   for await (const chunk of req) {
+    bytes += chunk.length;
+    const limit = req.url?.startsWith('/api/presentation-media') ? 16 * 1024 * 1024 : 512 * 1024;
+    if (bytes > limit) throw Object.assign(new Error('Request body too large'), { status: 413 });
     chunks.push(chunk);
   }
 
@@ -86,12 +93,13 @@ async function readJsonBody(req) {
 
 async function resolveHandler(urlPathname) {
   const routeName = urlPathname.replace(/^\/api\//, "");
-  if (!routeName || routeName.includes("/") || routeName.includes("\\")) {
+  if (!routeName || routeName.startsWith('_') || routeName.includes("/") || routeName.includes("\\")) {
     return null;
   }
 
   const filePath = path.join(apiDir, `${routeName}.js`);
-  const moduleUrl = `${pathToFileURL(filePath).href}?t=${Date.now()}`;
+  if (!fs.existsSync(filePath)) return null;
+  const moduleUrl = pathToFileURL(filePath).href;
   const loaded = await import(moduleUrl);
   return loaded?.default || null;
 }
@@ -129,11 +137,12 @@ const server = http.createServer(async (req, res) => {
       query: Object.fromEntries(requestUrl.searchParams.entries()),
       body,
       url: req.url,
+      socket: req.socket,
     };
 
     await handler(adaptedReq, createResponse(res));
   } catch (error) {
-    const statusCode = error?.message === "Invalid JSON body" ? 400 : 500;
+    const statusCode = error.status || (error?.message === "Invalid JSON body" ? 400 : 500);
     if (!res.headersSent) {
       res.statusCode = statusCode;
       res.setHeader("Content-Type", "application/json; charset=utf-8");

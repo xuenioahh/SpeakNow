@@ -1,50 +1,11 @@
 import { appendAdminEvent, deleteAdminRecord, listAdminData } from "./_adminStore.js";
-import { readAppStore } from "./_appStore.js";
+import { protectedApi } from "./_apiGuard.js";
+import { authenticate } from "./_auth.js";
+import { getOwned } from "./_appStore.js";
 
-function sanitizeEmail(email) {
-  return String(email || "").trim().toLowerCase();
-}
-
-function hasValidAdminKey(req) {
-  const expected = process.env.ADMIN_DASHBOARD_KEY;
-  if (!expected) return true;
-  const received = req.headers["x-admin-key"];
-  return typeof received === "string" && received === expected;
-}
-
-async function hasAdminUserAccess(req) {
-  const userId = req.headers["x-user-id"];
-  if (!userId) return false;
-
-  const db = await readAppStore();
-  const user = db.users.find((entry) => entry.id === userId);
-  if (!user) return false;
-
-  const envAdmins = String(process.env.VITE_ADMIN_EMAILS || "")
-    .split(",")
-    .map((item) => sanitizeEmail(item))
-    .filter(Boolean);
-  const savedAdmins = Array.isArray(db.settings?.adminEmails)
-    ? db.settings.adminEmails.map((item) => sanitizeEmail(item)).filter(Boolean)
-    : [];
-  const adminSet = new Set([...envAdmins, ...savedAdmins]);
-
-  return user.role === "admin" || adminSet.has(sanitizeEmail(user.email));
-}
-
-async function isAuthorizedAdminRequest(req) {
-  if (hasValidAdminKey(req)) {
-    return true;
-  }
-  return hasAdminUserAccess(req);
-}
-
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method === "GET") {
-    if (!(await isAuthorizedAdminRequest(req))) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
-    }
+    await authenticate(req, { admin: true });
     const db = await listAdminData();
     res.status(200).json(db);
     return;
@@ -58,18 +19,24 @@ export default async function handler(req, res) {
   try {
     const payload = req.body || {};
     if (payload.action === "delete_record") {
-      if (!(await isAuthorizedAdminRequest(req))) {
-        res.status(401).json({ error: "Unauthorized" });
-        return;
-      }
+      await authenticate(req, { admin: true });
       const result = await deleteAdminRecord(payload);
       res.status(200).json({ ok: true, ...result });
       return;
     }
-    const result = await appendAdminEvent(payload);
+    const collection = { voice_session_saved: 'voiceSessions', presentation_session_saved: 'presentationSessions' }[payload.type];
+    let eventPayload = payload.payload || {};
+    if (collection) {
+      const session = await getOwned(collection, req.user.id, eventPayload.session?.id);
+      if (!session) return res.status(404).json({ error: 'Practice not found' });
+      eventPayload = { ...eventPayload, session };
+    }
+    const result = await appendAdminEvent({ ...payload, payload: eventPayload, user: { id: req.user.id, full_name: req.user.full_name, email: req.user.email, role: req.user.role }, timestamp: new Date().toISOString() });
     res.status(200).json({ ok: true, ...result });
   } catch (error) {
     console.error("admin-track error:", error);
-    res.status(500).json({ error: error?.message || "Failed to record admin event" });
+    res.status(error.status || 500).json({ error: error.status ? error.message : "Failed to record admin event" });
   }
 }
+
+export default protectedApi(handler);

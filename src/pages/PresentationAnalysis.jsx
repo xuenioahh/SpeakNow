@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Play, Sparkles, Lightbulb, Flag, PanelsTopLeft, CircleCheckBig } from "lucide-react";
+import { ArrowLeft, Play, Lightbulb, Flag, PanelsTopLeft, CircleCheckBig } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { localApi } from "@/api/localClient";
 import LoadingProgressCard from "@/components/LoadingProgressCard";
@@ -133,7 +133,7 @@ export default function PresentationAnalysis() {
   }
 
   return (
-    <div className="min-h-screen pb-8">
+    <div className="studio-page studio-page-reading">
       <div className="px-4 pt-5 space-y-4">
         {errorMessage && (
           <div className="glass rounded-2xl px-4 py-3">
@@ -145,7 +145,7 @@ export default function PresentationAnalysis() {
         )}
         <div className="px-1">
           <p className="text-[11px] text-muted-foreground">
-            Source: {analysis.source === "ai" ? "AI-generated" : "Fallback"}
+            Source: {analysis.source === "ai" ? "AI Coaching Suggestion" : "Local preparation guidance"} · slide preparation, not a measurement of your speech
           </p>
         </div>
         <div className="glass rounded-[28px] p-5">

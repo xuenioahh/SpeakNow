@@ -85,6 +85,12 @@ create index if not exists admin_presentation_sessions_user_id_idx
 create index if not exists admin_presentation_sessions_report_gin_idx
   on public.admin_presentation_sessions using gin (report);
 
--- Optional: if you want to inspect data from the Supabase table editor without
--- using RLS yet, keep RLS disabled for these admin-only tables.
--- If you later expose them to client-side reads, enable RLS and add policies.
+-- Only the authenticated server API may access these copies of private data.
+alter table public.admin_users enable row level security;
+alter table public.admin_events enable row level security;
+alter table public.admin_voice_sessions enable row level security;
+alter table public.admin_presentation_sessions enable row level security;
+revoke all on public.admin_users, public.admin_events, public.admin_voice_sessions,
+ public.admin_presentation_sessions from anon, authenticated;
+grant select, insert, update, delete on public.admin_users, public.admin_events,
+ public.admin_voice_sessions, public.admin_presentation_sessions to service_role;

@@ -11,11 +11,15 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules/
+public/expression-worker.js
 dist/
 dist-ssr/
 .vite/
 .vercel/
 coverage/
+data/
+*.sealed
+*.key
 *.local
 
 .DS_Store

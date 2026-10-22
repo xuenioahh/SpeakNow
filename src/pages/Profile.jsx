@@ -1,734 +1,197 @@
-import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
-import { Link, useLocation } from "react-router-dom";
-import {
-  Edit2,
-  LogOut,
-  Camera,
-  CheckCircle,
-  Loader2,
-  Mic,
-  Presentation,
-  Shield,
-  Pause,
-  Play,
-  Volume2,
-  VolumeX,
-  Sparkles,
-  Stars,
-  BadgeCheck,
-  AudioLines,
-  Flame,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import PracticeTimeline from '@/components/report/PracticeTimeline';
+import RadarChart from '@/components/report/RadarChart';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, Camera, Check, Clock3, Edit2, Loader2, LogOut, RefreshCw, Shield, Target } from "lucide-react";
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { localApi } from "@/api/localClient";
-import BottomNav from "@/components/BottomNav";
-import { buildProfileInsights } from "@/lib/profileInsights";
-import { subscribeActivitySync } from "@/lib/activitySync";
 import { useAuth } from "@/lib/AuthContext";
+import { subscribeActivitySync } from "@/lib/activitySync";
+import { buildProfileAnalytics, metricLabel } from "@/lib/profileAnalytics";
+import BottomNav from "@/components/BottomNav";
+import ProfileMusic from "@/components/ProfileMusic";
 import { toast } from "sonner";
+import "@/profile.css";
 
-const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const PROFILE_BGM_TRACKS = [
-  {
-    title: "Valley Sunset",
-    fileName: "profile-bgm-127.mp3",
-    src: "/profile-bgm-127.mp3",
-    mimeType: "audio/mpeg",
-  },
-  {
-    title: "Vastness",
-    fileName: "profile-bgm-292.mp3",
-    src: "/profile-bgm-292.mp3",
-    mimeType: "audio/mpeg",
-  },
-  {
-    title: "Hazy After Hours",
-    fileName: "profile-bgm-139.mp3",
-    src: "/profile-bgm-139.mp3",
-    mimeType: "audio/mpeg",
-  },
-  {
-    title: "Sleepy Cat",
-    fileName: "profile-bgm-135.mp3",
-    src: "/profile-bgm-135.mp3",
-    mimeType: "audio/mpeg",
-  },
-  {
-    title: "Tech House Vibes",
-    fileName: "profile-bgm-640.mp3",
-    src: "/profile-bgm-640.mp3",
-    mimeType: "audio/mpeg",
-  },
-];
-
-function pickNextTrackIndex(currentIndex, total) {
-  if (total <= 1) return 0;
-  let nextIndex = Math.floor(Math.random() * total);
-  if (nextIndex === currentIndex) {
-    nextIndex = (currentIndex + 1 + Math.floor(Math.random() * (total - 1))) % total;
-  }
-  return nextIndex;
-}
+const DEFAULT_PREFS = { weekly_goal: 3, practice_focus: "presentation" };
+const shortDate = date => new Date(date).toLocaleDateString("en", { month: "short", day: "numeric" });
 
 export default function Profile() {
-  const { isAdmin } = useAuth();
-  const location = useLocation();
+  const { isAdmin, logout } = useAuth();
   const [user, setUser] = useState(null);
+  const [voice, setVoice] = useState([]);
+  const [presentations, setPresentations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [days, setDays] = useState(30);
+  const [track, setTrack] = useState("all");
+  const [groupId, setGroupId] = useState("");
   const [editing, setEditing] = useState(false);
-  const [newName, setNewName] = useState("");
+  const [name, setName] = useState("");
+  const [preferences, setPreferences] = useState(DEFAULT_PREFS);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [voiceSessions, setVoiceSessions] = useState([]);
-  const [presentationSessions, setPresentationSessions] = useState([]);
-  const [activityRecords, setActivityRecords] = useState([]);
-  const fileInputRef = useRef(null);
-  const audioRef = useRef(null);
-  const trackIndexRef = useRef(-1);
-  const [avatarUrl, setAvatarUrl] = useState(null);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
-  const [isMusicMuted, setIsMusicMuted] = useState(false);
-  const [musicVolume, setMusicVolume] = useState(0.35);
-  const [musicError, setMusicError] = useState("");
-  const [musicReady, setMusicReady] = useState(false);
-  const [musicSrc, setMusicSrc] = useState("");
-  const [currentTrackTitle, setCurrentTrackTitle] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const avatarInput = useRef(null);
+  const requestId = useRef(0);
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    if (location.pathname === "/profile") {
-      loadData();
-    }
-  }, [location.pathname]);
-
-  useEffect(() => {
-    return subscribeActivitySync(() => {
-      loadData();
-    });
-  }, []);
-
-  useEffect(() => {
-    if (location.pathname === "/profile" && location.state?.deniedAdminFor) {
-      toast.error(`Admin access denied for ${location.state.deniedAdminFor}`);
-      window.history.replaceState({}, "", "/profile");
-    }
-  }, [location.pathname, location.state]);
-
-  useEffect(() => {
-    if (!audioRef.current) return;
-    audioRef.current.volume = musicVolume;
-  }, [musicVolume]);
-
-  useEffect(() => {
-    if (!audioRef.current) return;
-    audioRef.current.muted = isMusicMuted;
-  }, [isMusicMuted]);
-
-  useEffect(() => {
-    const audio = new Audio();
-    audioRef.current = audio;
-
-    const supportedTracks = PROFILE_BGM_TRACKS.filter((track) => {
-      if (typeof audio.canPlayType !== "function") return true;
-      return audio.canPlayType(track.mimeType) !== "";
-    });
-
-    if (!supportedTracks.length) {
-      setMusicSrc("");
-      setCurrentTrackTitle("");
-      setMusicReady(false);
-      setMusicError("Background music is unavailable in this browser.");
-      return;
-    }
-
-    const assignTrack = (trackIndex) => {
-      const safeTrack = supportedTracks[trackIndex];
-      if (!safeTrack) return;
-      trackIndexRef.current = trackIndex;
-      setMusicSrc(safeTrack.src);
-      setCurrentTrackTitle(safeTrack.title);
-      setMusicReady(false);
-      setMusicError("");
-      audio.src = safeTrack.src;
-      audio.preload = "metadata";
-      audio.volume = musicVolume;
-      audio.muted = isMusicMuted;
-      audio.load();
-    };
-
-    assignTrack(pickNextTrackIndex(-1, supportedTracks.length));
-
-    const handlePlay = () => setIsMusicPlaying(true);
-    const handlePause = () => setIsMusicPlaying(false);
-    const handleCanPlay = () => {
-      setMusicReady(true);
-      setMusicError("");
-    };
-    const handleError = () => {
-      setMusicReady(false);
-      setMusicError("Background music could not be loaded.");
-      setIsMusicPlaying(false);
-    };
-    const handleEnded = async () => {
-      const nextIndex = pickNextTrackIndex(trackIndexRef.current, supportedTracks.length);
-      assignTrack(nextIndex);
-      try {
-        await audio.play();
-      } catch (error) {
-        setMusicError(error?.message || "Playback was blocked.");
-        setIsMusicPlaying(false);
-      }
-    };
-
-    audio.addEventListener("play", handlePlay);
-    audio.addEventListener("pause", handlePause);
-    audio.addEventListener("loadedmetadata", handleCanPlay);
-    audio.addEventListener("canplay", handleCanPlay);
-    audio.addEventListener("canplaythrough", handleCanPlay);
-    audio.addEventListener("error", handleError);
-    audio.addEventListener("ended", handleEnded);
-
-    return () => {
-      audio.pause();
-      audio.removeEventListener("play", handlePlay);
-      audio.removeEventListener("pause", handlePause);
-      audio.removeEventListener("loadedmetadata", handleCanPlay);
-      audio.removeEventListener("canplay", handleCanPlay);
-      audio.removeEventListener("canplaythrough", handleCanPlay);
-      audio.removeEventListener("error", handleError);
-      audio.removeEventListener("ended", handleEnded);
-      if (audioRef.current === audio) {
-        audioRef.current = null;
-      }
-    };
-  }, [isMusicMuted, musicVolume]);
-
-  useEffect(() => {
-    if (location.pathname !== "/profile") return;
-    const audio = audioRef.current;
-    if (!audio || !musicReady) return;
-
-    let cancelled = false;
-
-    const tryAutoplay = async () => {
-      try {
-        setMusicError("");
-        await audio.play();
-        if (!cancelled) {
-          setIsMusicPlaying(true);
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setMusicError("Autoplay was blocked. Press Play to start the music.");
-          setIsMusicPlaying(false);
-        }
-      }
-    };
-
-    tryAutoplay();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [location.pathname, musicReady]);
-
-  const loadData = async () => {
+  const load = useCallback(async () => {
+    const id = ++requestId.current;
+    setLoading(true);
+    setError("");
     try {
-      setLoading(true);
-      setError("");
-      const u = await localApi.auth.me();
-      setUser(u);
-      setNewName(u?.full_name || "");
-      setAvatarUrl(u?.avatar_url || "");
-
-      const [vs, ps, activities] = await Promise.all([
-        localApi.entities.VoiceSession.list("-created_date", 50),
-        localApi.entities.PresentationSession.list("-created_date", 50),
-        localApi.entities.ActivityRecord.list("-created_date", 200),
+      const [account, vs, ps] = await Promise.all([
+        localApi.auth.me(),
+        localApi.entities.VoiceSession.list("-created_date"),
+        localApi.entities.PresentationSession.list("-created_date"),
       ]);
-      setVoiceSessions(vs || []);
-      setPresentationSessions(ps || []);
-      setActivityRecords(activities || []);
-    } catch (err) {
-      console.error("Profile load failed:", err);
-      setError(err?.message || "Profile could not be loaded.");
+      if (id !== requestId.current) return;
+      setUser(account);
+      setVoice(Array.isArray(vs) ? vs : []);
+      setPresentations(Array.isArray(ps) ? ps : []);
+    } catch {
+      if (id === requestId.current) setError("Your latest records could not be loaded. Please retry. Any numbers below are from the last successful refresh.");
     } finally {
-      setLoading(false);
+      if (id === requestId.current) setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    void load();
+    const unsubscribe = subscribeActivitySync(() => void load());
+    return () => { requestId.current++; unsubscribe(); };
+  }, [load]);
+
+  const analytics = useMemo(() => buildProfileAnalytics({ voiceSessions: voice, presentationSessions: presentations, days, track }), [voice, presentations, days, track]);
+  const group = analytics.groups.find(g => g.id === groupId) || analytics.groups[0];
+  const prefs = { ...DEFAULT_PREFS, ...user?.profile_preferences };
+  const weeklyGoal = Number(prefs.weekly_goal) || 3;
+  const remaining = Math.max(0, weeklyGoal - analytics.weekCount);
+  const nextHref = prefs.practice_focus === "presentation" ? "/presentation" : "/voice";
+  const suggested = analytics.advice.find(a => prefs.practice_focus === "presentation" ? a.group === "presentation" : a.group !== "presentation") || analytics.advice[0];
+
+  const beginEdit = () => {
+    setName(user?.full_name || "");
+    setPreferences(prefs);
+    setEditing(true);
   };
-
-  const getWeeklyStats = () => {
-    const now = new Date();
-    const monday = new Date(now);
-    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
-    monday.setHours(0, 0, 0, 0);
-
-    const allSessions = [...(voiceSessions || []), ...(presentationSessions || [])].filter(Boolean);
-    const weekCount = allSessions.filter(s => {
-      const d = new Date(s.created_date);
-      return d >= monday;
-    }).length;
-
-    const dayActivity = DAYS.map((_, idx) => {
-      const day = new Date(monday);
-      day.setDate(monday.getDate() + idx);
-      const nextDay = new Date(day);
-      nextDay.setDate(day.getDate() + 1);
-      return allSessions.some(s => {
-        const d = new Date(s.created_date);
-        return d >= day && d < nextDay;
-      });
-    });
-
-    return { weekCount, dayActivity };
-  };
-
-  const handleSaveName = async () => {
+  const saveProfile = async event => {
+    event.preventDefault();
+    if (!name.trim() || saving) return;
     setSaving(true);
-    await localApi.auth.updateMe({ full_name: newName });
-    setSaved(true);
-    setSaving(false);
-    setEditing(false);
-    setUser(prev => ({ ...prev, full_name: newName }));
-    setTimeout(() => setSaved(false), 2000);
-  };
-
-  const handleAvatarUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const { file_url } = await localApi.integrations.Core.UploadFile({ file });
-    await localApi.auth.updateMe({ avatar_url: file_url });
-    setAvatarUrl(file_url);
-  };
-
-  const handleToggleMusic = async () => {
-    const audio = audioRef.current;
-    if (!audio || !musicSrc) {
-      setMusicError("Background music is unavailable right now.");
-      return;
-    }
-
-    if (isMusicPlaying) {
-      audio.pause();
-      return;
-    }
-
     try {
-      setMusicError("");
-      if (audio.readyState === 0) {
-        audio.load();
-      }
-      await audio.play();
-      setMusicReady(true);
-    } catch (error) {
-      setMusicError(error?.message || "Playback was blocked.");
-      setIsMusicPlaying(false);
+      const updated = await localApi.auth.updateMe({ full_name: name.trim(), profile_preferences: preferences });
+      setUser(updated);
+      setEditing(false);
+      toast.success("Profile and practice goal saved");
+    } catch {
+      toast.error("Changes could not be saved. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+  const uploadAvatar = async event => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) || file.size > 2 * 1024 * 1024) {
+      toast.error("Choose a JPG, PNG or WebP image smaller than 2 MB.");
+      return;
+    }
+    setUploading(true);
+    try {
+      const { file_url } = await localApi.integrations.Core.UploadFile({ file });
+      const updated = await localApi.auth.updateMe({ avatar_url: file_url });
+      setUser(updated);
+      toast.success("Profile photo updated");
+    } catch {
+      toast.error("Your photo could not be saved. Please retry.");
+    } finally {
+      setUploading(false);
     }
   };
 
-  const handleToggleMute = () => {
-    setIsMusicMuted((prev) => !prev);
-  };
+  if (loading && !user) return <main className="profile-dashboard" aria-busy="true"><div className="profile-panel profile-loading"><Loader2 className="animate-spin" /><p>Loading your practice records…</p></div><BottomNav /></main>;
 
-  const handleVolumeChange = (event) => {
-    const nextVolume = Number(event.target.value);
-    setMusicVolume(nextVolume);
-    if (nextVolume > 0 && isMusicMuted) {
-      setIsMusicMuted(false);
-    }
-  };
-
-  const { weekCount, dayActivity } = getWeeklyStats();
-  const totalSessions = (voiceSessions?.length || 0) + (presentationSessions?.length || 0);
-  const insights = buildProfileInsights({
-    voiceSessions: Array.isArray(voiceSessions) ? voiceSessions : [],
-    presentationSessions: Array.isArray(presentationSessions) ? presentationSessions : [],
-    activityRecords: Array.isArray(activityRecords) ? activityRecords : [],
-  });
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-3">
-          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto" />
-          <p className="text-sm text-muted-foreground">Loading profile...</p>
+  return <main className="profile-dashboard">
+    <p role="note" className="profile-panel text-sm">This journal tracks actual sessions and duration. Unverified legacy or model-estimated scores are excluded from skill trends.</p>
+    <header className="profile-heading">
+      <div><p className="profile-eyebrow">YOUR PRACTICE JOURNAL</p><h1>Profile & progress</h1></div>
+      <button className="profile-secondary-button" onClick={() => void load()} disabled={loading} aria-label="Refresh profile"><RefreshCw size={16} className={loading ? "animate-spin" : ""} /><span>{loading ? "Refreshing" : "Refresh"}</span></button>
+    </header>
+    {error && <div role="alert" className="profile-error"><p>{error}</p><button onClick={() => void load()} disabled={loading}>Retry</button></div>}
+    {!user ? <p className="profile-panel">Your profile is unavailable. Retry to load your account.</p> : <>
+      <section className="profile-cover" aria-label="Your personal practice space">
+        <img src="/profile-studio-v2.png" alt="A speaker rehearsing with a notebook in a sunlit studio" width="1536" height="1024" fetchPriority="high" />
+        <div className="profile-cover-copy"><p className="profile-eyebrow">A LITTLE PRACTICE, OFTEN.</p><h2>Your next rehearsal<br />starts here.</h2><p>{analytics.lifetimeTotal ? `${analytics.lifetimeTotal} saved sessions. Keep a record of what works for you.` : "One conversation. One rehearsal. A place to see how you grow."}</p></div>
+      </section>
+      <section className="profile-panel profile-identity">
+        <div className="profile-person">
+          <button className="profile-avatar-button" onClick={() => avatarInput.current?.click()} disabled={uploading || saving} aria-label="Change profile photo">
+            {user.avatar_url ? <img src={user.avatar_url} alt="" /> : <span>{user.full_name?.[0]?.toUpperCase() || "S"}</span>}
+            <span className="profile-avatar-edit">{uploading ? <Loader2 size={14} className="animate-spin" /> : <Camera size={14} />}</span>
+          </button>
+          <input ref={avatarInput} className="hidden" type="file" accept="image/jpeg,image/png,image/webp" onChange={uploadAvatar} />
+          <div><h2>{user.full_name || "Your profile"}</h2><p>{user.email}</p><p className="profile-caption">{prefs.practice_focus === "presentation" ? "Presentation rehearsal" : "Conversation practice"} · {weeklyGoal} sessions / week</p></div>
         </div>
+        {!editing && <button className="profile-secondary-button" onClick={beginEdit} disabled={uploading}><Edit2 size={16} /> Edit profile & goal</button>}
+        {editing && <form onSubmit={saveProfile} className="profile-edit-form">
+          <label>Display name<input required maxLength={80} autoComplete="name" value={name} onChange={e => setName(e.target.value)} /></label>
+          <label>Weekly session goal<select value={preferences.weekly_goal} onChange={e => setPreferences(p => ({ ...p, weekly_goal: Number(e.target.value) }))}>{[1, 2, 3, 4, 5, 6, 7].map(n => <option key={n} value={n}>{n} sessions</option>)}</select></label>
+          <label>Practice focus<select value={preferences.practice_focus} onChange={e => setPreferences(p => ({ ...p, practice_focus: e.target.value }))}><option value="voice">Conversation</option><option value="presentation">Presentation</option></select></label>
+          <div className="profile-form-actions"><button className="profile-primary-button" disabled={saving}>{saving ? "Saving…" : "Save changes"}</button><button type="button" className="profile-secondary-button" onClick={() => setEditing(false)} disabled={saving}>Cancel</button></div>
+        </form>}
+      </section>
+      <div className="profile-overview">
+        <section className="profile-panel">
+          <div className="profile-section-title"><h2>This week</h2><span>Last 7 days · all practice</span></div>
+          <div className="profile-goal-count"><strong>{analytics.weekCount}</strong><span>/ {weeklyGoal} sessions</span><Target size={20} /></div>
+          <progress aria-label="Weekly practice goal" max={weeklyGoal} value={Math.min(weeklyGoal, analytics.weekCount)} />
+          <p className="profile-caption">{remaining ? `${remaining} more session${remaining === 1 ? "" : "s"} to reach your goal.` : "Weekly goal reached. Keep your next session focused."}</p>
+          <div className="profile-week">{analytics.week.map(d => <div key={d.date.toISOString()}><span className={d.count ? "profile-day active" : "profile-day"} title={`${shortDate(d.date)}: ${d.count} sessions`}>{d.count || "–"}</span><span>{d.label}</span></div>)}</div>
+          <p className="profile-caption">{analytics.streak} consecutive practice day{analytics.streak === 1 ? "" : "s"} · counts through today or yesterday</p>
+        </section>
+        <section className="profile-panel profile-next">
+          <p className="profile-eyebrow">YOUR NEXT SESSION</p><h2>{suggested?.title || (prefs.practice_focus === "presentation" ? "Start with one slide" : "Start with a familiar scenario")}</h2>
+          <p>{suggested?.action || (prefs.practice_focus === "presentation" ? "Upload a short PDF and rehearse its opening. Save your report to start a progress history." : "Choose a familiar situation and complete a short conversation. Save the report to receive feedback based on your practice.")}</p>
+          {suggested && <p className="profile-caption">{suggested.evidence} {suggested.provisional ? "Early signal; more practice is needed for a stable pattern." : ""}</p>}
+          <Link className="profile-primary-button" to={suggested?.href || nextHref}>Start practice <ArrowRight size={16} /></Link>
+        </section>
       </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen pb-24">
-      {/* Header */}
-      <div className="px-5 pt-6 pb-4">
-        <h1 className="text-xl font-bold font-space text-foreground">Profile</h1>
+      <div className="profile-filters">
+        <h2>Practice analysis</h2>
+        <div><label>Period<select value={days} onChange={e => setDays(Number(e.target.value))}><option value={7}>Last 7 days</option><option value={30}>Last 30 days</option><option value={90}>Last 90 days</option></select></label><label>Activity<select value={track} onChange={e => setTrack(e.target.value)}><option value="all">All practice</option><option value="voice">Conversation</option><option value="presentation">Presentation</option></select></label></div>
       </div>
-
-      <div className="px-4 space-y-4">
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(251,191,36,0.18),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(45,212,191,0.16),transparent_24%),linear-gradient(135deg,rgba(99,102,241,0.22),rgba(15,23,42,0.88))] px-5 py-6"
-        >
-          <div className="pointer-events-none absolute inset-0 opacity-80">
-            <div className="profile-orbit profile-orbit-a" />
-            <div className="profile-orbit profile-orbit-b" />
-          </div>
-          <div className="relative">
-            <div>
-              <p className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-cyan-100/80">
-                <Sparkles className="w-3.5 h-3.5" />
-                Growth Profile
-              </p>
-              <h2 className="mt-3 text-[2.05rem] leading-tight font-space font-bold text-white">Your speaking growth, visualized.</h2>
-              <p className="mt-2 max-w-[290px] text-[0.95rem] leading-relaxed text-white/72">
-                Keep going. Every practice session makes your speaking more confident, more natural, and more ready for the real moment.
-              </p>
-            </div>
-            <div className="mt-7 flex justify-center">
-              <div className="profile-character-stage">
-                <div className="profile-skill-tag profile-skill-tag-a">
-                  <BadgeCheck className="w-3.5 h-3.5 text-emerald-300" />
-                  Clear Accent
-                </div>
-                <div className="profile-skill-tag profile-skill-tag-b">
-                  <Flame className="w-3.5 h-3.5 text-amber-300" />
-                  Confident
-                </div>
-                <div className="profile-skill-tag profile-skill-tag-c">
-                  <AudioLines className="w-3.5 h-3.5 text-cyan-300" />
-                  Smooth Rhythm
-                </div>
-                <div className="profile-skill-tag profile-skill-tag-d">
-                  <Stars className="w-3.5 h-3.5 text-violet-200" />
-                  Natural Tone
-                </div>
-                <div className="profile-skill-tag profile-skill-tag-e">
-                  <Sparkles className="w-3.5 h-3.5 text-rose-200" />
-                  Stage Ready
-                </div>
-                <div className="profile-character-main">
-                  <div className="profile-hero-illustration-shell">
-                    <img
-                      src="/profile-hero-illustration.png"
-                      alt="Profile illustration"
-                      className="profile-hero-illustration"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 flex justify-center">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-1 text-[11px] text-white/80">
-                <Stars className="w-3.5 h-3.5 text-amber-200" />
-                animated speaking persona
-              </span>
-            </div>
-          </div>
-        </motion.div>
-
-        {error && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass rounded-2xl p-4">
-            <p className="text-sm text-accent">{error}</p>
-          </motion.div>
-        )}
-
-        {/* User Card */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-5 overflow-hidden relative">
-          <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-cyan-400/10 blur-2xl" />
-          <div className="pointer-events-none absolute -left-6 bottom-0 h-24 w-24 rounded-full bg-violet-500/10 blur-2xl" />
-          <div className="flex items-center gap-4">
-            {/* Avatar */}
-            <div className="relative">
-              <div className="profile-avatar-aura" />
-              <div
-                className="relative z-10 w-16 h-16 rounded-2xl overflow-hidden bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-2xl font-bold text-white">
-                    {user?.full_name?.[0]?.toUpperCase() || "?"}
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
-              >
-                <Camera className="w-2.5 h-2.5 text-white" />
-              </button>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
-            </div>
-
-            {/* Info */}
-            <div className="flex-1 min-w-0">
-              {editing ? (
-                <div className="flex items-center gap-2">
-                  <Input
-                    value={newName}
-                    onChange={e => setNewName(e.target.value)}
-                    className="h-8 text-sm bg-white/5 border-white/10 rounded-xl"
-                    autoFocus
-                  />
-                  <Button size="sm" onClick={handleSaveName} disabled={saving} className="rounded-xl h-8 px-3">
-                    {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : "Save"}
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <h2 className="font-semibold text-foreground truncate">
-                    {user?.full_name || "User"}
-                  </h2>
-                  {saved && <CheckCircle className="w-3.5 h-3.5 text-success flex-shrink-0" />}
-                  <button onClick={() => setEditing(true)} className="flex-shrink-0">
-                    <Edit2 className="w-3.5 h-3.5 text-muted-foreground hover:text-primary transition-colors" />
-                  </button>
-                </div>
-              )}
-              <p className="text-xs text-muted-foreground mt-0.5 truncate">{user?.email}</p>
-              <p className="text-[10px] text-muted-foreground/60 mt-0.5 capitalize">
-                {user?.role || "user"}
-              </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <BadgePill label={`${weekCount} this week`} tone="violet" />
-                <BadgePill label={`${totalSessions} sessions`} tone="cyan" />
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Stats Row */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="grid grid-cols-3 gap-3">
-          <StatCard value={weekCount} label="This Week" />
-          <StatCard value={voiceSessions.length} label="Speaking" icon={Mic} />
-          <StatCard value={presentationSessions.length} label="Presents" icon={Presentation} />
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }} className="glass rounded-2xl p-4">
-          <div className="flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-sm font-semibold text-foreground">User Portrait</h3>
-              <p className="text-xs text-muted-foreground mt-1">{insights.profileTone}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-xl font-bold text-primary">{insights.recentAverage}</p>
-              <p className="text-[10px] text-muted-foreground">recent avg</p>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            <PortraitMetric label="Strongest" value={insights.strongestMetric} />
-            <PortraitMetric label="Focus area" value={insights.weakestMetric} />
-            <PortraitMetric label="Top scenario" value={insights.frequentScenario} />
-            <PortraitMetric label="Main mode" value={insights.focusMode} />
-          </div>
-        </motion.div>
-
-        {/* Weekly Practice */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-semibold text-foreground">📊 Weekly Practice</h3>
-            <span className="text-xs text-muted-foreground">{weekCount} sessions</span>
-          </div>
-          <div className="flex items-end justify-between gap-1">
-            {DAYS.map((day, i) => (
-              <div key={day} className="flex flex-col items-center gap-1.5 flex-1">
-                <div className={`w-full rounded-lg transition-all ${
-                  dayActivity[i]
-                    ? "bg-gradient-to-t from-violet-600 to-indigo-500"
-                    : "bg-white/5"
-                } ${dayActivity[i] ? "profile-bar-active" : ""}`} style={{ height: dayActivity[i] ? "28px" : "12px", animationDelay: `${i * 120}ms` }} />
-                <span className="text-[9px] text-muted-foreground">{day}</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="glass rounded-2xl p-4">
-          <h3 className="text-sm font-semibold text-foreground">Learning Snapshot</h3>
-          <div className="grid grid-cols-3 gap-2 mt-3">
-            <StatMini label="Total" value={totalSessions} />
-            <StatMini label="Activities" value={insights.totalActivities} />
-            <StatMini label="Avg words" value={insights.averageWords} />
-            <StatMini label="Avg mins" value={insights.averageDurationMinutes} />
-          </div>
-          {totalSessions === 0 && (
-            <p className="text-xs text-muted-foreground mt-3">
-              No saved sessions yet. Complete one speaking or presentation practice to build your profile.
-            </p>
-          )}
-          {insights.latestActivity !== "Not enough data" && (
-            <p className="text-xs text-muted-foreground mt-2">
-              Latest activity: {insights.latestActivity}
-            </p>
-          )}
-        </motion.div>
-
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.14 }} className="glass rounded-2xl p-4 space-y-4">
-          <div>
-            <h3 className="text-sm font-semibold text-foreground">Strengths</h3>
-            <div className="space-y-2 mt-3">
-              {insights.strengths.map((item) => (
-                <div key={item} className="glass rounded-xl px-3 py-2">
-                  <p className="text-xs text-muted-foreground">{item}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h3 className="text-sm font-semibold text-foreground">Next Focus</h3>
-            <div className="space-y-2 mt-3">
-              {insights.focusAreas.map((item) => (
-                <div key={item} className="glass rounded-xl px-3 py-2">
-                  <p className="text-xs text-muted-foreground">{item}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {isAdmin && user?.role === "admin" ? (
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.145 }}>
-            <Link
-              to="/admin"
-              className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl border border-emerald-400/20 text-emerald-300 hover:bg-emerald-500/8 transition-colors"
-            >
-              <Shield className="w-4 h-4" />
-              Open Admin Dashboard
-            </Link>
-          </motion.div>
-        ) : null}
-
-        {/* Sign Out */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          <Button
-            onClick={() => localApi.auth.logout("/")}
-            variant="outline"
-            className="w-full h-12 rounded-2xl border-accent/30 text-accent hover:bg-accent/10 hover:border-accent/50"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
-        </motion.div>
+      <div className="profile-stats" aria-live="polite">
+        <Stat label="Sessions" value={analytics.total} detail={`${analytics.voiceCount} conversations · ${analytics.presentationCount} presentations`} />
+        <Stat label="Practice time" value={`${analytics.minutes} min`} detail="From saved session durations" />
+        <Stat label="Average session" value={analytics.averageMinutes === null ? "—" : `${analytics.averageMinutes} min`} detail={`In the selected ${days}-day period`} />
       </div>
-
-      <div className="fixed bottom-24 right-4 z-30 flex flex-col items-end gap-2">
-        {(musicError || musicReady) && (
-          <div className="glass max-w-[210px] rounded-2xl px-3 py-2 text-right">
-            <div className="flex items-center justify-end gap-1.5">
-              <span className={`music-dot !h-3 !w-3 rounded-full ${isMusicPlaying ? "music-dot-live" : ""}`} />
-              <p className="text-[11px] font-medium text-foreground">BGM</p>
-            </div>
-            {musicError ? (
-              <p className="mt-1 text-[10px] leading-relaxed text-amber-300">{musicError}</p>
-            ) : (
-              <>
-                <p className="mt-1 text-[10px] text-muted-foreground">
-                  {isMusicPlaying ? "Playing quietly in background." : "Optional background music."}
-                </p>
-                {currentTrackTitle && (
-                  <p className="mt-1 text-[10px] leading-relaxed text-cyan-200/85">
-                    Now playing: {currentTrackTitle}
-                  </p>
-                )}
-              </>
-            )}
-            <div className="mt-2 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={handleToggleMute}
-                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/5 text-foreground transition-colors hover:bg-white/10"
-                aria-label={isMusicMuted ? "Unmute music" : "Mute music"}
-              >
-                {isMusicMuted || musicVolume === 0 ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-              </button>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                value={musicVolume}
-                onChange={handleVolumeChange}
-                className="w-20 accent-amber-500"
-                aria-label="Music volume"
-              />
-            </div>
-          </div>
-        )}
-        <button
-          type="button"
-          onClick={handleToggleMusic}
-          disabled={!musicSrc}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-slate-900/80 text-white shadow-[0_16px_30px_rgba(15,23,42,0.28)] transition-all hover:scale-[1.03] hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-          aria-label={isMusicPlaying ? "Pause background music" : "Play background music"}
-        >
-          {isMusicPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
-        </button>
-      </div>
-
-      <BottomNav />
-    </div>
-  );
+      {analytics.total === 0 ? <section className="profile-panel profile-empty"><Clock3 size={26} /><h2>No sessions in this period</h2><p>{analytics.lifetimeTotal ? "Choose a longer period or another activity to see your saved practice." : "Complete and save your first practice. Your recording, suggested priority and next practice will appear here."}</p><Link to={nextHref} className="profile-primary-button">Start a session <ArrowRight size={16} /></Link></section> : <>
+        <section className="profile-panel">
+          <div className="profile-section-title"><div><h2>Score history</h2><p className="profile-caption">Each scoring system is shown separately. These are practice estimates, not exam results.</p></div>{group && <label className="profile-chart-select">Scoring system<select value={group.id} onChange={e => setGroupId(e.target.value)}>{analytics.groups.map(g => <option key={g.id} value={g.id}>{g.label}</option>)}</select></label>}</div>
+          {!group ? <p className="profile-empty">These sessions have no usable scored report yet. Practice time still counts.</p> : <>
+            <div className="profile-score-summary"><strong>{group.average}<small> / {group.max}</small></strong><span>{group.count} scored sessions</span><span>{group.delta === null ? "At least 4 scores needed to compare trends" : `${group.delta > 0 ? "+" : ""}${group.delta} vs previous ${group.comparisonCount} sessions`}</span></div>
+            {group.points.length >= 2 ? <div className="profile-chart" role="img" aria-label={`${group.label} score history. Exact values are in the table below.`}>
+              <ResponsiveContainer width="100%" height="100%" minWidth={0}><LineChart data={group.points} margin={{ top: 12, right: 20, left: -20, bottom: 4 }}><CartesianGrid stroke="#343936" vertical={false} /><XAxis dataKey="date" tickFormatter={shortDate} stroke="#9baba0" tick={{ fontSize: 12 }} minTickGap={28} /><YAxis domain={[0, group.max]} stroke="#9baba0" tick={{ fontSize: 12 }} /><Tooltip labelFormatter={shortDate} formatter={value => [`${value} / ${group.max}`, "Score"]} contentStyle={{ background: "#202722", border: "1px solid #4a584d", borderRadius: 12 }} /><Line type="linear" dataKey="value" stroke="#b5d0a6" strokeWidth={2.5} dot={{ r: 3 }} isAnimationActive={false} /></LineChart></ResponsiveContainer>
+            </div> : <p className="profile-empty">One score saved. Save another report in this scoring system to see a trend.</p>}
+            <details className="profile-score-table"><summary>View exact scores</summary><table><caption>{group.label} · last {days} days</caption><thead><tr><th>Date</th><th>Score</th></tr></thead><tbody>{group.points.map((point, i) => <tr key={point.id || i}><td>{shortDate(point.date)}</td><td>{point.value} / {group.max}</td></tr>)}</tbody></table></details>
+          </>}
+          {analytics.excludedScores > 0 && <p className="profile-caption">{analytics.excludedScores} session(s) excluded from score charts: missing or invalid scores, unknown scales, or marked fallback reports.</p>}
+        </section>
+        {group && <div className="profile-overview">
+          <section className="profile-panel"><div className="profile-section-title"><h2>Skill breakdown</h2><span>{group.label}</span></div>{group.metrics.length > 0 && <RadarChart scores={Object.fromEntries(group.metrics.map(metric => [metric.label, metric.value]))} maxScore={group.max} history={[...voice, ...presentations].filter(session => group.points.some(point => point.id === session.id)).map(session => ({ ...session, report: { ...session.report, scores: Object.fromEntries(Object.entries(session.report?.scores || {}).map(([key, value]) => [metricLabel(key), value])) } }))} />}{group.metrics.length ? group.metrics.map(metric => <div className="profile-skill" key={metric.name}><div><span>{metric.label}</span><span>{metric.value} / {group.max}</span></div><progress aria-label={metric.label} max={group.max} value={metric.value} /><p className="profile-caption">{metric.count} scored session{metric.count === 1 ? "" : "s"}</p></div>) : <p className="profile-caption">These reports do not include individual skill scores.</p>}<p className="profile-caption">Feedback reflects the saved report. Pronunciation and body-language accuracy cannot be established from text alone.</p></section>
+          <section className="profile-panel"><h2>Feedback to act on</h2>{analytics.advice.filter(a => a.group === group.id).map(a => <div key={a.group} className="profile-advice"><Check size={18} /><div><h3>{a.title}</h3><p>{a.evidence}</p><p>{a.action}</p>{a.provisional && <p className="profile-caption">Provisional: fewer than three scored sessions.</p>}<Link to={a.href}>Practise this skill <ArrowRight size={14} /></Link></div></div>)}</section>
+        </div>}
+        <section className="profile-panel"><div className="profile-section-title"><h2>Recent practice</h2><span>Selected period</span></div><PracticeTimeline sessions={analytics.recent} /></section>
+      </>}
+      {analytics.invalidDates > 0 && <p className="profile-caption">{analytics.invalidDates} record(s) with missing, invalid or future dates are not included.</p>}
+      <ProfileMusic />
+      <footer className="profile-footer"><span>Progress is based on your saved practice.</span><div>{isAdmin && <Link to="/admin"><Shield size={16} /> Admin</Link>}<button onClick={() => logout()}><LogOut size={16} /> Sign out</button></div></footer>
+    </>}
+    <BottomNav />
+  </main>;
 }
 
-/**
- * @param {{ label: string, value: string | number }} props
- */
-function PortraitMetric({ label, value }) {
-  return (
-    <div className="glass rounded-xl px-3 py-2">
-      <p className="text-[10px] text-muted-foreground">{label}</p>
-      <p className="text-sm font-semibold text-foreground mt-1">{value}</p>
-    </div>
-  );
-}
-
-/**
- * @param {{ value: string | number, label: string, icon?: any }} props
- */
-function StatCard({ value, label, icon: Icon = null }) {
-  return (
-    <motion.div
-      whileHover={{ y: -3, scale: 1.01 }}
-      transition={{ type: "spring", stiffness: 260, damping: 18 }}
-      className="glass rounded-2xl px-3 py-3 text-center"
-    >
-      <div className="flex items-center justify-center gap-1.5">
-        {Icon ? <Icon className="w-3.5 h-3.5 text-primary" /> : null}
-        <p className="text-xl font-bold text-foreground">{value}</p>
-      </div>
-      <p className="text-[11px] text-muted-foreground mt-1">{label}</p>
-    </motion.div>
-  );
-}
-
-/**
- * @param {{ label: string, value: string | number }} props
- */
-function StatMini({ label, value }) {
-  return (
-    <div className="glass rounded-xl px-3 py-2 text-center">
-      <p className="text-[10px] text-muted-foreground">{label}</p>
-      <p className="text-sm font-semibold text-foreground">{value}</p>
-    </div>
-  );
-}
-
-function BadgePill({ label, tone = "violet" }) {
-  const toneClass = tone === "cyan"
-    ? "border-cyan-300/20 bg-cyan-400/10 text-cyan-100"
-    : "border-violet-300/20 bg-violet-400/10 text-violet-100";
-
-  return (
-    <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[10px] font-medium ${toneClass}`}>
-      {label}
-    </span>
-  );
+function Stat({ label, value, detail }) {
+  return <section className="profile-panel profile-stat"><h3>{label}</h3><strong>{value}</strong><p>{detail}</p></section>;
 }

@@ -37,11 +37,17 @@ declare global {
     onresult: ((event: SpeechRecognitionEvent) => void) | null;
     onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
     onend: (() => void) | null;
-    start(): void;
+    onstart: (() => void) | null;
+    onspeechstart: (() => void) | null;
+    onaudiostart: (() => void) | null;
+    onaudioend: (() => void) | null;
+    abort(): void;
+    start(audioTrack?: MediaStreamTrack): void;
     stop(): void;
   }
 
   interface SpeechRecognitionEvent {
+    resultIndex: number;
     results: SpeechRecognitionResultList;
   }
 

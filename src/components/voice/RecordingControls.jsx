@@ -1,252 +1,54 @@
-import { useState, useRef, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Mic, Send, RotateCcw, Square, Loader2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Mic, Send, RotateCcw, Square, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
-export default function RecordingControls({ onSend, disabled }) {
-  const [isRecording, setIsRecording] = useState(false);
-  const [transcript, setTranscript] = useState("");
-  const [typedText, setTypedText] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
-  const recognitionRef = useRef(null);
-  const silenceTimerRef = useRef(null);
-  const transcriptRef = useRef("");
-  const shouldRestartRef = useRef(false);
-  const isRecordingRef = useRef(false);
-  const isSendingRef = useRef(false);
-
-  const stopRecording = useCallback(() => {
-    setIsRecording(false);
-    isRecordingRef.current = false;
-    shouldRestartRef.current = false;
-    if (recognitionRef.current) {
-      recognitionRef.current.onend = null;
-      recognitionRef.current.stop();
-      recognitionRef.current = null;
-    }
-    if (silenceTimerRef.current) {
-      clearTimeout(silenceTimerRef.current);
-      silenceTimerRef.current = null;
-    }
-  }, []);
-
-  const sendMessage = useCallback(async () => {
-    if (isSendingRef.current) return;
-    const text = (transcriptRef.current || typedText).trim();
-    if (!text) return;
-
-    isSendingRef.current = true;
-    stopRecording();
-    const sentText = text;
-    setTranscript("");
-    transcriptRef.current = "";
-    setTypedText("");
-    setIsProcessing(true);
-    try {
-      await onSend(sentText);
-    } finally {
-      setIsProcessing(false);
-      isSendingRef.current = false;
-    }
-  }, [onSend, stopRecording, typedText]);
-
-  const resetSilenceTimer = useCallback((delay = 850) => {
-    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-    silenceTimerRef.current = setTimeout(() => {
-      if (transcriptRef.current.trim()) {
-        sendMessage();
-      }
-    }, delay);
-  }, [sendMessage]);
-
-  const startRecording = useCallback(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = "en-US";
-    shouldRestartRef.current = true;
-
-    recognition.onresult = (event) => {
-      let finalTranscript = "";
-      let interimTranscript = "";
-      let hasFreshFinal = false;
-
-      for (let i = 0; i < event.results.length; i++) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-          hasFreshFinal = true;
-        } else {
-          interimTranscript += event.results[i][0].transcript;
-        }
-      }
-
-      const fullText = finalTranscript + interimTranscript;
-      transcriptRef.current = fullText;
-      setTranscript(fullText);
-      resetSilenceTimer(hasFreshFinal ? 420 : 850);
-    };
-
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error:", event.error);
-      if (event.error === "aborted" || event.error === "no-speech") return;
-      stopRecording();
-    };
-
-    recognition.onend = () => {
-      if (recognitionRef.current === recognition) {
-        recognitionRef.current = null;
-      }
-      if (!shouldRestartRef.current || !isRecordingRef.current) return;
-      window.setTimeout(() => {
-        if (!shouldRestartRef.current || !isRecordingRef.current) return;
-        startRecording();
-      }, 120);
-    };
-
-    recognitionRef.current = recognition;
-    try {
-      recognition.start();
-    } catch (error) {
-      console.error("Failed to start speech recognition:", error);
-      recognitionRef.current = null;
-      return;
-    }
-    setIsRecording(true);
-    isRecordingRef.current = true;
-    setTranscript("");
-    transcriptRef.current = "";
-    resetSilenceTimer();
-  }, [resetSilenceTimer, sendMessage, stopRecording]);
-
-  const handleReSpeak = () => {
-    stopRecording();
-    setTranscript("");
-    transcriptRef.current = "";
-    setTimeout(() => startRecording(), 200);
-  };
-
-  const handleRecordButton = () => {
-    if (isRecording) {
-      if (transcriptRef.current.trim()) {
-        sendMessage();
-        return;
-      }
-      stopRecording();
-      return;
-    }
-
-    startRecording();
-  };
-
-  const handleManualSend = () => {
-    if (isSendingRef.current) return;
-    if (transcriptRef.current.trim() || typedText.trim()) {
-      sendMessage();
-    }
-  };
-
-  const handleTypedTextChange = (event) => {
-    const value = event.target.value;
-    setTypedText(value);
-    if (!isRecording) {
-      transcriptRef.current = value;
-    }
-  };
-
-  const handleTypedTextKeyDown = (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      handleManualSend();
-    }
-  };
-
-  useEffect(() => {
-    return () => {
-      stopRecording();
-    };
-  }, [stopRecording]);
-
-  return (
-    <div className="glass border-t border-white/5 px-4 py-3 space-y-2">
-      <div className="flex items-center gap-2">
-        <Input
-          value={typedText}
-          onChange={handleTypedTextChange}
-          onKeyDown={handleTypedTextKeyDown}
-          placeholder="Type your reply if voice input does not work"
-          disabled={disabled || isProcessing}
-          className="h-11 rounded-2xl border-white/10 bg-white/5 text-foreground placeholder:text-muted-foreground"
-        />
-        <button
-          onClick={handleManualSend}
-          disabled={disabled || isProcessing || (!typedText.trim() && !transcript.trim())}
-          className="h-11 w-11 flex-shrink-0 rounded-2xl glass hover:bg-white/10 disabled:opacity-30 transition-all flex items-center justify-center"
-        >
-          <Send className="w-5 h-5 text-primary" />
-        </button>
-      </div>
-
-      {/* Transcript preview */}
-      <AnimatePresence>
-        {(transcript || isRecording) && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="glass rounded-xl px-3 py-2 mb-2"
-          >
-            <p className="text-sm text-foreground/80 min-h-[20px]">
-              {transcript || (
-                <span className="text-muted-foreground italic">Listening...</span>
-              )}
-            </p>
-            {transcript && isRecording && (
-              <p className="mt-1 text-[11px] text-muted-foreground/70">
-                Tap the center button to send now.
-              </p>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Controls */}
-      <div className="flex items-center justify-center gap-6">
-        {/* Re-speak */}
-        <button
-          onClick={handleReSpeak}
-          disabled={disabled || isProcessing || (!isRecording && !transcript)}
-          className="p-3 rounded-full glass hover:bg-white/10 disabled:opacity-30 transition-all"
-        >
-          <RotateCcw className="w-5 h-5 text-muted-foreground" />
-        </button>
-
-        {/* Record / Stop */}
-        <button
-          onClick={handleRecordButton}
-          disabled={disabled || isProcessing}
-          className={`p-5 rounded-full transition-all ${
-            isRecording
-              ? "bg-accent shadow-lg shadow-accent/30 animate-pulse-glow"
-              : "bg-primary shadow-lg shadow-primary/30 hover:shadow-primary/50"
-          } disabled:opacity-50`}
-        >
-          {isProcessing ? (
-            <Loader2 className="w-6 h-6 text-white animate-spin" />
-          ) : isRecording ? (
-            <Square className="w-6 h-6 text-white" />
-          ) : (
-            <Mic className="w-6 h-6 text-white" />
-          )}
-        </button>
-
-        {/* Send */}
-        <div className="w-11" />
-      </div>
+export default function RecordingControls({ interaction, state, replyInputRef = null }) {
+  const starting = ['requesting_permission', 'starting'].includes(state.status);
+  const finishing = ['stopping', 'finalizing'].includes(state.status);
+  const busy = ['submitting', 'processing'].includes(state.status) || finishing;
+  const recording = state.recordingSession || starting;
+  const hasWords = Boolean((state.typedText || (!state.interimText ? state.finalText : '')).trim());
+  const statusText = {
+    requesting_permission: 'Allow microphone access when your browser asks.',
+    starting: 'Starting voice input…',
+    listening: 'Listening. Take your time; tap stop to finish and send.',
+    stopping: 'Stopping the microphone…',
+    finalizing: 'Waiting for the final recognized words…',
+    submitting: 'Sending your confirmed reply…',
+    processing: 'Your coach is responding. You can cancel this request.',
+    speaking: 'Your coach is speaking. Recording will stop playback.',
+    completed: 'Practice complete.',
+  }[state.status];
+  return <div className="voice-recording-panel glass border-t border-white/5 px-4 py-3 space-y-2">
+    <div className="voice-input-status" aria-live="polite">
+      {state.status === 'error' ? <AlertCircle className="h-4 w-4 text-amber-300" /> : state.inputActive ? <CheckCircle2 className="h-4 w-4 text-emerald-300" /> : <Mic className="h-4 w-4 text-primary" />}
+      <span>{state.error || statusText || state.notice || 'Speak or type your reply. Your words remain available if a request fails.'}</span>
     </div>
-  );
+    {state.draftStorageUnavailable && <p className="text-xs text-amber-200">Your browser cannot save an unsent draft. Your words remain here; copy them before leaving.</p>}
+    <div className="flex items-center gap-2">
+      <Input ref={replyInputRef} aria-label="Your reply" value={state.typedText} onChange={event => interaction.setTypedText(event.target.value)} onKeyDown={event => {
+        if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent?.isComposing && !busy && !starting) { event.preventDefault(); void interaction.send(); }
+      }} placeholder="Type or review your reply" disabled={busy || starting} className="h-11 rounded-2xl border-white/10 bg-white/5 text-foreground placeholder:text-muted-foreground" />
+      <button type="button" aria-label="Send reply" onClick={() => void interaction.send()} disabled={busy || starting || !hasWords} className="h-11 w-11 flex-shrink-0 rounded-2xl glass hover:bg-white/10 disabled:opacity-30 transition-all flex items-center justify-center"><Send className="w-5 h-5 text-primary" /></button>
+    </div>
+    <div className="voice-live-transcript glass rounded-xl px-3 py-2" aria-label="Live transcription">
+      <p className="voice-transcript-label">{recording ? 'YOU · LIVE TRANSCRIPT' : 'YOUR TRANSCRIPT'}</p>
+      <p className="text-sm leading-relaxed"><span className="voice-final-words">{state.finalText}</span>{state.finalText && state.interimText ? ' ' : ''}<span className="voice-interim-words">{state.interimText}</span>{!state.finalText && !state.interimText && <span className="text-muted-foreground">{recording ? 'Listening for your words…' : 'Confirmed words appear here while you speak.'}</span>}</p>
+      {state.interimText && <p className="voice-transcript-label">Lighter words are still being recognized.</p>}
+    </div>
+    <div className="voice-input-options">
+      <label><input type="checkbox" checked={state.autoEnd} disabled={!state.energyAvailable && !state.autoEnd || busy} onChange={event => interaction.configure({ autoEnd: event.target.checked })} /> End after a speaking pause</label>
+      {state.autoEnd && <label>Pause <select value={state.silenceMs} disabled={busy} onChange={event => interaction.configure({ silenceMs: Number(event.target.value) })}><option value={1800}>1.8 seconds</option><option value={2500}>2.5 seconds</option><option value={3500}>3.5 seconds</option></select></label>}
+      <label><input type="checkbox" checked={state.autoPlay} onChange={event => interaction.configure({ autoPlay: event.target.checked })} /> Read coach replies aloud</label>
+    </div>
+    {!state.energyAvailable && state.inputActive && <p className="text-xs text-muted-foreground">Automatic pause detection is unavailable in this browser. Tap stop when you finish.</p>}
+    <div className="flex items-center justify-center gap-6">
+      <button type="button" aria-label="Record again" onClick={() => void interaction.startRecording({ restart: true })} disabled={busy || starting || (!recording && !state.finalText && !state.interimText && !state.typedText)} className="p-3 rounded-full glass hover:bg-white/10 disabled:opacity-30"><RotateCcw className="w-5 h-5 text-muted-foreground" /></button>
+      <button type="button" aria-label={starting && !state.recordingSession ? 'Cancel microphone startup' : recording ? 'Stop recording and send' : 'Start recording'} aria-pressed={state.inputActive} onClick={() => starting && !state.recordingSession ? interaction.cancelRecording() : recording ? void interaction.stopRecording() : void interaction.startRecording()} disabled={busy || state.status === 'completed'} className={`p-5 rounded-full transition-all ${recording ? 'bg-accent shadow-lg shadow-accent/30' : 'bg-primary shadow-lg shadow-primary/30'} disabled:opacity-50`}>
+        {busy || starting ? <Loader2 className="w-6 h-6 text-white animate-spin" /> : recording ? <Square className="w-6 h-6 text-white" /> : <Mic className="w-6 h-6 text-white" />}
+      </button>
+      <div className="w-11" />
+    </div>
+    {state.status === 'processing' && <button type="button" className="voice-recovery-button" onClick={() => interaction.cancelRequest()}>Cancel request · keep my reply</button>}
+    {state.retryable && <button type="button" className="voice-recovery-button" onClick={() => interaction.retryRequest()} disabled={recording || busy}>Retry this request</button>}
+  </div>;
 }

@@ -1,0 +1,16 @@
+import assert from 'node:assert/strict';
+import { createLatestResource } from '../src/lib/latestResource.js';
+const deferred=()=>{let resolve,reject;const promise=new Promise((a,b)=>{resolve=a;reject=b;});return{promise,resolve,reject};};
+const tick=()=>new Promise(resolve=>setTimeout(resolve,0));
+const requests=[], shown=[], errors=[];let started=0,ended=0;
+const reader=createLatestResource({load:()=>{const request=deferred();requests.push(request);return request.promise;},onStart:()=>started++,onValue:value=>shown.push(value),onError:error=>errors.push(error),onEnd:()=>ended++});
+const first=reader.refresh(); reader.refresh();reader.refresh();reader.refresh();
+assert.equal(requests.length,1,'only one read in flight');
+requests[0].resolve(['obsolete snapshot']);await first;await tick();
+assert.equal(shown.length,0,'obsolete snapshot is never committed');assert.equal(requests.length,2,'coalesce activity into one latest follow-up');
+requests[1].resolve(['real latest snapshot']);await tick();
+assert.deepEqual(shown,[['real latest snapshot']]);assert.equal(started,2);assert.equal(ended,1);
+const failed=reader.refresh();requests[2].reject(new Error('offline'));await failed;assert.equal(errors.length,1);assert.equal(ended,2);assert.deepEqual(shown,[['real latest snapshot']]);
+const retry=reader.refresh();requests[3].resolve(['retried snapshot']);await retry;assert.deepEqual(shown.at(-1),['retried snapshot']);
+const leaving=reader.refresh();reader.dispose();requests[4].resolve(['after unmount']);await leaving;assert(!shown.some(value=>value[0]==='after unmount'));assert.equal(ended,3);await reader.refresh();assert.equal(requests.length,5);
+console.log('PASS: serialize/coalesce reads, latest result only, recoverable failure retains data, retry and no callbacks after unmount');

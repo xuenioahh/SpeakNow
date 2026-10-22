@@ -1,0 +1,29 @@
+{
+  "kind": "controlled SpeechSynthesis fixture; excludes ASR, real TTS and network delay",
+  "measurements": [
+    {
+      "label": "before",
+      "stage": "T3-to-T4 frontend warm voice fixture",
+      "samplesMs": [
+        31.825,
+        31.096,
+        31.413,
+        31.145,
+        31.293
+      ],
+      "averageMs": 31.354
+    },
+    {
+      "label": "after",
+      "stage": "T3-to-T4 frontend warm voice fixture",
+      "samplesMs": [
+        1.116,
+        0.051,
+        0.071,
+        0.218,
+        0.041
+      ],
+      "averageMs": 0.299
+    }
+  ]
+}

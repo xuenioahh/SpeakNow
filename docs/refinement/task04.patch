@@ -1,0 +1,332 @@
+--- a/src/components/voice/ModeSelector.jsx
++++ b/src/components/voice/ModeSelector.jsx
+@@ -1,12 +1,16 @@
+ import { motion, AnimatePresence } from "framer-motion";
+ import { Zap, Sparkles, Target, MessageCircle, BookOpen, GraduationCap, Coffee, ArrowLeft, ChevronRight } from "lucide-react";
+-import { useState } from "react";
++import { useState, useRef, useEffect } from "react";
+ import * as Dialog from "@radix-ui/react-dialog";
+ 
+ const STEPS = ["mode", "dialog", "scoring"];
+ 
+ export default function ModeSelector({ scenario, onComplete, onBack }) {
+   const [step, setStep] = useState(0);
++  const [transitioning, setTransitioning] = useState(false);
++  const locked = useRef(false);
++  const timer = useRef(null);
++  useEffect(() => () => clearTimeout(timer.current), []);
+   const [selections, setSelections] = useState({
+     mode: null,
+     dialogMode: null,
+@@ -14,17 +18,23 @@
+   });
+ 
+   const handleSelect = (key, value) => {
++    if (locked.current) return;
++    locked.current = true;
++    setTransitioning(true);
+     const updated = { ...selections, [key]: value };
+     setSelections(updated);
+ 
+     if (step < STEPS.length - 1) {
+-      setTimeout(() => setStep(step + 1), 200);
++      timer.current = setTimeout(() => { setStep(current => current + 1); locked.current = false; setTransitioning(false); }, 200);
+     } else {
+       onComplete(updated);
+     }
+   };
+ 
+   const goBack = () => {
++    clearTimeout(timer.current);
++    locked.current = false;
++    setTransitioning(false);
+     if (step === 0) {
+       onBack();
+     } else {
+@@ -40,7 +50,7 @@
+       initial={{ opacity: 0 }}
+       animate={{ opacity: 1 }}
+       exit={{ opacity: 0 }}
+-      className="fixed inset-0 h-dvh bg-background z-[60] flex flex-col"
++      className="practice-mode-dialog fixed inset-0 h-dvh bg-background z-[60] flex flex-col"
+     >
+       <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
+         <button onClick={goBack} aria-label={step === 0 ? "Close practice setup" : "Previous step"} className="p-3 rounded-xl hover:bg-white/5">
+@@ -64,6 +74,7 @@
+                 icon={Zap}
+                 title="Basic"
+                 desc="Guided conversation with simpler vocabulary and slower pace"
++                disabled={transitioning}
+                 selected={selections.mode === "basic"}
+                 onClick={() => handleSelect("mode", "basic")}
+                 gradient="from-emerald-500 to-teal-600"
+@@ -72,6 +83,7 @@
+                 icon={Sparkles}
+                 title="Advanced"
+                 desc="Natural conversation with complex topics and expressions"
++                disabled={transitioning}
+                 selected={selections.mode === "advanced"}
+                 onClick={() => handleSelect("mode", "advanced")}
+                 gradient="from-violet-500 to-purple-600"
+@@ -85,6 +97,7 @@
+                 icon={Target}
+                 title="Goal-Oriented"
+                 desc="Complete a specific task with clear objectives"
++                disabled={transitioning}
+                 selected={selections.dialogMode === "goal_oriented"}
+                 onClick={() => handleSelect("dialogMode", "goal_oriented")}
+                 gradient="from-amber-500 to-orange-600"
+@@ -93,6 +106,7 @@
+                 icon={MessageCircle}
+                 title="Free Talk"
+                 desc="Open conversation without specific goals"
++                disabled={transitioning}
+                 selected={selections.dialogMode === "free_talk"}
+                 onClick={() => handleSelect("dialogMode", "free_talk")}
+                 gradient="from-cyan-500 to-blue-600"
+@@ -106,6 +120,7 @@
+                 icon={BookOpen}
+                 title="IELTS"
+                 desc="Band 1-9 · fluency, vocabulary, grammar, pronunciation"
++                disabled={transitioning}
+                 selected={selections.scoringStandard === "ielts"}
+                 onClick={() => handleSelect("scoringStandard", "ielts")}
+                 gradient="from-red-500 to-rose-600"
+@@ -114,6 +129,7 @@
+                 icon={GraduationCap}
+                 title="TOEFL"
+                 desc="Current 1-6 scale · delivery, language use, topic development"
++                disabled={transitioning}
+                 selected={selections.scoringStandard === "toefl"}
+                 onClick={() => handleSelect("scoringStandard", "toefl")}
+                 gradient="from-blue-500 to-indigo-600"
+@@ -122,6 +138,7 @@
+                 icon={Coffee}
+                 title="Daily"
+                 desc="Casual feedback for everyday practice"
++                disabled={transitioning}
+                 selected={selections.scoringStandard === "daily"}
+                 onClick={() => handleSelect("scoringStandard", "daily")}
+                 gradient="from-green-500 to-emerald-600"
+@@ -151,10 +168,11 @@
+   );
+ }
+ 
+-function OptionCard({ icon: Icon, title, desc, selected, onClick, gradient }) {
++function OptionCard({ icon: Icon, title, desc, selected, onClick, gradient, disabled = false }) {
+   return (
+     <motion.button
+       whileTap={{ scale: 0.97 }}
++      type="button" disabled={disabled} aria-pressed={selected}
+       onClick={onClick}
+       className={`w-full glass glass-hover rounded-2xl p-5 text-left flex items-center gap-4 transition-all ${
+         selected ? "ring-2 ring-primary glow-purple" : ""
+--- a/src/components/voice/ScenarioCard.jsx
++++ b/src/components/voice/ScenarioCard.jsx
+@@ -1,3 +1,4 @@
++import { useEffect, useRef } from 'react';
+ 
+ 
+ const SCENARIO_IMAGES = {
+@@ -16,6 +17,9 @@
+ };
+ 
+ export default function ScenarioCard({ scenario, onClick, selected = false }) {
++  const frame = useRef(0);
++  const pointer = useRef(null);
++  useEffect(() => () => cancelAnimationFrame(frame.current), []);
+   const Icon = scenario.icon;
+   const imgUrl = SCENARIO_IMAGES[scenario.id];
+ 
+@@ -24,13 +28,23 @@
+       aria-label={`Preview ${scenario.title}`} aria-pressed={selected}
+       onPointerMove={e => {
+         if (e.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+-        const rect = e.currentTarget.getBoundingClientRect();
+-        e.currentTarget.style.setProperty('--pointer-x', `${(e.clientX - rect.left) / rect.width * 100}%`);
+-        e.currentTarget.style.setProperty('--pointer-y', `${(e.clientY - rect.top) / rect.height * 100}%`);
+-        e.currentTarget.style.setProperty('--tilt-x', `${-(e.clientY - rect.top - rect.height / 2) / rect.height * 5}deg`);
+-        e.currentTarget.style.setProperty('--tilt-y', `${(e.clientX - rect.left - rect.width / 2) / rect.width * 5}deg`);
++        const node = e.currentTarget;
++        pointer.current = { x: e.clientX, y: e.clientY, node };
++        if (frame.current) return;
++        frame.current = requestAnimationFrame(() => {
++          frame.current = 0;
++          const point = pointer.current;
++          if (!point) return;
++          const rect = node.getBoundingClientRect();
++          const x = Math.min(1, Math.max(0, (point.x - rect.left) / Math.max(1, rect.width)));
++          const y = Math.min(1, Math.max(0, (point.y - rect.top) / Math.max(1, rect.height)));
++          node.style.setProperty('--pointer-x', `${x * 100}%`);
++          node.style.setProperty('--pointer-y', `${y * 100}%`);
++          node.style.setProperty('--tilt-x', `${-(y - 0.5) * 4}deg`);
++          node.style.setProperty('--tilt-y', `${(x - 0.5) * 4}deg`);
++        });
+       }}
+-      onPointerLeave={e => { e.currentTarget.style.setProperty('--tilt-x', '0deg'); e.currentTarget.style.setProperty('--tilt-y', '0deg'); }}
++      onPointerLeave={e => { cancelAnimationFrame(frame.current); frame.current = 0; pointer.current = null; e.currentTarget.style.setProperty('--tilt-x', '0deg'); e.currentTarget.style.setProperty('--tilt-y', '0deg'); }}
+       type="button"
+       onClick={onClick}
+       className="scenario-card glass glass-hover rounded-2xl flex flex-col items-center cursor-pointer text-left transition-colors duration-150 group relative"
+@@ -41,6 +55,8 @@
+           <img
+             src={imgUrl}
+             alt=""
++            width="400" height="225"
++            sizes="(max-width: 600px) 50vw, (max-width: 900px) 33vw, 25vw"
+             loading="lazy"
+             decoding="async"
+             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+@@ -53,7 +69,7 @@
+         </div>
+       )}
+ 
+-      <div className="w-full px-4 py-4">
++      <div className="scenario-card-copy w-full px-4 py-4">
+         <h3 className="font-semibold text-foreground text-base leading-tight">{scenario.title}</h3>
+         <p className="text-sm text-muted-foreground mt-1.5 leading-snug">{scenario.subtitle}</p>
+       </div>
+--- a/src/pages/Home.jsx
++++ b/src/pages/Home.jsx
+@@ -26,7 +26,7 @@
+   };
+ 
+   return (
+-    <div className="studio-page">
++    <div className="studio-page scenario-selection">
+       {/* Header */}
+       <div className="px-5 pt-6 pb-4">
+         <motion.div
+--- a/src/pages/MainLanding.jsx
++++ b/src/pages/MainLanding.jsx
+@@ -43,14 +43,7 @@
+     <main className="min-h-dvh pb-24 relative overflow-x-hidden bg-[#171717] speaknow-shell">
+ 
+ 
+-      <div className="absolute inset-0 pointer-events-none">
+-        <div className="absolute inset-x-[10%] top-[-8%] h-[30%] rounded-full bg-violet-500/12 blur-[110px]" />
+-        <div className="absolute inset-x-[14%] top-[14%] h-[34%] rounded-full bg-indigo-400/8 blur-[120px]" />
+-        <div className="absolute inset-x-[22%] top-[34%] h-[20%] rounded-full bg-cyan-400/6 blur-[130px]" />
+-        <div className="absolute inset-x-[14%] bottom-[10%] h-[28%] rounded-full bg-amber-400/10 blur-[110px]" />
+-        <div className="absolute inset-x-[6%] bottom-[-10%] h-[26%] rounded-full bg-violet-500/7 blur-[120px]" />
+-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.04),rgba(0,0,0,0)_60%)]" />
+-      </div>
++      <div className="landing-ambient" aria-hidden="true" />
+ 
+       <motion.div
+         initial={false}
+@@ -67,15 +60,15 @@
+           className="glass speaknow-hero rounded-[30px] px-5 pt-5 pb-6 overflow-hidden sm:px-7 sm:pt-7"
+         >
+           <div className="absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+-          <div className="flex items-start justify-between gap-4">
++          <div className="landing-hero-header flex items-start justify-between gap-4">
+             <div className="min-w-0">
+               <p className="text-[11px] uppercase tracking-[0.24em] text-foreground/50">
+                 Your speaking studio
+               </p>
+-              <p className="mt-3 text-[38px] leading-none font-bold font-space tracking-[-0.05em] text-foreground sm:text-[48px]">
++              <h1 className="speaknow-brand-title mt-3 font-bold font-space text-foreground">
+                 Speak Now
+-              </p>
+-              <p className="text-sm text-foreground/70 mt-3 break-words">
++              </h1>
++              <p className="landing-identity text-sm text-foreground/70 mt-3">
+                 {user?.full_name || "User"} · {user?.email || "unknown"}
+               </p>
+             </div>
+@@ -103,7 +96,7 @@
+             transition={{ duration: 0.15 }}
+           >
+             <Link to="/admin" className="block">
+-              <div className="glass rounded-[30px] p-5 relative overflow-hidden border border-emerald-300/18 bg-gradient-to-b from-emerald-400/24 via-teal-500/14 to-cyan-500/8">
++              <div className="landing-admin glass rounded-[30px] p-5 relative overflow-hidden border border-emerald-300/18 bg-gradient-to-b from-emerald-400/24 via-teal-500/14 to-cyan-500/8">
+                 <div className="absolute inset-0 bg-emerald-500/12" />
+                 <div className="absolute right-[-10%] top-[-10%] w-36 h-36 rounded-full bg-white/10 blur-3xl" />
+                 <div className="relative flex items-center justify-between gap-4">
+@@ -133,7 +126,7 @@
+         <div className="mb-4 flex items-end justify-between gap-4 px-1 pt-3 sm:pt-5">
+           <div>
+             <p className="text-[11px] uppercase tracking-[0.24em] text-foreground/45">Practice modes</p>
+-            <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Pick a place to begin.</h1>
++            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Pick a place to begin.</h2>
+           </div>
+           <p className="hidden max-w-[15rem] text-right text-sm leading-relaxed text-foreground/55 sm:block">
+             Short, focused sessions for clearer and more confident speaking.
+@@ -156,7 +149,7 @@
+                     <div className="flex items-start justify-between gap-4">
+                       <div className="min-w-0">
+                         <p className="text-[11px] uppercase tracking-[0.24em] text-foreground/52">{subtitle}</p>
+-                        <h2 className="mt-4 max-w-[12rem] text-[30px] leading-[1.02] font-semibold font-space text-foreground">
++                        <h2 className="mt-4 max-w-[20rem] text-[30px] leading-[1.15] font-semibold font-space text-foreground">
+                           {title}
+                         </h2>
+                       </div>
+--- a/src/spatial-studio.css
++++ b/src/spatial-studio.css
+@@ -3,7 +3,11 @@
+ :root {
+   --spatial-ease: cubic-bezier(.22,1,.36,1);
+   --spatial-edge: rgba(211,204,255,.16);
+-  --spatial-shadow: 0 18px 48px -28px #000b, inset 0 1px 0 #ffffff0e;
++  --spatial-shadow: 0 18px 42px -28px #0009, inset 0 1px 0 #ffffff0e;
++  --spatial-surface: rgba(30,30,40,.86);
++  --spatial-surface-inset: rgba(255,255,255,.035);
++  --spatial-radius: 22px;
++  --spatial-text-secondary: #bcb2ce;
+ }
+ 
+ body {
+@@ -17,7 +21,7 @@
+ }
+ 
+ .glass {
+-  background: linear-gradient(135deg,#ffffff0c,#ffffff04),rgba(30,30,40,.78);
++  background: linear-gradient(135deg,#ffffff0a,#ffffff03),var(--spatial-surface);
+   border-color: var(--spatial-edge);
+   box-shadow: var(--spatial-shadow);
+   backdrop-filter: blur(14px);
+@@ -25,7 +29,7 @@
+ }
+ 
+ .glass .glass {
+-  background: rgba(255,255,255,.035);
++  background: var(--spatial-surface-inset);
+   box-shadow: inset 0 1px 0 #ffffff08;
+   backdrop-filter: none;
+   -webkit-backdrop-filter: none;
+@@ -839,3 +843,34 @@
+   transform: translateZ(5px);
+   border-radius: 0 0 16px 16px;
+ }
++
++/* Task 04: refine existing surfaces and layout, using the same depth tokens. */
++.landing-ambient { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 12% 0%,hsl(var(--primary) / .12),transparent 50%),radial-gradient(ellipse at 92% 62%,hsl(var(--accent) / .035),transparent 48%); }
++.speaknow-shell > .relative { max-width: 1120px; }
++.speaknow-shell .speaknow-hero { padding-block: clamp(24px,4vw,40px); border-radius: var(--spatial-radius); }
++.speaknow-brand-title { font-size: clamp(34px,4.5vw,56px); line-height: 1.08; letter-spacing: -.045em; text-wrap: balance; }
++.landing-identity { overflow-wrap: anywhere; line-height: 1.7; }
++.speaknow-shell .speaknow-entry-card { border-radius: var(--spatial-radius); box-shadow: var(--spatial-shadow); }
++.speaknow-shell .speaknow-entry-card h2 { font-size: clamp(25px,3vw,32px); text-wrap: balance; letter-spacing: -.035em; }
++.speaknow-shell .speaknow-entry-action { min-height: 54px; box-shadow: inset 0 1px 0 #ffffff0a; }
++.scenario-selection .scenario-gallery { align-items: stretch; }
++.scenario-card .scenario-card-copy { flex: 1; padding: 18px; min-height: 114px; }
++.scenario-card h3 { line-height: 1.35; letter-spacing: -.015em; overflow-wrap: anywhere; }
++.scenario-card p { line-height: 1.6; color: var(--spatial-text-secondary); overflow-wrap: anywhere; }
++.scenario-card { transition: transform 220ms var(--spatial-ease),border-color 220ms,box-shadow 220ms !important; }
++.scenario-card[aria-pressed=true] { border-color: #bdcba5 !important; box-shadow: inset 0 0 0 1px #bdcba533,0 12px 28px -20px #000b; }
++.practice-mode-dialog { padding-bottom: env(safe-area-inset-bottom); }
++.practice-mode-dialog button { min-height: 44px; }
++.practice-mode-dialog h3 { line-height: 1.35; text-wrap: balance; }
++.studio-nav { -webkit-backdrop-filter: blur(12px); }
++.studio-nav-item { transition: background-color 200ms ease,color 200ms ease; }
++@media (hover:hover) and (pointer:fine) { .scenario-card:hover { transform: perspective(800px) translateY(-2px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg)); } }
++@media(max-width:600px) {
++  .scenario-card .scenario-card-copy { padding: 14px; min-height: 122px; }
++  .landing-hero-header { flex-wrap: wrap; gap: 18px; }
++  .landing-hero-header > .min-w-0 { flex: 1 1 160px; }
++  .landing-admin .relative.flex { gap: 10px; }
++  .landing-admin h2 { font-size: 20px; overflow-wrap: anywhere; }
++  .landing-admin .flex.items-center.gap-4 { gap: 12px; min-width: 0; }
++}
++@media(prefers-reduced-motion:reduce) { .scenario-card:hover { transform: none !important; } }

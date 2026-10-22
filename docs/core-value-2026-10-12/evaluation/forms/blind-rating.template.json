@@ -1,0 +1,12 @@
+{
+  "templateOnly": true,
+  "pairId": "",
+  "raterId": "",
+  "independenceDeclared": null,
+  "hadSeenAiOutput": null,
+  "A": {"messageClarity":null,"audienceSuitability":null,"persuasiveness":null,"actionability":null},
+  "B": {"messageClarity":null,"audienceSuitability":null,"persuasiveness":null,"actionability":null},
+  "preferredTake": "",
+  "notApplicableReason": {},
+  "reason": ""
+}

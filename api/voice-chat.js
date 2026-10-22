@@ -1,6 +1,8 @@
+import { protectedApi } from "./_apiGuard.js";
 import { requestStructuredLlm } from "./_llm.js";
+import { cafeConversationHistory, cafeDialogueGuide, cafeLocalPractice } from './_cafeDialogue.js';
 
-function buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOriented }) {
+function buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOriented, sceneCueId }) {
   const role = scenario?.aiRole || "conversation partner";
   const title = scenario?.title || "General English Practice";
   const userRole = scenarioData?.userRole || "learner";
@@ -8,9 +10,9 @@ function buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOrient
     ? `Goal: ${scenarioData?.goal || "Help the user complete the task clearly."}`
     : `Topic: ${scenarioData?.topic || title}`;
   const scoringGuide = scoring === "ielts"
-    ? "Ask for a reason and example."
+    ? "IELTS practice: assess the four equally weighted criteria—Fluency and Coherence, Lexical Resource, Grammatical Range and Accuracy, and Pronunciation. Prompt a direct answer plus a reason/example; do not claim an official band from one reply."
     : scoring === "toefl"
-      ? "Ask for one main point and one detail."
+      ? "Current TOEFL iBT practice: use the 1–6 section scale and focus on delivery/intelligibility, language use, and topic development. Ask for one main point and relevant detail; do not use the retired 0–30 display as the primary score."
       : "Keep it practical and natural.";
   const difficultyGuide = mode === "advanced"
     ? "Use natural richer English."
@@ -25,14 +27,16 @@ function buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOrient
     scoringGuide,
     difficultyGuide,
     dialogGuide,
+    scenario?.id === 'cafe' ? cafeDialogueGuide({ isGoalOriented, sceneCueId }) : '',
     "Be human, warm, short, and stay in character.",
     "Reply in 1-2 short sentences.",
+    "All feedback is an AI Coaching Suggestion. Only text is available: leave pronunciation empty; do not infer acoustic fluency, confidence, ability improvement or spoken delivery from text.",
     "Return JSON: {\"reply\":\"...\",\"feedback\":{\"grammar\":\"...\",\"vocabulary\":\"...\",\"pronunciation\":\"...\",\"task\":\"...\"}}",
   ].join(" ");
 }
 
-function buildUserPrompt({ history, userText }) {
-  const recent = (Array.isArray(history) ? history : [])
+function buildUserPrompt({ history, userText, scenario }) {
+  const recent = scenario?.id === 'cafe' ? cafeConversationHistory(history, userText) : (Array.isArray(history) ? history : [])
     .slice(-2)
     .map((message) => `${message.role === "ai" ? "Assistant" : "User"}: ${message.content}`)
     .join("\n");
@@ -69,9 +73,9 @@ function fallbackPayload({ userText, isGoalOriented, scenarioData, scoring, mode
     ? scenarioData?.goal || "the task"
     : scenarioData?.topic || "the topic";
   const styleTail = scoring === "ielts"
-    ? "Try to answer with a clear reason and one example."
+    ? "Try to answer with a clear reason, example, and connected ideas."
     : scoring === "toefl"
-      ? "Try to organize your answer with one main point and one detail."
+      ? "Try to organize your answer with one main point and one relevant detail at a natural pace."
       : mode === "advanced"
         ? "Keep it natural and specific."
         : "Keep it simple and clear.";
@@ -91,7 +95,7 @@ function fallbackPayload({ userText, isGoalOriented, scenarioData, scoring, mode
     feedback: {
       grammar: "Use one complete sentence with a subject, verb, and clear idea.",
       vocabulary: "Add one more specific word or detail to sound more natural.",
-      pronunciation: "Slow down slightly and stress the key content words.",
+      pronunciation: "",
       task: isGoalOriented
         ? "State the problem, your request, and the result you want."
         : "Add one reason, feeling, or personal example to develop your answer.",
@@ -99,14 +103,14 @@ function fallbackPayload({ userText, isGoalOriented, scenarioData, scoring, mode
   };
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
   }
 
   const payload = req.body || {};
-  const { scenario, scenarioData, history, userText, mode, scoring, isGoalOriented } = payload;
+  const { scenario, scenarioData, history, userText, mode, scoring, isGoalOriented, sceneCueId } = payload;
 
   try {
     const { provider, model, parsed } = await requestStructuredLlm({
@@ -125,8 +129,8 @@ export default async function handler(req, res) {
       timeoutMs: 7800,
       maxModelsPerProvider: 1,
       retryOnce: true,
-      systemText: buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOriented }),
-      userText: buildUserPrompt({ history, userText }),
+      systemText: buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOriented, sceneCueId }),
+      userText: buildUserPrompt({ history, userText, scenario }),
     });
 
     res.status(200).json({
@@ -137,15 +141,17 @@ export default async function handler(req, res) {
       feedback: {
         grammar: parsed.feedback?.grammar || "",
         vocabulary: parsed.feedback?.vocabulary || "",
-        pronunciation: parsed.feedback?.pronunciation || "",
+        pronunciation: "",
         task: parsed.feedback?.task || "",
       },
     });
   } catch (error) {
     console.error("voice-chat api error:", error);
     res.status(200).json({
-      ...fallbackPayload({ userText, isGoalOriented, scenarioData, scoring, mode }),
+      ...(scenario?.id === 'cafe' ? cafeLocalPractice({ userText, isGoalOriented, sceneCueId }) : fallbackPayload({ userText, isGoalOriented, scenarioData, scoring, mode })),
       fallback_reason: error?.message || "request_failed",
     });
   }
 }
+
+export default protectedApi(handler, { ai: true });

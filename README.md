@@ -1,5 +1,7 @@
 # SpeakNow
 
+Current repair status: [2026-10-13 progress and verification](docs/repair-progress-2026-10-13/REPORT.md). This report describes the local working tree; the deployed website has not been verified against these changes. Earlier completion reports are historical snapshots.
+
 SpeakNow is a speaking-practice web application built for `ENT208TC Session 4 Group 25`. It combines scenario-based voice conversation, presentation rehearsal, progress tracking, reporting, and admin-side monitoring in one React + Vite project.
 
 ## Live Demo
@@ -12,7 +14,7 @@ SpeakNow is a speaking-practice web application built for `ENT208TC Session 4 Gr
 The product supports two main communication workflows:
 
 - voice conversation practice for scenario-based speaking tasks
-- presentation rehearsal for slide-based speaking tasks
+- presentation rehearsal with an optional PDF, audience context, evidence-based coaching and targeted retries
 
 The current version includes authentication, protected routes, report generation, history pages, profile insights, and admin-facing analytics. The app is designed to remain reviewable both as a deployed website and as a local-first coursework codebase.
 
@@ -34,7 +36,7 @@ The current version includes authentication, protected routes, report generation
 - session reports and practice history
 - profile page with progress summaries
 - admin dashboard with activity and session visibility
-- local-first fallback behaviour with hosted persistence support
+- explicit local development storage or hosted persistence; cloud failures are reported without switching to local storage
 
 ## User Flow
 
@@ -49,10 +51,10 @@ The current version includes authentication, protected routes, report generation
 ### Presentation Practice
 
 1. Sign in to the app.
-2. Upload a PDF or prepare presentation material.
-3. Rehearse the presentation flow.
-4. Receive analysis and pause-level feedback.
-5. Review the final report and saved history.
+2. Enter a topic, core message, desired outcome and audience; optionally attach a PDF.
+3. Record an attempt, review the transcript and save it.
+4. Review model coaching when the server has a configured provider.
+5. Retry a selected moment and compare the independent attempts.
 
 ## Technology Stack
 
@@ -63,7 +65,7 @@ The current version includes authentication, protected routes, report generation
 - Radix UI / shadcn-style components
 - TanStack Query
 - Vercel API routes
-- Supabase-backed storage with local fallback support
+- Supabase-backed storage or explicitly configured local development storage
 
 ## Screenshots
 
@@ -81,7 +83,9 @@ Use the live website directly:
 
 - `https://omniverse-ent208.vercel.app`
 
-No local setup is required for review. The source code is provided for inspection only, and reviewers are not expected to run the project locally. All normal access, testing, and demonstration should be completed through the deployed website.
+For the current local version, run `npm run dev` in this directory. The launcher keeps the frontend origin and backend configuration aligned. Use an isolated `SPEAKNOW_DATA_DIR` and `FORCE_LOCAL_DATA=true` for test data. Run `npm test`, `npm run lint`, `npm run typecheck` and `npm run build` for the automated checks.
+
+An existing hosted installation needs [repair_2026_10_13.sql](supabase/repair_2026_10_13.sql) before deploying this repair. The migration has been prepared but has not been applied to a live database. New installations use the existing schema and consolidation scripts.
 
 ## Repository Structure
 
@@ -99,7 +103,7 @@ No local setup is required for review. The source code is provided for inspectio
 
 - browser microphone permission is required for voice practice
 - camera permission is required only for camera-based features
-- a text-based PDF is recommended for presentation rehearsal testing
+- a PDF is optional; model feedback requires a configured server provider
 - the deployed website may require a VPN in mainland China
 
 ## Additional Documents

@@ -1,15 +1,8 @@
+import { coachingOnly } from './feedbackEvidence.js';
+import { getExamStandard, roundExamScore, EXAM_STANDARDS_VERSION } from './examStandards.js';
+
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
-}
-
-function roundScore(value, scoring) {
-  if (scoring === "ielts") {
-    return Math.round(clamp(value, 1, 9) * 2) / 2;
-  }
-  if (scoring === "toefl") {
-    return Math.round(clamp(value * 3, 0, 30));
-  }
-  return Math.round(clamp(value, 1, 10));
 }
 
 function average(values) {
@@ -223,11 +216,7 @@ function createConversationFeedback(userText, scenarioTitle, mode) {
   const vocabularyFocus = topicWords[0] || "details";
   const vocabulary = `Use more precise words around "${vocabularyFocus}". Try adding one specific detail and one reason to sound more natural.`;
 
-  const pronunciation = safeUserText.split(" ").filter(Boolean).length < 4
-    ? "Slow down and stress the key content word at the end of your sentence."
-    : `Focus on sentence stress in "${safeUserText.split(" ").slice(-3).join(" ")}".`;
-
-  return { grammar, vocabulary, pronunciation };
+  return { grammar, vocabulary, pronunciation: '' };
 }
 
 function buildScenarioCoverageFeedback({ userText, scenarioData, isGoalOriented }) {
@@ -540,25 +529,11 @@ export function generateVoiceReport({
 }) {
   const userMessages = messages.filter((message) => message.role === "user");
   const fullUserText = userMessages.map((message) => message.content).join(" ");
-  const avgWords = userMessages.length ? words / userMessages.length : 0;
-  const questionsAsked = countMatches(fullUserText, /\?/g);
-  const connectors = countMatches(
-    fullUserText.toLowerCase(),
-    /\b(because|however|although|therefore|meanwhile|actually|instead)\b/g
-  );
+  const connectors = countMatches(fullUserText.toLowerCase(), /\b(because|however|although|therefore|meanwhile|actually|instead)\b/g);
   const grammarIssue = findGrammarIssue(fullUserText);
-
-  const baseFluency = clamp(5 + avgWords / 5 + exchanges / 6, 2, 9);
-  const baseLexical = clamp(5 + extractTopicWords(fullUserText).length / 2 + connectors / 3, 2, 9);
-  const baseGrammar = clamp(6 - (grammarIssue ? 1 : 0) + connectors / 4, 2, 9);
-  const basePronunciation = clamp(5 + Math.min(questionsAsked, 3) / 2 + avgWords / 8, 2, 9);
-
-  const scores = {
-    Fluency: roundScore(baseFluency, scoring),
-    Lexical: roundScore(baseLexical, scoring),
-    Grammar: roundScore(baseGrammar, scoring),
-    Pronunciation: roundScore(basePronunciation, scoring),
-  };
+  const scores = {};
+  const standard = getExamStandard(scoring);
+  const totalScore = null;
 
   const suggestions = [
     `Practice longer answers in ${scenarioTitle} so each response includes a reason and an example.`,
@@ -571,8 +546,23 @@ export function generateVoiceReport({
   ];
 
   return {
+    source: "heuristic",
+    measurement_basis: "text-rules-not-acoustic-measurement",
     scores,
-    totalScore: average(Object.values(scores)),
+    totalScore,
+    scoring_standard: scoring,
+    scoring_framework: {
+      version: EXAM_STANDARDS_VERSION,
+      label: standard.label,
+      criteria: standard.criteria,
+      practice_estimate: false,
+      score_available: false,
+      descriptor: "Text-based practice notes only. Pronunciation, acoustic fluency and exam scores were not measured.",
+      strategy: standard.strategy,
+      official_scale_note: scoring === 'toefl'
+        ? 'Current TOEFL iBT score reports use a 1–6 scale from January 21, 2026. A comparable 0–120 total may appear during the transition, but this practice report uses the current section scale.'
+        : scoring === 'ielts' ? 'IELTS Speaking uses four equally weighted criteria and half-band increments. This is an estimate, not an official examiner score.' : '',
+    },
     grammar_analysis: grammarIssue
       ? [
           {
@@ -593,16 +583,8 @@ export function generateVoiceReport({
       accuracy: connectors >= 2 ? "Mostly accurate word choice" : "Clear meaning, but vocabulary can be more specific",
       suggestions: extractTopicWords(fullUserText).slice(0, 3).map((word) => `Reuse "${word}" in a longer, more precise sentence.`),
     },
-    pronunciation_analysis: {
-      problem_sounds: ["sentence stress", "content-word emphasis"],
-      word_stress: "Stress the final key noun or verb in each response.",
-      intonation: "Let your pitch rise slightly when asking questions and fall clearly when giving a final answer.",
-    },
-    fluency_analysis: {
-      speech_rate: avgWords > 12 ? "Comfortable pace" : "Slightly short turns; expand responses",
-      unnatural_pauses: duration > 0 && exchanges > 0 ? "Some pauses likely appeared between ideas" : "Not enough data",
-      fillers: avgWords > 10 ? "Likely controlled" : "Watch for repeated fillers such as um or like",
-    },
+    pronunciation_analysis: null,
+    fluency_analysis: null,
     conversation_review: userMessages.slice(0, 3).map((message, index) => ({
       original: message.content,
       correction: `${message.content}${message.content.endsWith(".") ? "" : "."} Add one supporting reason to strengthen this answer.`,
@@ -612,7 +594,7 @@ export function generateVoiceReport({
   };
 }
 
-export function generatePresentationReport({
+function generatePresentationReportInternal({
   duration,
   totalPages,
   pageTimings,
@@ -871,7 +853,7 @@ export function generatePresentationAnalysis({
   };
 }
 
-export function generatePresentationPauseFeedback({
+function generatePresentationPauseFeedbackInternal({
   transcript,
   page,
   elapsed,
@@ -1018,3 +1000,7 @@ export function generatePresentationPauseFeedback({
     ],
   };
 }
+
+export function generatePresentationReport(input) { return coachingOnly(generatePresentationReportInternal(input)); }
+
+export function generatePresentationPauseFeedback(input) { return coachingOnly(generatePresentationPauseFeedbackInternal(input)); }

@@ -1,0 +1,15 @@
+{
+  "entryStaticJs": {
+    "files": [
+      "assets/index-CUVLnnjb.js"
+    ],
+    "rawBytes": 513444,
+    "gzipBytes": 164521
+  },
+  "allJs": {
+    "files": 49,
+    "rawBytes": 1753221,
+    "gzipBytes": 516540
+  },
+  "note": "Production artifact bytes; excludes HTTP caching, network, parse/render time and runtime performance."
+}

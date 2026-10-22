@@ -1,3 +1,5 @@
+import { coachingOnly } from '../src/lib/feedbackEvidence.js';
+import { protectedApi } from "./_apiGuard.js";
 import { generatePresentationPauseFeedback } from "../src/lib/localReports.js";
 import { requestStructuredLlm } from "./_llm.js";
 
@@ -88,7 +90,7 @@ function buildCompactPausePrompt(payload) {
   ].join("\n");
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
@@ -107,30 +109,24 @@ export default async function handler(req, res) {
         properties: {
           title: { type: "string" },
           elapsedLabel: { type: "string" },
-          overallScore: { type: "number" },
           nextStep: { type: "string" },
           evidenceLine: { type: "string" },
           strengths: { type: "array", items: { type: "string" } },
           improvements: { type: "array", items: { type: "string" } },
         },
-        required: ["title", "elapsedLabel", "overallScore", "nextStep", "evidenceLine", "strengths", "improvements"],
+        required: ["title", "elapsedLabel", "nextStep", "evidenceLine", "strengths", "improvements"],
       },
       timeoutMs: 7600,
       retryOnce: true,
-      systemText: "You are a live presentation coach. Return strict JSON only. Keep every field short. Reuse one concrete word from the slide text or transcript in nextStep or evidenceLine. nextStep must be one sentence the speaker can say now.",
+      systemText: "You are a live presentation coach. Return strict JSON only. Keep every field short. Reuse one concrete word from the slide text or transcript in nextStep or evidenceLine. nextStep must be one sentence the speaker can say now. Label this as an AI Coaching Suggestion; do not infer pronunciation, acoustic fluency, body language, confidence or improvement from text.",
       userText: buildCompactPausePrompt(payload),
     });
     const normalized = normalizeFeedback(parsed, fallback);
-    res.status(200).json({
-      ...normalized,
-      provider,
-      model,
-    });
+    res.status(200).json(coachingOnly({ ...normalized, provider, model }));
   } catch (error) {
     console.error("presentation-pause-feedback api error:", error);
-    res.status(200).json({
-      ...fallback,
-      fallback_reason: error?.message || "request_failed",
-    });
+    res.status(200).json(coachingOnly({ ...fallback, fallback_reason: error?.message || "request_failed" }));
   }
 }
+
+export default protectedApi(handler, { ai: true });

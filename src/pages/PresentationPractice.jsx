@@ -1,3 +1,5 @@
+import PresentationCapture from '@/impact/PresentationCapture';
+import { useAuth } from '@/lib/AuthContext';
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Pause, Timer, X } from "lucide-react";
@@ -12,9 +14,44 @@ function getSpeechRecognition() {
 }
 
 export default function PresentationPractice() {
+  const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [setup] = useState(() => {
+    let stored;
+    try { stored = JSON.parse(sessionStorage.getItem('presentationImpactSetup') || 'null'); } catch { /* Invalid old state. */ }
+    const value = location.state?.impactPractice || (stored?.userId === user?.id ? stored : null);
+    return value?.context ? { ...value, userId: user.id, attemptId: value.attemptId || crypto.randomUUID() } : null;
+  });
+  useEffect(() => {
+    if (setup) sessionStorage.setItem('presentationImpactSetup', JSON.stringify(setup));
+  }, [setup]);
+  if (setup?.context) return <OralPresentationPractice setup={setup} onExit={() => navigate('/presentation')} onSaved={session => { sessionStorage.removeItem('presentationImpactSetup'); navigate(`/presentation/report?session=${session.id}`); }} />;
+  return <LegacyPresentationPractice />;
+}
+
+function OralPresentationPractice({ setup, onExit, onSaved }) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const fileUrl = sessionStorage.getItem('presentationFileUrl');
+  const [showSlides, setShowSlides] = useState(Boolean(fileUrl));
+  return <div className="studio-page impact-studio"><div className="impact-workspace">
+    <header className="impact-header"><h1>{setup.kind === 'moment' ? 'Retry one important moment' : 'Your 5-minute English presentation'}</h1><span>{setup.context.targetAudience} Audience</span></header>
+    {showSlides && <div className="glass rounded-2xl p-3">
+      <DocumentViewer currentPage={currentPage} onTotalPages={setTotalPages} />
+      <div className="impact-actions"><Button variant="outline" onClick={() => setShowSlides(false)}>Continue without slides</Button><Button variant="outline" disabled={currentPage <= 1} onClick={() => setCurrentPage(page => page - 1)}>Previous slide</Button><span>{currentPage} / {totalPages || '…'}</span><Button variant="outline" disabled={!totalPages || currentPage >= totalPages} onClick={() => setCurrentPage(page => page + 1)}>Next slide</Button></div>
+      <p className="text-sm text-muted-foreground">Slides are optional. A missing or unavailable PDF never blocks your recording.</p>
+    </div>}
+    <PresentationCapture key={setup.attemptId} attemptId={setup.attemptId} userId={setup.userId} context={setup.context} retry={setup} fileName={sessionStorage.getItem('presentationFile') || setup.context.topic} pageTimings={[]} totalPages={showSlides ? totalPages : 0} onSaved={onSaved} onExit={onExit} />
+  </div></div>;
+}
+
+function LegacyPresentationPractice() {
   const navigate = useNavigate();
   const location = useLocation();
   const params = new URLSearchParams(location.search);
+  const impactSetup = null;
+
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [elapsed, setElapsed] = useState(0);
@@ -26,7 +63,7 @@ export default function PresentationPractice() {
   const [transcriptSupported, setTranscriptSupported] = useState(true);
   const [recognitionStatus, setRecognitionStatus] = useState("starting");
   const [isPaused, setIsPaused] = useState(false);
-  const [liveScores, setLiveScores] = useState({ expression: 72, posture: 68, eye_contact: 75, fluency: 70 });
+  const [liveScores, setLiveScores] = useState({});
   const [pauseHistory, setPauseHistory] = useState(() => {
     const saved = sessionStorage.getItem("presentationPauseHistory");
     return saved ? JSON.parse(saved) : [];
@@ -227,6 +264,7 @@ export default function PresentationPractice() {
       return undefined;
     }
 
+    if (impactSetup) { stopRecognition(); return undefined; }
     startRecognition();
     return () => stopRecognition();
   }, [isPaused, startRecognition, stopRecognition]);
@@ -285,8 +323,7 @@ export default function PresentationPractice() {
       {
         page: currentPage,
         elapsed,
-        score: Math.round(Object.values(latestScores).reduce((sum, value) => sum + value, 0) / 4),
-      },
+        },
     ];
     setPauseHistory(nextHistory);
     sessionStorage.setItem("presentationPauseHistory", JSON.stringify(nextHistory));
@@ -308,7 +345,6 @@ export default function PresentationPractice() {
       activity_type: "presentation_paused",
       page: currentPage,
       elapsed,
-      score: Math.round(Object.values(latestScores).reduce((sum, value) => sum + value, 0) / 4),
       current_page_text_preview: (pdfPageTexts[currentPage - 1] || "").slice(0, 220),
     });
     setTranscript("");
@@ -352,7 +388,7 @@ export default function PresentationPractice() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
+    <div className="presentation-room h-dvh flex flex-col bg-background overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 glass flex-shrink-0">
         <button onClick={handleExit} className="flex items-center gap-1.5 text-[15px] text-accent font-medium">
           <X className="w-4 h-4" />
@@ -365,13 +401,14 @@ export default function PresentationPractice() {
         <div className="text-[15px] text-muted-foreground truncate max-w-[150px] text-right">{fileName}</div>
       </div>
 
-      <div className="flex-1 flex gap-3 p-3 min-h-0">
+      <div className="presentation-workspace flex-1 flex gap-3 p-3 min-h-0">
         <div className="flex-1 flex flex-col min-h-0 min-w-0">
-          <div className="flex-1 glass rounded-2xl overflow-hidden relative min-h-0">
+          <div className="presentation-document flex-1 glass rounded-2xl overflow-hidden relative min-h-0">
             <DocumentViewer currentPage={currentPage} onTotalPages={setTotalPages} />
           </div>
           <div className="flex items-center justify-between mt-2 px-1">
             <button
+              aria-label="Previous slide"
               onClick={handlePrev}
               disabled={currentPage <= 1}
               className="p-2 rounded-xl glass hover:bg-white/10 disabled:opacity-30 transition-all"
@@ -382,6 +419,7 @@ export default function PresentationPractice() {
               Page {currentPage} / {totalPages}
             </span>
             <button
+              aria-label="Next slide"
               onClick={handleNext}
               disabled={currentPage >= totalPages}
               className="p-2 rounded-xl glass hover:bg-white/10 disabled:opacity-30 transition-all"
@@ -400,7 +438,7 @@ export default function PresentationPractice() {
           </div>
         </div>
 
-        <div className="w-56 flex-shrink-0 flex flex-col gap-2">
+        <div className="presentation-sidebar w-56 flex-shrink-0 flex flex-col gap-2">
           <CameraPreview />
           <div className="flex-1 overflow-auto min-h-0">
             <LiveScorePanel onScoresChange={setLiveScores} />
@@ -408,7 +446,7 @@ export default function PresentationPractice() {
         </div>
       </div>
 
-      <div className="border-t border-white/5 glass px-4 py-3 flex items-center gap-3">
+      <div className="presentation-controls border-t border-white/5 glass px-4 py-3 flex items-center gap-3">
         <div className="flex-1">
           <Button
             onClick={handlePause}

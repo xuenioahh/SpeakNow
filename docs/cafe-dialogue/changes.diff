@@ -1,0 +1,273 @@
+--- before/src/components/ScenarioStage.jsx
++++ src/components/ScenarioStage.jsx
+@@ -4,11 +4,11 @@
+ import { createScene } from './scene/createScene';
+ import '@/scenario-studio.css';
+ 
+-export default function ScenarioStage({ scenario }) {
+-  return <Stage key={scenario.id} scenario={scenario} />;
++export default function ScenarioStage({ scenario, onUseCue = null, cueDisabledReason = '', conversation = null, cueOverrides = null }) {
++  return <Stage key={scenario.id} scenario={scenario} onUseCue={onUseCue} cueDisabledReason={cueDisabledReason} conversation={conversation} cueOverrides={cueOverrides} />;
+ }
+ 
+-function Stage({ scenario }) {
++function Stage({ scenario, onUseCue, cueDisabledReason, conversation, cueOverrides }) {
+   const theme = IMMERSIVE_SCENARIOS[scenario.id];
+   const host = useRef(null);
+   const api = useRef(null);
+@@ -22,7 +22,8 @@
+   const [night, setNight] = useState(false);
+   const [expanded, setExpanded] = useState(false);
+   const detailsId = useId();
+-  const activeCue = theme.cues.find(cue => cue.id === active);
++  const selectedCue = theme.cues.find(cue => cue.id === active);
++  const activeCue = selectedCue ? { ...selectedCue, ...cueOverrides?.[selectedCue.id] } : null;
+   const select = useCallback(id => {
+     setActive(id); setVisited(previous => previous.includes(id) ? previous : [...previous, id]);
+     api.current?.focus(id);
+@@ -34,6 +35,7 @@
+     } catch (error) { console.warn('SpeakNow scene could not initialize:', error); setFailed(true); }
+     return () => { api.current?.dispose(); api.current = null; };
+   }, [scenario.id, theme, select, retry]);
++  useEffect(() => { api.current?.setConversationState(conversation?.status || 'idle'); }, [conversation?.status, retry]);
+   const reset = () => { setActive(null); setView('overview'); api.current?.focus(null); api.current?.setView('overview'); };
+   const switchView = next => { setActive(null); setView(next); api.current?.focus(null); api.current?.setView(next); };
+   const closeDetails = () => {
+@@ -48,6 +50,11 @@
+       <span>{visited.length} / {theme.cues.length} discovered</span>
+     </div>
+     <div className="scene-title"><h3>{theme.name}</h3><p>{theme.atmosphere}</p></div>
++    {scenario.id === 'cafe' && conversation && <div className="scene-dialogue" aria-label="Barista in the scene">
++      <div><span className="scene-live-dot" /><strong>{conversation.status === 'speaking' ? 'Barista is speaking' : conversation.status === 'processing' || conversation.status === 'submitting' ? 'Barista is considering your reply' : conversation.status === 'listening' ? 'Barista is listening' : conversation.isLocal ? 'Local practice prompt' : 'Barista says'}</strong></div>
++      <p>{conversation.reply}</p>
++      <button type="button" disabled={!conversation.canReply} onClick={conversation.onReply}>Reply to the barista <ArrowUpRight size={14} /></button>
++    </div>}
+     <div className="scene-viewport">
+       <div ref={host} className="scenario-canvas" tabIndex={failed ? -1 : 0} role="group" aria-label="Interactive 3D scene. Drag to look around. Arrow keys rotate, plus and minus zoom, Home resets."
+         onKeyDown={e => {
+@@ -67,7 +74,9 @@
+     <div className="scenario-stage-controls"><span>{failed ? 'A moment to imagine' : 'Drag to look around · select an object'}</span>{!failed && <div><button type="button" aria-label="Rotate scene left" onClick={() => api.current?.rotate(-0.18)}><RotateCcw size={15} /></button><button type="button" aria-label="Rotate scene right" onClick={() => api.current?.rotate(0.18)}><RotateCw size={15} /></button><button type="button" aria-label="Zoom in" onClick={() => api.current?.zoom(-1)}><Plus size={15} /></button><button type="button" aria-label="Zoom out" onClick={() => api.current?.zoom(1)}><Minus size={15} /></button></div>}</div>
+     <div className="scene-cue-list" aria-label="Scene objects">{theme.cues.map((cue, index) => <button type="button" id={`${detailsId}-cue-${index}`} key={cue.id} aria-expanded={active === cue.id} aria-controls={detailsId} className={active === cue.id ? 'is-active' : ''} onClick={() => active === cue.id ? closeDetails() : select(cue.id)}><span>{visited.includes(cue.id) ? <Check size={12} /> : `0${index + 1}`}</span>{cue.title}</button>)}</div>
+     <div id={detailsId} ref={detailRef} className="scene-cue-detail" hidden={!activeCue} aria-live="polite">
+-      {activeCue && <><button type="button" className="scene-detail-close" aria-label="Close object details" onClick={closeDetails}><X size={16} /></button><span className="scene-detail-kicker">NOTICE IT. THEN SAY IT.</span><h4>{activeCue.title}</h4><p>{activeCue.detail}</p><blockquote>“{activeCue.phrase}”</blockquote><span className="scene-practice-note">A role-play cue. Try saying it in your own words.</span></>}
++      {activeCue && <><button type="button" className="scene-detail-close" aria-label="Close object details" onClick={closeDetails}><X size={16} /></button><span className="scene-detail-kicker">NOTICE IT. THEN SAY IT.</span><h4>{activeCue.title}</h4><p>{activeCue.detail}</p><blockquote>“{activeCue.phrase}”</blockquote><span className="scene-practice-note">A role-play cue. Try saying it in your own words.</span>
++        {onUseCue && <div className="scene-cue-action"><button type="button" disabled={Boolean(cueDisabledReason)} onClick={() => onUseCue(activeCue)}>Use as a reply draft <ArrowUpRight size={15} /></button><p>{cueDisabledReason || 'Edit the words before sending, or say them in your own way.'}</p></div>}
++      </>}
+     </div>
+   </div>;
+ }
+--- before/src/pages/VoiceChat.jsx
++++ src/pages/VoiceChat.jsx
+@@ -35,7 +35,10 @@
+   const [startTime] = useState(Date.now());
+   const chatEndRef = useRef(null);
+   const messageRefs = useRef({});
++  const replyInputRef = useRef(null);
++  const sceneCueRef = useRef('');
+   const draftKey = `speaknow-voice-draft:${scenarioId}:${mode}:${dialogMode}:${scoring}`;
++  const requestCueIds = useMemo(() => new Map(), [draftKey]);
+   const interaction = useMemo(() => {
+     let initialDraft = '';
+     try { initialDraft = sessionStorage.getItem(draftKey) || ''; } catch { /* Storage unavailable. */ }
+@@ -45,9 +48,13 @@
+       saveDraft: text => text ? sessionStorage.setItem(draftKey, text) : sessionStorage.removeItem(draftKey),
+       visualFor: text => getDynamicSceneCue(scenarioId, text),
+       initialMessage: scenarioData ? { id: `intro-${scenarioId}`, role: 'ai', content: scenarioData.firstMessage, aiRole: scenario?.aiRole, visual: getDynamicSceneCue(scenarioId, scenarioData.firstMessage), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) } : null,
+-      request: (userText, { signal, history }) => localApi.integrations.Core.InvokeLLM({ input: { kind: 'voice-chat', scenario, scenarioData, history, userText, mode, scoring, isGoalOriented } }, { signal }),
++      request: (userText, { signal, history, turnId }) => {
++        // Retries retain the scene context of the original turn.
++        if (!requestCueIds.has(turnId)) requestCueIds.set(turnId, sceneCueRef.current);
++        return localApi.integrations.Core.InvokeLLM({ input: { kind: 'voice-chat', scenario, scenarioData, history, userText, mode, scoring, isGoalOriented, ...(scenarioId === 'cafe' ? { sceneCueId: requestCueIds.get(turnId) } : {}) } }, { signal });
++      },
+     });
+-  }, [draftKey, scenario, scenarioData, scenarioId, mode, scoring, isGoalOriented]);
++  }, [draftKey, scenario, scenarioData, scenarioId, mode, scoring, isGoalOriented, requestCueIds]);
+   const state = useSyncExternalStore(interaction.subscribe, interaction.getSnapshot, interaction.getSnapshot);
+   const messages = state.messages;
+   const hasUserSpoken = messages.some(message => message.role === 'user');
+@@ -63,6 +70,20 @@
+   const orbState = resolveVoiceOrbState({ status: state.status });
+   const exchanges = messages.filter(message => message.role === 'user').length;
+   const wordCount = messages.filter(message => message.role === 'user').reduce((total, message) => total + message.content.split(/\s+/).filter(Boolean).length, 0);
++  const latestPartnerMessage = [...messages].reverse().find(message => message.role === 'ai');
++  const canUseSceneDraft = !['requesting_permission', 'starting', 'listening', 'stopping', 'finalizing', 'submitting', 'processing', 'completed'].includes(state.status);
++  const cafeCueDisabledReason = ['requesting_permission', 'starting', 'listening', 'stopping', 'finalizing', 'submitting', 'processing', 'completed'].includes(state.status)
++    ? 'Finish the current turn before choosing a reply draft.'
++    : [state.typedText, state.finalText, state.interimText].some(text => text.trim())
++      ? 'Your unsent words are kept. Send or clear them before choosing a draft.' : '';
++  const focusReply = () => { replyInputRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' }); replyInputRef.current?.focus({ preventScroll: true }); };
++  const useSceneCue = cue => {
++    if (cafeCueDisabledReason) return;
++    sceneCueRef.current = cue.id;
++    interaction.setTypedText(cue.phrase);
++    focusReply();
++  };
++  useEffect(() => { sceneCueRef.current = ''; }, [draftKey]);
+ 
+   useEffect(() => {
+     if (!scenario) navigate('/voice');
+@@ -80,7 +101,9 @@
+     const timer = window.setInterval(() => setElapsed(Math.floor((Date.now() - startTime) / 1000)), 1000);
+     return () => window.clearInterval(timer);
+   }, [startTime]);
+-  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: 'auto', block: 'nearest' }); }, [messages]);
++  useEffect(() => {
++    if (!(scenarioId === 'cafe' && sceneOpen)) chatEndRef.current?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
++  }, [messages, sceneOpen, scenarioId]);
+ 
+   const handleEnd = async () => {
+     const finished = await interaction.complete();
+@@ -126,7 +149,7 @@
+   }
+ 
+   return (
+-    <div className="speaking-room" data-interaction-state={state.status}>
++    <div className={`speaking-room${scenarioId === 'cafe' && sceneOpen ? ' is-cafe-scene-active' : ''}`} data-interaction-state={state.status}>
+       {/* Header */}
+       <div className="room-header glass">
+         <button onClick={handleExit} className="flex items-center gap-1 text-sm text-accent font-medium">
+@@ -157,7 +180,16 @@
+       {/* Chat Area */}
+       <div className="room-conversation space-y-4" aria-label="Conversation and coaching">
+         <button type="button" className="voice-scene-toggle" aria-expanded={sceneOpen} aria-controls="conversation-scene" onClick={() => setSceneOpen(open => !open)}><span>{sceneOpen ? 'Return to the conversation' : `Step into ${scenario.title} · explore your surroundings`}</span><span aria-hidden="true">{sceneOpen ? '−' : '↗'}</span></button>
+-        {sceneOpen && <div id="conversation-scene" className="voice-scene-panel"><Suspense fallback={<div className="scenario-stage scenario-stage-loading">Preparing your scene…</div>}><ScenarioStage scenario={scenario} /></Suspense></div>}
++        {sceneOpen && <div id="conversation-scene" className="voice-scene-panel"><Suspense fallback={<div className="scenario-stage scenario-stage-loading">Preparing your scene…</div>}><ScenarioStage scenario={scenario}
++          onUseCue={scenarioId === 'cafe' ? useSceneCue : null}
++          cueDisabledReason={cafeCueDisabledReason}
++          conversation={scenarioId === 'cafe' ? { status: state.status, reply: latestPartnerMessage?.content || '', isLocal: latestPartnerMessage?.source === 'fallback', canReply: canUseSceneDraft, onReply: focusReply } : null}
++          cueOverrides={scenarioId === 'cafe' && !isGoalOriented ? {
++            menu: { detail: 'Browse the café menu and ask about the barista’s favourites.', phrase: 'What coffee would you recommend today?' },
++            coffee: { detail: 'Talk about how you like your coffee, or ask about milk options.', phrase: 'I usually have a latte. How does it taste with oat milk?' },
++            pastry: { detail: 'Ask about pastries and the café’s morning routine.', phrase: 'Which pastry do you enjoy with your morning coffee?' },
++          } : null}
++        /></Suspense></div>}
+         {!sceneOpen && isGoalOriented && examinerScene && (
+           <div className="flex justify-center">
+             <div className="w-full max-w-sm overflow-hidden rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.12),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.06),rgba(15,23,42,0.32))] px-5 py-6 shadow-[0_24px_80px_rgba(0,0,0,0.32)]">
+@@ -192,6 +224,7 @@
+             isActive={isSpeaking && activePlaybackId === (msg.playbackId || msg.id)}
+             onPlay={() => interaction.playMessage(msg.id)}
+             playbackDisabled={["requesting_permission", "starting", "listening", "stopping", "finalizing", "submitting", "processing", "completed"].includes(state.status)}
++            feedbackInitiallyOpen={scenarioId !== 'cafe'}
+             registerRef={(node) => {
+               if (!msg.id && !msg.playbackId) return;
+               messageRefs.current[msg.playbackId || msg.id] = node;
+@@ -231,7 +264,7 @@
+             </div>
+           </details>
+         )}
+-        <RecordingControls interaction={interaction} state={state} />
++        <RecordingControls interaction={interaction} state={state} replyInputRef={replyInputRef} />
+         {timing && <details className="voice-timing"><summary>Response timing</summary><dl>
+           <div><dt>Final recognition</dt><dd>{timingDuration(timing.t1, timing.t2)}</dd></div>
+           <div><dt>Coach response</dt><dd>{timingDuration(timing.requestStarted, timing.t3)}</dd></div>
+--- before/src/components/scene/buildRoom.js
++++ src/components/scene/buildRoom.js
+@@ -14,6 +14,8 @@
+   const lightingUpdates = [];
+   const surface = createSurfaceMaterials(materials, textures);
+   let activeId = null;
++  let conversationState = 'idle';
++  let barista = null;
+   const palette = { wood: '#b68a59', dark: '#283c3c', ivory: '#f3e8d5', metal: '#b5bdb6', gold: '#b99357', green: '#62866a' };
+   const material = (color, metalness = 0, emissive = false) => {
+     const key = `${color}-${metalness}-${emissive}`;
+@@ -165,6 +167,12 @@
+     const hair = sphere(0.205, '#40382f', 0, 1.8, -0.035, p); hair.scale.y = 0.65;
+     for (const dx of [-0.075, 0.075]) sphere(0.018, palette.dark, dx, 1.73, 0.18, p);
+     for (const dx of [-0.24, 0.24]) { const arm = cylinder(0.065, 0.46, color, dx, 1.25, 0.04, p); arm.rotation.z = dx * 1.3; }
++    if (id === 'cafe') {
++      box(0.29, 0.43, 0.06, '#d1b48a', 0, 1.13, 0.19, p, 0.035);
++      box(0.19, 0.12, 0.025, '#b39167', 0, 1.06, 0.23, p, 0.012);
++      for (const dx of [-0.09, 0.09]) box(0.025, 0.22, 0.026, '#d1b48a', dx, 1.42, 0.16, p, 0);
++      barista = p;
++    }
+   }
+   function shelves(x, z, key = 'books') {
+     const p = group(x, 0, z, key);
+@@ -363,9 +371,16 @@
+       });
+     },
+     lighting(night) { lightingUpdates.forEach(update => update(night)); },
++    setConversationState(value) { conversationState = value; },
+     update(time, camera, motion) {
+       rings.forEach((ring, i) => { ring.quaternion.copy(camera.quaternion); ring.scale.setScalar(theme.cues[i].id === activeId ? 1.4 : 1); });
+       if (motion) animated.forEach(update => update(time));
++      // Small acknowledgment gestures follow actual interaction state, not a
++      // fabricated mouth animation or audio meter.
++      if (barista) {
++        barista.rotation.y = conversationState === 'listening' ? -0.08 : 0;
++        barista.rotation.x = motion && conversationState === 'speaking' ? Math.sin(time * 3) * 0.015 : 0;
++      }
+     },
+     dispose() { geometries.forEach(g => g.dispose()); materials.forEach(m => m.dispose()); textures.forEach(t => t.dispose()); },
+   };
+--- before/src/components/scene/createScene.js
++++ src/components/scene/createScene.js
+@@ -158,6 +158,6 @@
+       if (visible) invalidate(); else { cancelAnimationFrame(frame); frame = 0; lastFrame = 0; }
+     }, { threshold: 0.01 }); intersectionObserver.observe(container);
+     invalidate();
+-    return { rotate, zoom, focus, setView, lighting, dispose };
++    return { rotate, zoom, focus, setView, lighting, dispose, setConversationState(value) { built.setConversationState(value); invalidate(); } };
+   } catch (error) { dispose(); throw error; }
+ }
+--- before/api/voice-chat.js
++++ api/voice-chat.js
+@@ -1,7 +1,8 @@
+ import { protectedApi } from "./_apiGuard.js";
+ import { requestStructuredLlm } from "./_llm.js";
++import { cafeConversationHistory, cafeDialogueGuide, cafeLocalPractice } from './_cafeDialogue.js';
+ 
+-function buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOriented }) {
++function buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOriented, sceneCueId }) {
+   const role = scenario?.aiRole || "conversation partner";
+   const title = scenario?.title || "General English Practice";
+   const userRole = scenarioData?.userRole || "learner";
+@@ -26,14 +27,15 @@
+     scoringGuide,
+     difficultyGuide,
+     dialogGuide,
++    scenario?.id === 'cafe' ? cafeDialogueGuide({ isGoalOriented, sceneCueId }) : '',
+     "Be human, warm, short, and stay in character.",
+     "Reply in 1-2 short sentences.",
+     "Return JSON: {\"reply\":\"...\",\"feedback\":{\"grammar\":\"...\",\"vocabulary\":\"...\",\"pronunciation\":\"...\",\"task\":\"...\"}}",
+   ].join(" ");
+ }
+ 
+-function buildUserPrompt({ history, userText }) {
+-  const recent = (Array.isArray(history) ? history : [])
++function buildUserPrompt({ history, userText, scenario }) {
++  const recent = scenario?.id === 'cafe' ? cafeConversationHistory(history, userText) : (Array.isArray(history) ? history : [])
+     .slice(-2)
+     .map((message) => `${message.role === "ai" ? "Assistant" : "User"}: ${message.content}`)
+     .join("\n");
+@@ -107,7 +109,7 @@
+   }
+ 
+   const payload = req.body || {};
+-  const { scenario, scenarioData, history, userText, mode, scoring, isGoalOriented } = payload;
++  const { scenario, scenarioData, history, userText, mode, scoring, isGoalOriented, sceneCueId } = payload;
+ 
+   try {
+     const { provider, model, parsed } = await requestStructuredLlm({
+@@ -126,8 +128,8 @@
+       timeoutMs: 7800,
+       maxModelsPerProvider: 1,
+       retryOnce: true,
+-      systemText: buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOriented }),
+-      userText: buildUserPrompt({ history, userText }),
++      systemText: buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOriented, sceneCueId }),
++      userText: buildUserPrompt({ history, userText, scenario }),
+     });
+ 
+     res.status(200).json({
+@@ -145,7 +147,7 @@
+   } catch (error) {
+     console.error("voice-chat api error:", error);
+     res.status(200).json({
+-      ...fallbackPayload({ userText, isGoalOriented, scenarioData, scoring, mode }),
++      ...(scenario?.id === 'cafe' ? cafeLocalPractice({ userText, isGoalOriented, sceneCueId }) : fallbackPayload({ userText, isGoalOriented, scenarioData, scoring, mode })),
+       fallback_reason: error?.message || "request_failed",
+     });
+   }

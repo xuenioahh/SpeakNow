@@ -1,0 +1,20 @@
+[
+  {
+    "width": 1440,
+    "id": "0527e3dd-e1e2-4a25-8bca-de559b7fb038",
+    "authentication": "actual server session",
+    "media": "actual MediaRecorder using generated Chromium audio; controlled ASR event",
+    "model": "real endpoint returned 503, no mock model",
+    "browserErrors": [],
+    "status": "PASS engineering flow; AI quality BLOCKED"
+  },
+  {
+    "width": 390,
+    "id": "1f8dfbff-dd4d-4bfb-88ae-24d35afdce10",
+    "authentication": "actual server session",
+    "media": "actual MediaRecorder using generated Chromium audio; controlled ASR event",
+    "model": "real endpoint returned 503, no mock model",
+    "browserErrors": [],
+    "status": "PASS engineering flow; AI quality BLOCKED"
+  }
+]

@@ -1,3 +1,4 @@
+import { loadPdfJs, buildPdfSource } from '@/lib/pdfText';
 import { useEffect, useState } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 
@@ -19,7 +20,7 @@ export default function DocumentViewer({ currentPage, onTotalPages }) {
 
     if (!fileData) {
       setStatus("error");
-      setErrorMsg("No PDF found. Please go back and upload again.");
+      setErrorMsg("No slide file is available. Continue without slides.");
       return;
     }
 
@@ -29,19 +30,8 @@ export default function DocumentViewer({ currentPage, onTotalPages }) {
   /* ───── PDF via PDF.js ───── */
   const renderPDF = async (fileData) => {
     try {
-      if (!window.pdfjsLib) {
-        await Promise.race([
-          loadScript("https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"),
-          waitForTimeout(8000, "Timed out while loading the PDF viewer."),
-        ]);
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-      }
-
-      const pdfSource = fileData.startsWith("blob:")
-        ? fileData
-        : { data: base64ToUint8Array(fileData.split(",")[1]) };
-      const pdf = await window.pdfjsLib.getDocument(pdfSource).promise;
+      const pdfjsLib = await loadPdfJs();
+      const pdf = await pdfjsLib.getDocument(buildPdfSource(fileData)).promise;
       const total = pdf.numPages;
       onTotalPages(total);
 
@@ -62,29 +52,8 @@ export default function DocumentViewer({ currentPage, onTotalPages }) {
     } catch (err) {
       console.error("PDF render error:", err);
       setStatus("error");
-      setErrorMsg("The PDF preview could not be loaded. Please upload the PDF again.");
+      setErrorMsg("The PDF preview could not be loaded. You can continue without slides.");
     }
-  };
-
-  const loadScript = (src) => new Promise((resolve, reject) => {
-    const existing = document.querySelector(`script[src="${src}"]`);
-    if (existing) { resolve(); return; }
-    const s = document.createElement("script");
-    s.src = src;
-    s.onload = resolve;
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
-
-  const waitForTimeout = (ms, message) => new Promise((_, reject) => {
-    window.setTimeout(() => reject(new Error(message)), ms);
-  });
-
-  const base64ToUint8Array = (base64) => {
-    const binary = atob(base64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    return bytes;
   };
 
   /* ───── Render ───── */

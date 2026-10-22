@@ -5,6 +5,7 @@ create table if not exists public.app_users (
   password text not null default '',
   role text not null default 'learner',
   avatar_url text not null default '',
+  profile_preferences jsonb not null default '{"weekly_goal":3,"practice_focus":"voice"}'::jsonb,
   created_date timestamptz not null default timezone('utc', now())
 );
 

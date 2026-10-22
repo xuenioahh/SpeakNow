@@ -1,0 +1,40 @@
+{
+  "scope": "provided-consented-dataset-only, not all product users",
+  "source": "real-user",
+  "enrolled": 0,
+  "activated": 0,
+  "activationRate": null,
+  "valueMoments": 0,
+  "valueMomentRate": null,
+  "d7Eligible": 0,
+  "d7Returned": 0,
+  "d7Retention": null,
+  "definitions": {
+    "activation": "Original spoken practice with saved recording, transcript and feedback.",
+    "valueMoment": "A saved spoken targeted retry following feedback; this is not proven improvement.",
+    "d7": "Another completed spoken practice in [7,8) days after activation; denominator excludes immature cohorts."
+  },
+  "plans": {
+    "task-pass-5": {
+      "offered": 0,
+      "purchased": 0,
+      "declined": 0,
+      "pending": 0,
+      "purchaseRate": null
+    },
+    "monthly-10": {
+      "offered": 0,
+      "purchased": 0,
+      "declined": 0,
+      "pending": 0,
+      "purchaseRate": null
+    },
+    "monthly-15": {
+      "offered": 0,
+      "purchased": 0,
+      "declined": 0,
+      "pending": 0,
+      "purchaseRate": null
+    }
+  }
+}

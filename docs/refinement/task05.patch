@@ -1,0 +1,572 @@
+--- a/src/components/report/PracticeTimeline.jsx
++++ b/src/components/report/PracticeTimeline.jsx
+@@ -1,3 +1,4 @@
++import { displayRecordDate } from '@/lib/reportDisplay';
+ import { Link } from 'react-router-dom';
+ import { ArrowUpRight } from 'lucide-react';
+ import { getScenario } from '@/lib/scenarios';
+@@ -7,7 +8,7 @@
+   if (!entries.length) return null;
+   return <ol className="practice-timeline" aria-label="Saved practice timeline">{entries.map((session, i) => {
+     const title = session.kind === 'presentation' ? session.file_name || 'Presentation rehearsal' : getScenario(session.scenario)?.title || session.scenario || 'Conversation';
+-    const date = new Date(session.created_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
++    const date = displayRecordDate(session.created_date);
+     const detail = `${date} · ${Math.round(Math.max(0, Number(session.duration_seconds) || 0) / 60)} min`;
+     const content = <><div><strong>{title}</strong><span>{i === 0 ? 'Latest · ' : ''}{detail}</span></div><ArrowUpRight size={16} aria-hidden="true" /></>;
+     return <li key={session.id || i}>{onSelect ? <button type="button" onClick={() => onSelect(session.id)} aria-label={`Open ${title}, ${date}`} title={detail}>{content}</button> : <Link title={detail} to={`${session.kind === 'presentation' ? '/presentation/history' : '/voice/history'}?session=${encodeURIComponent(session.id)}`}>{content}</Link>}</li>;
+--- a/src/components/report/RadarChart.jsx
++++ b/src/components/report/RadarChart.jsx
+@@ -1,3 +1,4 @@
++import { hasReportedScore, displayScore, displayRecordDate } from '@/lib/reportDisplay';
+ import { useId, useState } from 'react';
+ import { useReducedMotion } from 'framer-motion';
+ import { Radar, RadarChart as RechartsRadar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts';
+@@ -6,26 +7,28 @@
+   const [selected, setSelected] = useState(null);
+   const reduced = useReducedMotion();
+   const gradient = useId().replace(/:/g, '');
+-  const data = Object.entries(scores).map(([key, value]) => ({ subject: key, score: value, fullMark: maxScore }));
++  const data = Object.entries(scores || {}).map(([key, value]) => ({ subject: key, score: hasReportedScore(value) ? Number(value) : null, label: displayScore(value), fullMark: maxScore }));
++  const canDraw = data.length >= 3 && data.every(item => item.score !== null && item.score >= 0 && item.score <= maxScore);
+   const metric = data.find(item => item.subject === selected);
+   const trend = history.filter(session => {
+     const value = session.report?.scores?.[selected];
+-    return value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) && Number(value) >= 0 && Number(value) <= maxScore && !session.report?.fallback_reason && session.report?.source !== 'fallback' && Number.isFinite(new Date(session.created_date).getTime());
++    return hasReportedScore(value) && Number(value) >= 0 && Number(value) <= maxScore && !session.report?.fallback_reason && session.report?.source !== 'fallback' && Number.isFinite(new Date(session.created_date).getTime());
+   }).sort((a, b) => new Date(a.created_date).getTime() - new Date(b.created_date).getTime()).slice(-5);
+   return <section className="skill-radar" aria-label="Skill scores">
+-    <div className="w-full h-64" role="img" aria-label={data.map(item => `${item.subject}: ${item.score} out of ${maxScore}`).join(', ')}>
++    <div className="w-full h-64" role="img" aria-label={data.map(item => `${item.subject}: ${item.score === null ? "not available" : item.label + " out of " + maxScore}`).join(', ')}>
+       <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+-        <RechartsRadar cx="50%" cy="50%" outerRadius="70%" data={data}>
++        <RechartsRadar cx="50%" cy="50%" outerRadius="64%" data={data}>
+           <defs><linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#c5a7ff" stopOpacity={0.48} /><stop offset="100%" stopColor="#8061ce" stopOpacity={0.14} /></linearGradient></defs>
+           <PolarGrid stroke="rgba(205,190,232,0.14)" />
+           <PolarAngleAxis dataKey="subject" tick={{ fill: '#c7bdd8', fontSize: 11 }} />
+           <PolarRadiusAxis angle={90} domain={[0, maxScore]} tick={{ fill: '#b0a6c0', fontSize: 9 }} />
+-          <Tooltip formatter={value => [`${value} / ${maxScore}`, 'Score']} contentStyle={{ background: '#25202f', border: '1px solid #aa8bd540', borderRadius: 12, color: '#ede5f8' }} />
+-          <Radar name="Score" dataKey="score" stroke="#bca1ef" fill={`url(#${gradient})`} strokeWidth={2} dot={({ cx, cy, payload }) => <circle key={payload.subject} cx={cx} cy={cy} r={selected === payload.subject ? 5 : 3} fill={selected === payload.subject ? '#f1e4ff' : '#d4bcff'} stroke={selected === payload.subject ? '#aa85ee' : 'transparent'} strokeWidth={2} />} isAnimationActive={!reduced} animationDuration={550} />
++          <Tooltip formatter={value => [`${displayScore(value)} / ${maxScore}`, 'Score']} allowEscapeViewBox={{ x: false, y: false }} contentStyle={{ background: '#25202f', border: '1px solid #aa8bd540', borderRadius: 12, color: '#ede5f8' }} />
++          {canDraw && <Radar name="Score" dataKey="score" stroke="#bca1ef" fill={`url(#${gradient})`} strokeWidth={2} dot={({ cx, cy, payload }) => <circle key={payload.subject} cx={cx} cy={cy} r={selected === payload.subject ? 5 : 3} fill={selected === payload.subject ? '#f1e4ff' : '#d4bcff'} stroke={selected === payload.subject ? '#aa85ee' : 'transparent'} strokeWidth={2} />} isAnimationActive={!reduced} animationDuration={450} />}
+         </RechartsRadar>
+       </ResponsiveContainer>
+     </div>
+-    <div className="skill-dimensions" aria-label="Select a skill">{data.map(item => <button type="button" key={item.subject} aria-pressed={selected === item.subject} onClick={() => setSelected(selected === item.subject ? null : item.subject)}>{item.subject} <strong>{item.score}</strong></button>)}</div>
+-    <div className="skill-detail" aria-live="polite">{metric ? <><strong>{metric.subject}: {metric.score} / {maxScore}</strong>{trend.length ? <div className="skill-history">{trend.map((session, i) => <span key={session.id || i}>{new Date(session.created_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}: <b>{session.report.scores[selected]}</b></span>)}</div> : <p>No comparable saved scores for this dimension yet.</p>}</> : 'Explore a dimension. Exact scores stay on the original scale.'}</div>
++    {!canDraw && <p className="skill-chart-notice">The chart needs complete scores within the recorded scale. Available values are listed below.</p>}
++    <div className="skill-dimensions" aria-label="Select a skill">{data.map(item => <button type="button" key={item.subject} aria-pressed={selected === item.subject} onClick={() => setSelected(selected === item.subject ? null : item.subject)}>{item.subject} <strong>{item.label}</strong></button>)}</div>
++    <div className="skill-detail" aria-live="polite">{metric ? <><strong>{metric.subject}: {metric.label} / {maxScore}</strong>{trend.length ? <div className="skill-history">{trend.map((session, i) => <span key={session.id || i}>{displayRecordDate(session.created_date)}: <b>{session.report.scores[selected]}</b></span>)}</div> : <p>No comparable saved scores for this dimension yet.</p>}</> : 'Explore a dimension. Exact scores stay on the original scale.'}</div>
+   </section>;
+ }
+--- a/src/expression-practice.css
++++ b/src/expression-practice.css
+@@ -1 +1,9 @@
+ .practice-promise{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}.practice-promise span{border:1px solid #4b5141;border-radius:100px;padding:6px 12px;font-size:12px;color:#d6debd}.practice-start{border-left:2px solid #b7c298;padding:2px 24px;margin-bottom:30px;max-width:720px}.practice-lab{margin-top:36px;background:#26291f;border:1px solid #687452;border-radius:22px;padding:28px;scroll-margin-top:24px}.practice-lab-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap}.practice-steps{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:#c1c9ae;border-block:1px solid #444d36;padding:16px 0;margin-bottom:24px;list-style:none}.practice-plan,.practice-comparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.practice-instructions{background:#1d2119;border-radius:14px;padding:24px}.practice-instructions h3{font-size:24px;letter-spacing:-.03em}.practice-instructions ol{list-style:decimal;padding-left:22px;line-height:1.65;margin-top:18px}.practice-instructions li{padding:6px 0;color:#cbcfc3}.practice-lab blockquote{font-size:19px;line-height:1.65;color:#e2e5da;border-left:2px solid #7d8b62;padding-left:16px;margin:14px 0;overflow-wrap:anywhere}.practice-listen,.practice-transfer{padding:14px 16px;background:#333b27;border-radius:10px}.practice-transfer svg{display:inline;vertical-align:middle}.practice-lab .practice-intention{color:#e6edda;font-size:18px}.practice-comparison{margin:24px 0}.practice-take{min-width:0;background:#1c2018;border-radius:14px;padding:18px}.practice-take video{width:100%;aspect-ratio:4/3;background:#11150f;border-radius:8px;margin:8px 0 14px}.practice-lab .practice-checkbox{display:flex;align-items:flex-start;gap:12px;line-height:1.7;font-size:14px;margin:20px 0}.practice-checkbox input{width:20px;height:20px;accent-color:#b4c493;flex-shrink:0;margin-top:3px}.practice-reflection fieldset{margin:20px 0}.practice-reflection legend{font-size:15px}.practice-reflection textarea{margin-bottom:18px}.practice-memory{margin-top:32px}.practice-memory details{border-top:1px solid #454a3b;padding:18px 0}.practice-memory summary{cursor:pointer;font-size:16px;overflow-wrap:anywhere}.practice-launch{margin:18px 0 8px}.practice-patterns{margin-top:24px}@media(max-width:760px){.practice-lab{padding:18px}.practice-plan,.practice-comparison{grid-template-columns:1fr}.practice-steps{gap:10px}.practice-instructions{padding:18px}.practice-lab-heading h2{font-size:24px}}
++/* Existing original/experiment players and reflections; no evaluation changes. */
++.practice-take { border: 1px solid #ffffff0a; box-shadow: inset 0 1px 0 #ffffff08; }
++.practice-take .expression-eyebrow { font-size: 12px; color: #d7dfc7; line-height: 1.6; }
++.practice-take button { min-height: 44px; width: 100%; margin-bottom: 8px; justify-content: center; }
++.practice-take blockquote { font-size: 16px; line-height: 1.75; overflow-wrap: anywhere; }
++.practice-reflection label,.practice-lab label { min-width: 0; overflow-wrap: anywhere; }
++.practice-lab select,.practice-lab textarea { max-width: 100%; min-width: 0; }
++.practice-memory summary { min-height: 44px; line-height: 1.6; }
+--- /dev/null
++++ b/src/lib/reportDisplay.js
+@@ -0,0 +1,19 @@
++// Presentation only: never modify saved values, score scales or scoring functions.
++export function hasReportedScore(value) {
++  return (typeof value === 'number' || typeof value === 'string' && value.trim() !== '') && Number.isFinite(Number(value));
++}
++export function displayScore(value) { return hasReportedScore(value) ? String(value) : '—'; }
++export function completeScoreVector(scores) {
++  const values = Object.values(scores || {});
++  return values.length > 0 && values.every(hasReportedScore);
++}
++export function displayRecordDate(value) {
++  if (value === null || value === undefined || value === '') return 'Date unavailable';
++  const date = new Date(value);
++  return Number.isFinite(date.getTime()) ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Date unavailable';
++}
++export function displayDuration(value) {
++  if (!hasReportedScore(value) || Number(value) < 0) return '—';
++  const seconds = Number(value);
++  return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
++}
+--- a/src/pages/PresentationHistory.jsx
++++ b/src/pages/PresentationHistory.jsx
+@@ -1,3 +1,4 @@
++import { hasReportedScore, displayScore, completeScoreVector, displayRecordDate, displayDuration } from '@/lib/reportDisplay';
+ import { useState, useEffect } from "react";
+ import { useLocation, useNavigate } from "react-router-dom";
+ import { motion, AnimatePresence } from "framer-motion";
+@@ -55,6 +56,7 @@
+   const navigate = useNavigate();
+   const [sessions, setSessions] = useState([]);
+   const [loading, setLoading] = useState(true);
++  const [loadError, setLoadError] = useState("");
+   const [expanded, setExpanded] = useState(null);
+   useEffect(() => {
+     const id = new URLSearchParams(location.search).get('session');
+@@ -66,9 +68,13 @@
+ 
+   const loadSessions = async () => {
+     setLoading(true);
+-    const data = await localApi.entities.PresentationSession.list("-created_date", 50);
+-    setSessions(data || []);
+-    setLoading(false);
++    try {
++      const data = await localApi.entities.PresentationSession.list("-created_date", 50);
++      setSessions(data || []);
++      setLoadError("");
++    } catch {
++      setLoadError("Your saved sessions could not be loaded. Existing records are kept; try again.");
++    } finally { setLoading(false); }
+   };
+ 
+   useEffect(() => {
+@@ -94,24 +100,17 @@
+     toast.success("Session deleted");
+   };
+ 
+-  const formatDate = (dateStr) => {
+-    const d = new Date(dateStr);
+-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+-  };
+-
+-  const formatDuration = (secs) => {
+-    const m = Math.floor((secs || 0) / 60);
+-    const s = (secs || 0) % 60;
+-    return `${m}m ${s}s`;
+-  };
++  const formatDate = displayRecordDate;
++
++  const formatDuration = displayDuration;
+ 
+   const scoreColor = (v) => v >= 8 ? "text-emerald-400" : v >= 6 ? "text-amber-400" : "text-accent";
+ 
+   return (
+-    <div className="studio-page studio-page-reading">
++    <div className="studio-page studio-page-reading history-page">
+       {/* Header */}
+       <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
+-        <button onClick={() => navigate("/presentation")} className="p-2 rounded-xl hover:bg-white/5">
++        <button aria-label="Back to practice" onClick={() => navigate("/presentation")} className="p-2 rounded-xl hover:bg-white/5">
+           <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+         </button>
+         <div className="flex items-center gap-2">
+@@ -122,11 +121,12 @@
+       </div>
+ 
+       <div className="px-4 py-4 space-y-3">
++        {loadError && <div role="alert" className="glass rounded-2xl p-4"><p className="text-sm text-muted-foreground">{loadError}</p><button type="button" onClick={loadSessions} disabled={loading} className="history-retry">Try loading again</button></div>}
+         {loading ? (
+           <div className="flex items-center justify-center py-20">
+             <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+           </div>
+-        ) : sessions.length === 0 ? (
++        ) : loadError && sessions.length === 0 ? null : sessions.length === 0 ? (
+           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 space-y-3">
+             <Monitor className="w-12 h-12 text-muted-foreground/30 mx-auto" />
+             <p className="text-sm text-muted-foreground">No saved presentations yet</p>
+@@ -139,7 +139,8 @@
+           sessions.map((session, i) => {
+             const isOpen = expanded === session.id;
+             const report = session.report;
+-            const overallScore = resolveOverallScore(report);
++            const totalAvailable = Object.prototype.hasOwnProperty.call(report || {}, 'overall_score') ? hasReportedScore(report.overall_score) : completeScoreVector(report?.scores);
++            const overallScore = totalAvailable ? resolveOverallScore(report) : null;
+ 
+             return (
+               <motion.div
+@@ -147,11 +148,13 @@
+                 key={session.id}
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+-                transition={{ delay: i * 0.04 }}
+-                className="glass rounded-2xl overflow-hidden"
++                transition={{ delay: Math.min(i * 0.025, 0.15), duration: 0.25 }}
++                className="history-record glass rounded-2xl overflow-hidden"
+               >
+                 {/* Card Header */}
+                 <button
++                  aria-expanded={isOpen}
++                  aria-controls={`saved-session-detail-${session.id}`}
+                   onClick={() => setExpanded(isOpen ? null : session.id)}
+                   className="w-full flex items-center gap-3 p-4 text-left hover:bg-white/5 transition-colors"
+                 >
+@@ -159,7 +162,7 @@
+                     <FileText className="w-5 h-5 text-white" />
+                   </div>
+                   <div className="flex-1 min-w-0">
+-                    <p className="text-sm font-semibold text-foreground truncate">{session.file_name}</p>
++                    <p className="history-record-title text-sm font-semibold text-foreground">{session.file_name}</p>
+                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                       <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                         <Calendar className="w-2.5 h-2.5" />
+@@ -192,6 +195,8 @@
+                       initial={{ height: 0, opacity: 0 }}
+                       animate={{ height: "auto", opacity: 1 }}
+                       exit={{ height: 0, opacity: 0 }}
++                      id={`saved-session-detail-${session.id}`}
++                      transition={{ duration: 0.25 }}
+                       className="overflow-hidden border-t border-white/5"
+                     >
+                       <div className="p-4 space-y-4">
+@@ -208,15 +213,16 @@
+                             <p className="text-[10px] font-medium text-muted-foreground mb-2 uppercase">📈 Score Breakdown</p>
+                             <div className="space-y-2">
+                               {Object.entries(report.scores).map(([key, val]) => (
+-                                <div key={key} className="flex items-center gap-3">
+-                                  <span className="text-[10px] text-muted-foreground capitalize w-28">{key.replace(/_/g, " ")}</span>
+-                                  <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
++                                <div key={key} className="report-score-row">
++                                  <span className="text-[10px] text-muted-foreground capitalize report-score-label">{key.replace(/_/g, " ")}</span>
++                                  <div className="report-score-meter h-2 bg-white/10 rounded-full overflow-hidden">
+                                     <div
+                                       className="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
+-                                      style={{ width: `${val * 10}%` }}
++                                      hidden={!hasReportedScore(val)}
++                                      style={{ width: hasReportedScore(val) ? `${val * 10}%` : undefined }}
+                                     />
+                                   </div>
+-                                  <span className="text-[10px] font-semibold text-foreground w-8 text-right">{val}/10</span>
++                                  <span className="text-[10px] font-semibold text-foreground report-score-number">{displayScore(val)}/10</span>
+                                 </div>
+                               ))}
+                             </div>
+--- a/src/pages/PresentationReport.jsx
++++ b/src/pages/PresentationReport.jsx
+@@ -1,4 +1,5 @@
+-import { useState, useEffect, useMemo } from "react";
++import { hasReportedScore, displayScore, completeScoreVector } from '@/lib/reportDisplay';
++import { useState, useEffect, useMemo, useRef } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { motion } from "framer-motion";
+ import { ArrowLeft, Save, Home, CheckCircle, Loader2, ExternalLink, Volume2 } from "lucide-react";
+@@ -130,6 +131,7 @@
+ export default function PresentationReport() {
+   const navigate = useNavigate();
+   const [report, setReport] = useState(null);
++  const suppliedReport = useRef(null);
+   const [loading, setLoading] = useState(true);
+   const [saved, setSaved] = useState(false);
+   const [saving, setSaving] = useState(false);
+@@ -215,7 +217,8 @@
+         },
+       });
+ 
+-      const normalizedReport = normalizeOverallScore(result || buildFallbackReport({ durationStr, duration, totalPages, fileName }));
++      suppliedReport.current = result || buildFallbackReport({ durationStr, duration, totalPages, fileName });
++      const normalizedReport = normalizeOverallScore(suppliedReport.current);
+       setReport(normalizedReport);
+       setFallbackReason(normalizedReport?.fallback_reason || "");
+       await localApi.integrations.Core.TrackActivity({
+@@ -231,13 +234,16 @@
+       setErrorMessage("");
+     } catch (error) {
+       console.error("Failed to generate presentation report:", error);
+-      setReport(normalizeOverallScore(buildFallbackReport({ durationStr, duration, totalPages, fileName })));
++      suppliedReport.current = buildFallbackReport({ durationStr, duration, totalPages, fileName });
++      setReport(normalizeOverallScore(suppliedReport.current));
+       setErrorMessage("The full summary could not be generated, so a fallback summary is shown instead.");
+       setFallbackReason(error?.message || "request_failed");
+     } finally {
+       setLoading(false);
+     }
+   };
++
++  const totalAvailable = suppliedReport.current && (Object.prototype.hasOwnProperty.call(suppliedReport.current, 'overall_score') ? hasReportedScore(suppliedReport.current.overall_score) : completeScoreVector(suppliedReport.current.scores));
+ 
+   const handleSave = async () => {
+     try {
+@@ -321,7 +327,7 @@
+         {/* Overall Score */}
+         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-5 text-center">
+           <h3 className="text-sm font-semibold mb-2">Overall score</h3>
+-          <div className="text-5xl font-bold font-space text-primary">{computedOverallScore}</div>
++          <div className="text-5xl font-bold font-space text-primary">{totalAvailable ? computedOverallScore : "—"}</div>
+           <p className="text-[14px] text-muted-foreground mt-1">out of 10</p>
+         </motion.div>
+ 
+@@ -379,15 +385,16 @@
+             <h3 className="text-sm font-semibold mb-3">Detailed scores</h3>
+             <div className="space-y-2">
+               {Object.entries(report.scores).map(([key, val]) => (
+-                <div key={key} className="flex items-center gap-3">
+-                  <span className="text-[14px] text-muted-foreground capitalize w-32">{key.replace(/_/g, " ")}</span>
+-                  <div className="w-32 h-2 bg-white/10 rounded-full overflow-hidden">
++                <div key={key} className="report-score-row">
++                  <span className="text-[14px] text-muted-foreground capitalize report-score-label">{key.replace(/_/g, " ")}</span>
++                  <div className="report-score-meter h-2 bg-white/10 rounded-full overflow-hidden">
+                     <div
+                       className="h-full bg-gradient-to-r from-violet-500 to-indigo-600 rounded-full"
+-                      style={{ width: `${val * 10}%` }}
++                      hidden={!hasReportedScore(val)}
++                      style={{ width: hasReportedScore(val) ? `${val * 10}%` : undefined }}
+                     />
+                   </div>
+-                  <span className="text-[14px] font-semibold text-foreground w-8 text-right">{val}/10</span>
++                  <span className="text-[14px] font-semibold text-foreground report-score-number">{displayScore(val)}/10</span>
+                 </div>
+               ))}
+             </div>
+--- a/src/pages/VoiceHistory.jsx
++++ b/src/pages/VoiceHistory.jsx
+@@ -1,3 +1,4 @@
++import { hasReportedScore, displayScore, completeScoreVector, displayRecordDate, displayDuration } from '@/lib/reportDisplay';
+ import PracticeTimeline from '@/components/report/PracticeTimeline';
+ import { useState, useEffect } from "react";
+ import { useLocation, useNavigate } from "react-router-dom";
+@@ -18,6 +19,7 @@
+   const navigate = useNavigate();
+   const [sessions, setSessions] = useState([]);
+   const [loading, setLoading] = useState(true);
++  const [loadError, setLoadError] = useState("");
+   const [expanded, setExpanded] = useState(null);
+   useEffect(() => {
+     const id = new URLSearchParams(location.search).get('session');
+@@ -30,9 +32,13 @@
+ 
+   const loadSessions = async () => {
+     setLoading(true);
+-    const data = await localApi.entities.VoiceSession.list("-created_date", 50);
+-    setSessions(data || []);
+-    setLoading(false);
++    try {
++      const data = await localApi.entities.VoiceSession.list("-created_date", 50);
++      setSessions(data || []);
++      setLoadError("");
++    } catch {
++      setLoadError("Your saved sessions could not be loaded. Existing records are kept; try again.");
++    } finally { setLoading(false); }
+   };
+ 
+   useEffect(() => {
+@@ -58,16 +64,9 @@
+     toast.success("Session deleted");
+   };
+ 
+-  const formatDate = (dateStr) => {
+-    const d = new Date(dateStr);
+-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+-  };
+-
+-  const formatDuration = (secs) => {
+-    const m = Math.floor((secs || 0) / 60);
+-    const s = (secs || 0) % 60;
+-    return `${m}m ${s}s`;
+-  };
++  const formatDate = displayRecordDate;
++
++  const formatDuration = displayDuration;
+ 
+   const getScoringColor = (scoring) => {
+     if (scoring === "ielts") return "text-blue-400 bg-blue-400/10";
+@@ -76,10 +75,10 @@
+   };
+ 
+   return (
+-    <div className="studio-page studio-page-reading">
++    <div className="studio-page studio-page-reading history-page">
+       {/* Header */}
+       <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
+-        <button onClick={() => navigate("/voice")} className="p-2 rounded-xl hover:bg-white/5">
++        <button aria-label="Back to practice" onClick={() => navigate("/voice")} className="p-2 rounded-xl hover:bg-white/5">
+           <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+         </button>
+         <div className="flex items-center gap-2">
+@@ -90,11 +89,12 @@
+       </div>
+ 
+       <div className="px-4 py-4 space-y-3">
++        {loadError && <div role="alert" className="glass rounded-2xl p-4"><p className="text-sm text-muted-foreground">{loadError}</p><button type="button" onClick={loadSessions} disabled={loading} className="history-retry">Try loading again</button></div>}
+         {loading ? (
+           <div className="flex items-center justify-center py-20">
+             <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+           </div>
+-        ) : sessions.length === 0 ? (
++        ) : loadError && sessions.length === 0 ? null : sessions.length === 0 ? (
+           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 space-y-3">
+             <Mic className="w-12 h-12 text-muted-foreground/30 mx-auto" />
+             <p className="text-sm text-muted-foreground">No saved sessions yet</p>
+@@ -179,17 +179,20 @@
+                 })()
+               : report?.totalScore;
+ 
++            const totalAvailable = report?.scores ? completeScoreVector(report.scores) : hasReportedScore(report?.totalScore);
+             return (
+               <motion.div
+                 id={`saved-session-${session.id}`}
+                 key={session.id}
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+-                transition={{ delay: i * 0.04 }}
+-                className="glass rounded-2xl overflow-hidden"
++                transition={{ delay: Math.min(i * 0.025, 0.15), duration: 0.25 }}
++                className="history-record glass rounded-2xl overflow-hidden"
+               >
+                 {/* Card Header */}
+                 <button
++                  aria-expanded={isOpen}
++                  aria-controls={`saved-session-detail-${session.id}`}
+                   onClick={() => setExpanded(isOpen ? null : session.id)}
+                   className="w-full flex items-center gap-3 p-4 text-left hover:bg-white/5 transition-colors"
+                 >
+@@ -216,7 +219,7 @@
+                   </div>
+                   {computedTotal != null && (
+                     <div className="text-right flex-shrink-0">
+-                      <p className="text-lg font-bold text-primary">{computedTotal}</p>
++                      <p className="text-lg font-bold text-primary">{displayScore(totalAvailable ? computedTotal : null)}</p>
+                       <p className="text-[9px] text-muted-foreground">/{maxScore}{legacyToefl ? " legacy" : ""}</p>
+                     </div>
+                   )}
+@@ -232,6 +235,8 @@
+                       initial={{ height: 0, opacity: 0 }}
+                       animate={{ height: "auto", opacity: 1 }}
+                       exit={{ height: 0, opacity: 0 }}
++                      id={`saved-session-detail-${session.id}`}
++                      transition={{ duration: 0.25 }}
+                       className="overflow-hidden border-t border-white/5"
+                     >
+                       <div className="p-4 space-y-4">
+@@ -251,7 +256,7 @@
+                               {Object.entries(report.scores).map(([key, val]) => (
+                                 <div key={key} className="glass rounded-xl px-3 py-2">
+                                   <p className="text-[10px] text-muted-foreground">{key}</p>
+-                                  <p className="text-sm font-semibold text-foreground">{val}/{maxScore}</p>
++                                  <p className="text-sm font-semibold text-foreground">{displayScore(val)}/{maxScore}</p>
+                                 </div>
+                               ))}
+                             </div>
+--- a/src/pages/VoiceReport.jsx
++++ b/src/pages/VoiceReport.jsx
+@@ -1,4 +1,5 @@
+-import { useState, useEffect } from "react";
++import { hasReportedScore, displayScore, completeScoreVector } from '@/lib/reportDisplay';
++import { useState, useEffect, useRef } from "react";
+ import { useLocation, useNavigate } from "react-router-dom";
+ import { motion } from "framer-motion";
+ import { ArrowLeft, Save, Home, CheckCircle, Loader2, RotateCcw } from "lucide-react";
+@@ -72,6 +73,7 @@
+ 
+   const scenario = getScenario(scenarioId);
+   const [report, setReport] = useState(null);
++  const suppliedScores = useRef({});
+   const [loading, setLoading] = useState(true);
+   const [saved, setSaved] = useState(false);
+   const [saving, setSaving] = useState(false);
+@@ -121,6 +123,7 @@
+         },
+       });
+ 
++      suppliedScores.current = (result || fallbackReport).scores || {};
+       setReport(normalizeReport(result || fallbackReport, scoring));
+       setReportError("");
+ 
+@@ -144,6 +147,7 @@
+       }
+     } catch (error) {
+       console.error("Failed to generate voice report:", error);
++      suppliedScores.current = fallbackReport.scores || {};
+       setReport(fallbackReport);
+       setReportError(error?.message || "Failed to generate report.");
+     } finally {
+@@ -188,6 +192,8 @@
+         return isIelts ? Math.round(avg * 10) / 10 : isToefl ? Math.round(avg * 2) / 2 : Math.round(avg);
+       })()
+     : report?.totalScore;
++  const displayScores = Object.fromEntries(Object.entries(report?.scores || {}).map(([key, value]) => [key, hasReportedScore(suppliedScores.current[key]) ? value : null]));
++  const displayedTotal = completeScoreVector(displayScores) ? computedTotal : null;
+   const durationStr = `${Math.floor(duration / 60)}m ${duration % 60}s`;
+ 
+   if (loading) {
+@@ -223,7 +229,7 @@
+         <section className="feedback-summary">
+           <p className="room-eyebrow">SESSION COMPLETE · {scenario.title}</p>
+           <h2>Your next conversation starts here.</h2>
+-          <p>{report?.suggestions?.[0] || report?.scoring_framework?.descriptor || getScoreDescriptor(computedTotal, scoring) || 'Review your saved conversation and choose one thing to practise again.'}</p>
++          <p>{report?.suggestions?.[0] || report?.scoring_framework?.descriptor || (hasReportedScore(displayedTotal) ? getScoreDescriptor(displayedTotal, scoring) : "") || 'Review your saved conversation and choose one thing to practise again.'}</p>
+           <button type="button" onClick={() => navigate(`/voice/chat?${new URLSearchParams({ scenario: scenarioId, mode, dialogMode, scoring })}`)}>Practise this conversation again →</button>
+         </section>
+         {reportError && (
+@@ -235,22 +241,22 @@
+         {/* Radar Chart */}
+         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4">
+           <h3 className="text-sm font-semibold text-center mb-2">📊 Performance Overview</h3>
+-          {report?.scores && <RadarChart scores={report.scores} maxScore={maxScore} />}
++          {report?.scores && <RadarChart scores={displayScores} maxScore={maxScore} />}
+         </motion.div>
+ 
+         {/* Total Score */}
+         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="glass rounded-2xl p-5 text-center">
+           <h3 className="text-sm font-semibold mb-2">📈 Total Score</h3>
+-          <div className="text-4xl font-bold font-space text-primary">{computedTotal}</div>
++          <div className="report-total text-4xl font-bold font-space text-primary">{displayScore(displayedTotal)}</div>
+           <p className="text-xs text-muted-foreground mt-1">out of {maxScore}</p>
+           <p className="text-[11px] text-primary/80 mt-2">{report?.scoring_framework?.practice_estimate ? "Practice estimate · not an official test score" : `${getExamStandard(scoring).label} practice`}</p>
+-          {(report?.scoring_framework?.descriptor || getScoreDescriptor(computedTotal, scoring)) && <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto">{report?.scoring_framework?.descriptor || getScoreDescriptor(computedTotal, scoring)}</p>}
++          {(report?.scoring_framework?.descriptor || (hasReportedScore(displayedTotal) ? getScoreDescriptor(displayedTotal, scoring) : "")) && <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto">{report?.scoring_framework?.descriptor || (hasReportedScore(displayedTotal) ? getScoreDescriptor(displayedTotal, scoring) : "")}</p>}
+           {report?.scores && (
+             <div className="grid grid-cols-2 gap-2 mt-4">
+               {Object.entries(report.scores).map(([key, val]) => (
+                 <div key={key} className="glass rounded-xl px-3 py-2">
+                   <p className="text-[10px] text-muted-foreground">{key}</p>
+-                  <p className="text-sm font-semibold text-foreground">{val}/{maxScore}</p>
++                  <p className="text-sm font-semibold text-foreground">{displayScore(displayScores[key])}/{maxScore}</p>
+                 </div>
+               ))}
+             </div>
+@@ -308,8 +314,8 @@
+             <div className="space-y-3">
+               {report.conversation_review.map((item, i) => (
+                 <div key={i} className="feedback-pair glass rounded-xl p-3">
+-                  <p className="text-xs text-muted-foreground">You: "{item.original}"</p>
+-                  <p className="text-xs text-success mt-1">✓ {item.correction}</p>
++                  <div className="feedback-original"><span>Original</span><p>{item.original}</p></div>
++                  <div className="feedback-suggested"><span>Suggested wording</span><p>{item.correction}</p></div>
+                   <p className="text-[10px] text-muted-foreground/60 mt-1">📊 {item.category}</p>
+                 </div>
+               ))}
+--- a/src/spatial-studio.css
++++ b/src/spatial-studio.css
+@@ -874,3 +874,39 @@
+   .landing-admin .flex.items-center.gap-4 { gap: 12px; min-width: 0; }
+ }
+ @media(prefers-reduced-motion:reduce) { .scenario-card:hover { transform: none !important; } }
++/* Task 05: readable feedback and existing recorded scores, without projection. */
++.feedback-workbench .feedback-content > .glass { padding: 22px; }
++.feedback-workbench h3 { font-size: 15px; line-height: 1.5; letter-spacing: -.015em; }
++.feedback-workbench p { overflow-wrap: anywhere; }
++.feedback-summary p { max-width: 68ch; }
++.feedback-original,.feedback-suggested { padding: 12px 14px; border-radius: 12px; margin-bottom: 10px; }
++.feedback-original { background: #ffffff03; border-left: 2px solid hsl(var(--muted-foreground) / .45); }
++.feedback-suggested { background: hsl(var(--primary) / .07); border-left: 2px solid hsl(var(--primary) / .65); }
++.feedback-original>span,.feedback-suggested>span { display: block; font-size: 10px; letter-spacing: .09em; margin-bottom: 6px; color: var(--spatial-text-secondary); text-transform: uppercase; }
++.feedback-original p,.feedback-suggested p { font-size: 14px; line-height: 1.75; color: hsl(var(--foreground)); }
++.report-total,.report-score-number,.history-record .text-lg { font-variant-numeric: tabular-nums; }
++.report-score-row { display: grid; grid-template-columns: minmax(0,1fr) minmax(70px,1fr) max-content; gap: 12px; align-items: center; }
++.report-score-label { min-width: 0; overflow-wrap: anywhere; }
++.report-score-meter { width: auto; min-width: 0; }
++.report-score-number { min-width: 48px; text-align: right; font-variant-numeric: tabular-nums; }
++.skill-chart-notice { font-size: 12px; line-height: 1.7; padding: 0 16px 12px; color: var(--spatial-text-secondary); text-align: center; }
++.skill-dimensions button { min-height: 44px; overflow-wrap: anywhere; max-width: 100%; }
++.skill-radar .recharts-tooltip-wrapper { z-index: 3; max-width: min(250px,90vw); }
++.history-record { scroll-margin-top: 24px; }
++.history-record-title { overflow-wrap: anywhere; line-height: 1.5; }
++.history-record>button { align-items: flex-start; min-height: 76px; }
++.history-record p,.history-page h1 { overflow-wrap: anywhere; }
++.history-retry { min-height: 44px; margin-top: 10px; padding: 8px 14px; border-radius: 10px; background: hsl(var(--primary) / .1); color: #dacaf6; }
++.history-page .text-\[10px\] { font-size: 12px; line-height: 1.6; }
++.history-page .text-\[9px\] { font-size: 11px; }
++.feedback-actions { gap: 10px; }
++.feedback-actions button { white-space: normal; line-height: 1.4; }
++@media(max-width:480px) {
++  .feedback-workbench .feedback-content > .glass { padding: 16px; }
++  .report-score-row { grid-template-columns: minmax(0,1fr) max-content; gap: 6px 12px; }
++  .report-score-meter { grid-column: 1/-1; grid-row: 2; }
++  .report-score-number { grid-column: 2; grid-row: 1; }
++  .feedback-actions button { flex: 1 1 110px; }
++}
++.history-page .text-muted-foreground\/60,.feedback-workbench .text-muted-foreground\/60 { color: var(--spatial-text-secondary); }
++@media(max-width:480px) { .history-page>div:first-child { flex-wrap: wrap; row-gap: 8px; } }

@@ -1,3 +1,5 @@
+import { coachingOnly } from '../src/lib/feedbackEvidence.js';
+import { protectedApi } from "./_apiGuard.js";
 function fallbackReport({ duration, totalPages, fileName }) {
   const durationStr = `${Math.floor((duration || 0) / 60)}m ${(duration || 0) % 60}s`;
   return {
@@ -228,7 +230,7 @@ function buildFastReportPayload(payload) {
   ].join("\n");
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
@@ -244,7 +246,6 @@ export default async function handler(req, res) {
         type: "object",
         additionalProperties: false,
         properties: {
-          overall_score: { type: "number" },
           dominant_page_type: { type: "string" },
           evidence_terms: { type: "array", items: { type: "string" } },
           transcript_signal: { type: "string" },
@@ -252,24 +253,21 @@ export default async function handler(req, res) {
           key_takeaways: { type: "array", items: { type: "string" } },
           suggestions: { type: "array", items: { type: "string" } },
         },
-        required: ["overall_score", "dominant_page_type", "evidence_terms", "transcript_signal", "recommendation", "key_takeaways", "suggestions"],
+        required: ["dominant_page_type", "evidence_terms", "transcript_signal", "recommendation", "key_takeaways", "suggestions"],
       },
       timeoutMs: 12000,
       retryOnce: true,
-      systemText: "You are a presentation coach. Return strict JSON only. Keep fields short. Required keys only: overall_score, dominant_page_type, evidence_terms, transcript_signal, recommendation, key_takeaways, suggestions. Reuse concrete words from the transcript or page previews. Avoid generic praise.",
+      systemText: "You are a presentation coach. Return strict JSON only. Keep fields short. Required keys only: dominant_page_type, evidence_terms, transcript_signal, recommendation, key_takeaways, suggestions. Reuse concrete words from the transcript or page previews. Avoid generic praise. This is an AI Coaching Suggestion on text, not measurement: do not assess pronunciation, acoustic fluency, body language, confidence or learning improvement.",
       userText: buildFastReportPayload(payload),
     });
     const normalized = normalizeReportShape(parsed, fallback);
     res.status(200).json(
-      normalized.source === "ai"
-        ? { ...normalized, provider, model }
-        : normalized
+      coachingOnly(normalized.source === "ai" ? { ...normalized, provider, model } : normalized)
     );
   } catch (error) {
     console.error("presentation-report api error:", error);
-    res.status(200).json({
-      ...fallback,
-      fallback_reason: error?.message || "request_failed",
-    });
+    res.status(200).json(coachingOnly({ ...fallback, fallback_reason: error?.message || "request_failed" }));
   }
 }
+
+export default protectedApi(handler, { ai: true });

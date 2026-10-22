@@ -1,0 +1,15 @@
+{
+  "entryStaticJs": {
+    "files": [
+      "assets/index-D18dayFK.js"
+    ],
+    "rawBytes": 975090,
+    "gzipBytes": 288058
+  },
+  "allJs": {
+    "files": 22,
+    "rawBytes": 1743536,
+    "gzipBytes": 502824
+  },
+  "note": "Production artifact bytes; excludes HTTP caching, network, parse/render time and runtime performance."
+}

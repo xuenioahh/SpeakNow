@@ -11,22 +11,11 @@ const TABLES = {
   presentationSessions: "admin_presentation_sessions",
 };
 
-function shouldFallbackToLocal(error) {
-  const message = String(error?.message || error || "");
-  return (
-    message.startsWith("Supabase ") ||
-    message.includes("fetch failed") ||
-    message.includes("ECONNREFUSED") ||
-    message.includes("ENOTFOUND") ||
-    message.includes("network")
-  );
-}
-
 function hasSupabase() {
   return !FORCE_LOCAL_DATA && Boolean(SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY);
 }
 
-async function supabaseRequest(table, { method = "GET", query = "", body } = {}) {
+async function supabaseRequest(table, { method = "GET", query = "", body, prefer } = {}) {
   const url = `${SUPABASE_URL}/rest/v1/${table}${query ? `?${query}` : ""}`;
   const response = await fetch(url, {
     method,
@@ -34,7 +23,7 @@ async function supabaseRequest(table, { method = "GET", query = "", body } = {})
       "Content-Type": "application/json",
       apikey: SUPABASE_SERVICE_ROLE_KEY,
       Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      Prefer: method === "GET" ? "count=exact" : "return=representation",
+      Prefer: prefer || (method === "GET" ? "count=exact" : "return=representation"),
     },
     body: body ? JSON.stringify(body) : undefined,
   });
@@ -44,7 +33,7 @@ async function supabaseRequest(table, { method = "GET", query = "", body } = {})
     throw new Error(`Supabase ${method} ${table} failed: ${response.status} ${text}`);
   }
 
-  return response.json();
+  return response.status === 204 ? null : response.json();
 }
 
 function createId(prefix) {
@@ -88,16 +77,8 @@ export async function listAdminData() {
       voiceSessions,
       presentationSessions,
     };
-  } catch (error) {
-    if (shouldFallbackToLocal(error)) {
-      console.warn("Supabase admin store unavailable; falling back to local JSON.", error);
-      const db = await readAdminDb();
-      return {
-        provider: "local-json",
-        ...db,
-      };
-    }
-    throw error;
+  } catch {
+    throw Object.assign(new Error("Persistent admin storage is unavailable; no local fallback was used."), { status: 503 });
   }
 }
 
@@ -164,24 +145,8 @@ export async function appendAdminEvent({ type = "event", user, payload = {}, tim
     if (safeUser) {
       await supabaseRequest(TABLES.users, {
         method: "POST",
-        body: {
-          ...safeUser,
-          last_seen_at: eventTimestamp,
-        },
-      }).catch(async () => {
-        await fetch(`${SUPABASE_URL}/rest/v1/${TABLES.users}?id=eq.${encodeURIComponent(safeUser.id)}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: SUPABASE_SERVICE_ROLE_KEY,
-            Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-            Prefer: "return=representation",
-          },
-          body: JSON.stringify({
-            ...safeUser,
-            last_seen_at: eventTimestamp,
-          }),
-        });
+        prefer: "resolution=merge-duplicates,return=representation",
+        body: { ...safeUser, last_seen_at: eventTimestamp },
       });
     }
 
@@ -221,69 +186,14 @@ export async function appendAdminEvent({ type = "event", user, payload = {}, tim
         presentationSessions: data.presentationSessions.length,
       },
     };
-  } catch (error) {
-    if (shouldFallbackToLocal(error)) {
-      console.warn("Supabase admin write failed; writing to local JSON instead.", error);
-      const db = await mutateAdminDb((current) => {
-        const next = {
-          users: [...current.users],
-          events: [...current.events],
-          voiceSessions: [...current.voiceSessions],
-          presentationSessions: [...current.presentationSessions],
-        };
-
-        if (safeUser) {
-          const index = next.users.findIndex((entry) => entry.id === safeUser.id);
-          if (index >= 0) {
-            next.users[index] = {
-              ...next.users[index],
-              ...safeUser,
-              last_seen_at: eventTimestamp,
-            };
-          } else {
-            next.users.unshift({
-              ...safeUser,
-              last_seen_at: eventTimestamp,
-            });
-          }
-        }
-
-        next.events.unshift({
-          id: createId("event"),
-          type,
-          timestamp: eventTimestamp,
-          user_id: safeUser?.id || "",
-          user_email: safeUser?.email || "",
-          payload,
-        });
-
-        if (type === "voice_session_saved" && payload?.session) {
-          next.voiceSessions.unshift(payload.session);
-        }
-        if (type === "presentation_session_saved" && payload?.session) {
-          next.presentationSessions.unshift(payload.session);
-        }
-
-        return next;
-      });
-
-      return {
-        provider: "local-json",
-        counts: {
-          users: db.users.length,
-          events: db.events.length,
-          voiceSessions: db.voiceSessions.length,
-          presentationSessions: db.presentationSessions.length,
-        },
-      };
-    }
-    throw error;
+  } catch {
+    throw Object.assign(new Error("Persistent admin write failed; no local fallback was used."), { status: 503 });
   }
 }
 
 export async function deleteAdminRecord({ collection, id }) {
-  if (!id) {
-    throw new Error("Record id is required");
+  if (!id || !["events", "voiceSessions", "presentationSessions"].includes(collection)) {
+    throw Object.assign(new Error("A supported collection and record id are required"), { status: 400 });
   }
 
   if (!hasSupabase()) {
@@ -350,38 +260,7 @@ export async function deleteAdminRecord({ collection, id }) {
         presentationSessions: data.presentationSessions.length,
       },
     };
-  } catch (error) {
-    if (shouldFallbackToLocal(error)) {
-      console.warn("Supabase admin delete failed; deleting from local JSON instead.", error);
-      const db = await mutateAdminDb((current) => {
-        const next = {
-          users: [...current.users],
-          events: [...current.events],
-          voiceSessions: [...current.voiceSessions],
-          presentationSessions: [...current.presentationSessions],
-        };
-
-        if (collection === "events") {
-          next.events = next.events.filter((entry) => entry.id !== id);
-        } else if (collection === "voiceSessions") {
-          next.voiceSessions = next.voiceSessions.filter((entry) => entry.id !== id);
-        } else if (collection === "presentationSessions") {
-          next.presentationSessions = next.presentationSessions.filter((entry) => entry.id !== id);
-        }
-
-        return next;
-      });
-
-      return {
-        provider: "local-json",
-        counts: {
-          users: db.users.length,
-          events: db.events.length,
-          voiceSessions: db.voiceSessions.length,
-          presentationSessions: db.presentationSessions.length,
-        },
-      };
-    }
-    throw error;
+  } catch {
+    throw Object.assign(new Error("Persistent admin delete failed; no local fallback was used."), { status: 503 });
   }
 }

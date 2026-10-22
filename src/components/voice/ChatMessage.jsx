@@ -1,16 +1,20 @@
 import { motion } from "framer-motion";
 import { Volume2, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { audioManager } from "@/lib/audioManager";
 
-export default function ChatMessage({ message, voiceGender, isActive = false, registerRef }) {
+export default function ChatMessage({ message, voiceGender, isActive = false, isLatest = false, registerRef, onPlay, playbackDisabled = false, feedbackInitiallyOpen = true }) {
   const isUser = message.role === "user";
-  const [showFeedback, setShowFeedback] = useState(true);
+  const [showFeedback, setShowFeedback] = useState(feedbackInitiallyOpen);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioFailed, setAudioFailed] = useState(false);
+  const mountedRef = useRef(true);
+  useEffect(() => { mountedRef.current = true; return () => { mountedRef.current = false; }; }, []);
 
   const handlePlayAudio = async () => {
-    if (isPlaying) return;
+    if (playbackDisabled) return;
+    if (onPlay) { await onPlay(); return; }
+    if (isPlaying) { audioManager.stop(); return; }
     setAudioFailed(false);
     setIsPlaying(true);
     const ok = await audioManager.playAIVoice(message.content, voiceGender, {
@@ -19,8 +23,7 @@ export default function ChatMessage({ message, voiceGender, isActive = false, re
       maxChars: 180,
       playbackId: message.playbackId || message.id,
     });
-    setIsPlaying(false);
-    setAudioFailed(!ok);
+    if (mountedRef.current) { setIsPlaying(false); setAudioFailed(!ok); }
   };
 
   return (
@@ -28,13 +31,14 @@ export default function ChatMessage({ message, voiceGender, isActive = false, re
       ref={registerRef}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
+      data-active={isActive} data-latest={isLatest}
+      className={`studio-message flex gap-3 ${isUser ? "flex-row-reverse" : "flex-row"}`}
     >
       {/* Avatar */}
       <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold ${
-        isUser 
-          ? "bg-gradient-to-br from-violet-500 to-indigo-600 text-white" 
-          : "bg-gradient-to-br from-emerald-500 to-teal-600 text-white"
+          isUser
+            ? "bg-slate-700 text-white"
+            : "bg-slate-600 text-white"
       }`}>
         {isUser ? "You" : "AI"}
       </div>
@@ -43,11 +47,11 @@ export default function ChatMessage({ message, voiceGender, isActive = false, re
         {/* Name + Time */}
         <div className={`flex items-center gap-2 mb-1 ${isUser ? "flex-row-reverse" : ""}`}>
           <span className="text-xs font-medium text-muted-foreground">
-            {isUser ? "You" : message.aiRole || "AI"}
+            {isUser ? "You" : message.aiRole || "Coach"}
           </span>
           {!isUser && message.source === "fallback" && (
             <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-200">
-              Fallback
+              Local
             </span>
           )}
           {!isUser && message.model && (
@@ -94,10 +98,11 @@ export default function ChatMessage({ message, voiceGender, isActive = false, re
           <div className="mt-1">
             <button 
               onClick={handlePlayAudio}
+              disabled={playbackDisabled}
               className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-primary transition-colors"
             >
-              <Volume2 className={`w-3 h-3 ${isPlaying ? "text-primary animate-pulse" : ""}`} />
-              {isPlaying ? "Playing..." : "Play audio"}
+              <Volume2 className={`w-3 h-3 ${(onPlay ? isActive : isPlaying) ? "text-primary" : ""}`} />
+              {(onPlay ? isActive : isPlaying) ? "Stop audio" : "Play audio"}
             </button>
             {audioFailed && (
               <p className="text-[10px] text-accent mt-1">Audio playback is unavailable in this browser right now.</p>
@@ -116,7 +121,7 @@ export default function ChatMessage({ message, voiceGender, isActive = false, re
               onClick={() => setShowFeedback(!showFeedback)}
               className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground mb-1"
             >
-              📝 Feedback
+              Coach note · AI suggestion
               {showFeedback ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
             </button>
             {showFeedback && (

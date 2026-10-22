@@ -1,28 +1,25 @@
-function loadPdfJs() {
-  return new Promise((resolve, reject) => {
-    if (window.pdfjsLib) {
+let loading;
+export function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if (loading) return loading;
+  loading = new Promise((resolve, reject) => {
+    const src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    const existing = /** @type {HTMLScriptElement|null} */ (document.querySelector(`script[src="${src}"]`));
+    const script = existing || document.createElement('script');
+    let timer;
+    function cleanup() { clearTimeout(timer); script.removeEventListener('load', ready); script.removeEventListener('error', failed); }
+    function failed() { cleanup(); script.remove(); loading = null; reject(new Error('PDF preview is unavailable. Continue without slides.')); }
+    function ready() {
+      if (!window.pdfjsLib) { failed(); return; }
+      cleanup();
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       resolve(window.pdfjsLib);
-      return;
     }
-
-    const existing = document.querySelector('script[data-pdfjs="true"]');
-    if (existing) {
-      existing.addEventListener("load", () => resolve(window.pdfjsLib), { once: true });
-      existing.addEventListener("error", reject, { once: true });
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
-    script.dataset.pdfjs = "true";
-    script.onload = () => {
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc =
-        "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-      resolve(window.pdfjsLib);
-    };
-    script.onerror = reject;
-    document.head.appendChild(script);
+    script.addEventListener('load', ready, { once: true }); script.addEventListener('error', failed, { once: true });
+    timer = setTimeout(failed, 8000);
+    if (!existing) { script.src = src; script.dataset.pdfjs = 'true'; document.head.appendChild(script); }
   });
+  return loading;
 }
 
 function base64ToUint8Array(base64) {
@@ -34,7 +31,7 @@ function base64ToUint8Array(base64) {
   return bytes;
 }
 
-function buildPdfSource(source) {
+export function buildPdfSource(source) {
   if (!source) {
     throw new Error("Missing PDF source");
   }

@@ -1,0 +1,121 @@
+/* Task 01: selectors stay inside the existing speaking page. */
+.speaking-room {
+  background: radial-gradient(ellipse at 22% 34%, #7052af24, transparent 55%),
+    radial-gradient(ellipse at 80% 16%, #4b78a115, transparent 44%), hsl(var(--background));
+}
+.speaking-room .room-presence {
+  background: radial-gradient(ellipse at 48% 46%, #8263bd16, transparent 62%),
+    linear-gradient(135deg, #ffffff05, #ffffff01);
+  box-shadow: inset 0 1px 0 #d8c5ff13, 0 25px 55px -38px #000a;
+}
+.speaking-room .room-header {
+  background: linear-gradient(120deg, #ffffff06, transparent), #1a1922e8;
+  box-shadow: inset 0 1px 0 #ffffff13, 0 10px 30px -22px #000;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.speaking-room .room-controls {
+  background: linear-gradient(140deg, #ffffff07, transparent), #211d2bf2;
+  box-shadow: inset 0 1px 0 #d7bfff24, 0 20px 42px -25px #0009;
+}
+.speaking-room .room-conversation {
+  background: #17151db8;
+  box-shadow: inset 0 1px 0 #ffffff08;
+}
+.speaking-room .room-status {
+  transition: color 250ms ease, background 250ms ease, border-color 250ms ease;
+}
+.speaking-room .room-controls button {
+  min-height: 44px;
+  transition: transform 180ms cubic-bezier(.22, 1, .36, 1), box-shadow 220ms ease, background-color 220ms ease;
+}
+.speaking-room .room-controls button:not(:disabled):active {
+  transform: translateY(1px) scale(.97);
+}
+.speaking-room .room-status[data-state=processing] {
+  color: #d2bcf8;
+  border-color: #b592ed4a;
+}
+.speaking-room .room-status[data-state=speaking] {
+  color: #b7d4fa;
+  border-color: #8faee347;
+}
+.speaking-room .room-status[data-state=completed] {
+  color: #b1e2cb;
+}
+.speaking-room .room-status-detail {
+  max-width: 340px;
+  text-align: center;
+}
+.speaking-room .voice-orb::after {
+  content: '';
+  position: absolute;
+  inset: 16% 24%;
+  border: 1px solid #c5b2f100;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.speaking-room .voice-orb[data-state=completed]::after {
+  animation: voice-room-complete 850ms ease-out both;
+}
+@keyframes voice-room-complete {
+  from { border-color: #c4ead05c; transform: scale(.9); opacity: .65; }
+  to { border-color: #c4ead000; transform: scale(1.3); opacity: 0; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .speaking-room .room-controls button:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -12px #b78cf94a;
+  }
+  .speaking-room .room-guidance {
+    transition: transform 200ms ease;
+  }
+  .speaking-room .room-guidance:hover { transform: translateY(-1px); }
+}
+@media (max-width: 760px) {
+  .speaking-room .room-controls { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+  .speaking-room .room-status-detail { font-size: 11px; }
+  .speaking-room .room-presence { backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .speaking-room *, .speaking-room *::before, .speaking-room *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .speaking-room .voice-orb,
+  .speaking-room .room-controls button:hover,
+  .speaking-room .room-controls button:active,
+  .speaking-room .room-guidance:hover { transform: none; }
+}
+/* Speech updates reserve their own region instead of moving the controls. */
+.speaking-room .voice-live-transcript { height: 112px; overflow-y: auto; }
+.speaking-room .voice-final-words { color: #eee5fa; }
+.speaking-room .voice-interim-words { color: #b3a5c2; font-style: italic; }
+.speaking-room .voice-transcript-label { font-size: 10px; letter-spacing: .1em; color: #aa9abb; margin: 3px 0 6px; }
+.speaking-room .voice-input-options { display: flex; flex-wrap: wrap; gap: 8px 18px; color: #c6b9d6; font-size: 11px; }
+.speaking-room .voice-input-options label { display: flex; align-items: center; gap: 7px; min-height: 32px; }
+.speaking-room .voice-input-options input { accent-color: #a68add; width: 16px; height: 16px; }
+.speaking-room .voice-input-options select { color: #ece4f7; background: #282232; padding: 5px 8px; border-radius: 8px; border: 1px solid #a68add30; }
+.speaking-room .voice-recovery-button { color: #dac7f7; padding: 8px 14px; border: 1px solid #b792e53d; border-radius: 12px; margin-right: 10px; font-size: 12px; }
+.speaking-room .voice-timing { color: #b7a8c9; font-size: 11px; }
+.speaking-room .voice-timing summary { cursor: pointer; min-height: 32px; padding: 6px 0; }
+.speaking-room .voice-timing dl { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin: 8px 0; }
+.speaking-room .voice-timing dd { color: #e5d8f5; font-variant-numeric: tabular-nums; }
+
+/* A café visit needs enough room for the world and its conversation. */
+.speaking-room.is-cafe-scene-active{height:auto;display:block}
+.is-cafe-scene-active .room-workspace{grid-template-columns:minmax(220px,.65fr) minmax(0,1.8fr);overflow:visible;min-height:0;align-items:start}
+.is-cafe-scene-active .room-conversation{max-height:none;min-height:0;overflow:visible}
+.is-cafe-scene-active .room-presence{min-height:0;padding:22px 16px}
+.is-cafe-scene-active .voice-orb{height:180px}
+@media(max-width:760px){
+  .is-cafe-scene-active .room-workspace{grid-template-columns:minmax(0,1fr)}
+  .is-cafe-scene-active .room-presence{display:grid;grid-template-columns:minmax(0,1fr) 86px;gap:8px;padding:14px 12px;justify-items:start}
+  .is-cafe-scene-active .room-task{grid-column:1;text-align:left;max-width:none}
+  .is-cafe-scene-active .room-task p{font-size:14px;margin-top:5px}
+  .is-cafe-scene-active .voice-orb{grid-column:2;grid-row:1/4;width:86px;height:100px;align-self:center}
+  .is-cafe-scene-active .room-status{grid-column:1;font-size:10px;padding:7px 9px}
+  .is-cafe-scene-active .room-status-detail{grid-column:1;margin:0;font-size:10px}
+  .is-cafe-scene-active .room-session-meta{grid-column:1/-1;margin-top:0;font-size:10px}
+  .is-cafe-scene-active .orb-fallback{width:60px;height:60px;left:calc(50% - 30px);top:calc(50% - 30px)}
+}

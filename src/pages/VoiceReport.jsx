@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { hasReportedScore, displayScore, completeScoreVector } from '@/lib/reportDisplay';
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Home, CheckCircle, Loader2 } from "lucide-react";
+import { ArrowLeft, Save, Home, CheckCircle, Loader2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { localApi } from "@/api/localClient";
 import { getScenario } from "@/lib/scenarios";
@@ -9,6 +10,7 @@ import { generateVoiceReport } from "@/lib/localReports";
 import RadarChart from "@/components/report/RadarChart";
 import { toast } from "sonner";
 import LoadingProgressCard from "@/components/LoadingProgressCard";
+import { getExamStandard, getScoreDescriptor, normalizeExamScore, scoreMax } from "@/lib/examStandards";
 
 function safeParseMessages(raw) {
   if (!raw) return [];
@@ -30,6 +32,32 @@ function safeParseObject(raw) {
   }
 }
 
+function normalizeReport(report, scoring) {
+  if (!report || typeof report !== "object") return report;
+  const rawScores = report.scores && typeof report.scores === "object" ? report.scores : {};
+  const legacyToefl = scoring === "toefl" && Object.values(rawScores).some(value => Number(value) > 6);
+  const scores = Object.fromEntries(Object.entries(rawScores).map(([key, value]) => [
+    key,
+    normalizeExamScore(value, scoring, { legacyToefl }),
+  ]));
+  const values = Object.values(scores).filter(value => Number.isFinite(value));
+  const totalScore = values.length
+    ? normalizeExamScore(values.reduce((sum, value) => sum + value, 0) / values.length, scoring)
+    : hasReportedScore(report.totalScore) ? normalizeExamScore(report.totalScore, scoring, { legacyToefl }) : null;
+  return {
+    ...report,
+    scores,
+    totalScore,
+    scoring_framework: report.scoring_framework || {
+      label: getExamStandard(scoring).label,
+      criteria: getExamStandard(scoring).criteria,
+      strategy: getExamStandard(scoring).strategy,
+      practice_estimate: true,
+      descriptor: getScoreDescriptor(totalScore, scoring),
+    },
+  };
+}
+
 export default function VoiceReport() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,6 +73,7 @@ export default function VoiceReport() {
 
   const scenario = getScenario(scenarioId);
   const [report, setReport] = useState(null);
+  const suppliedScores = useRef({});
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -94,7 +123,8 @@ export default function VoiceReport() {
         },
       });
 
-      setReport(result || fallbackReport);
+      suppliedScores.current = (result || fallbackReport).scores || {};
+      setReport(normalizeReport(result || fallbackReport, scoring));
       setReportError("");
 
       try {
@@ -117,6 +147,7 @@ export default function VoiceReport() {
       }
     } catch (error) {
       console.error("Failed to generate voice report:", error);
+      suppliedScores.current = fallbackReport.scores || {};
       setReport(fallbackReport);
       setReportError(error?.message || "Failed to generate report.");
     } finally {
@@ -151,27 +182,29 @@ export default function VoiceReport() {
   const isIelts = scoring === "ielts";
   const isToefl = scoring === "toefl";
   const scoringLabel = (scoring || "daily").toUpperCase();
-  const maxScore = isIelts ? 9 : isToefl ? 30 : 10;
+  const maxScore = scoreMax(scoring);
 
   // For TOEFL/IELTS/Daily: totalScore should be the average of subscores, not sum
   const computedTotal = report?.scores
     ? (() => {
         const vals = Object.values(report.scores);
         const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
-        return isIelts ? Math.round(avg * 10) / 10 : Math.round(avg);
+        return isIelts ? Math.round(avg * 10) / 10 : isToefl ? Math.round(avg * 2) / 2 : Math.round(avg);
       })()
     : report?.totalScore;
+  const displayScores = report?.source === 'measured' ? Object.fromEntries(Object.entries(report?.scores || {}).map(([key, value]) => [key, hasReportedScore(suppliedScores.current[key]) ? value : null])) : {};
+  const displayedTotal = completeScoreVector(displayScores) ? computedTotal : null;
   const durationStr = `${Math.floor(duration / 60)}m ${duration % 60}s`;
 
   if (loading) {
     return (
       <LoadingProgressCard
         title="Generating speaking report"
-        description="Reviewing the conversation and calculating your speaking score."
+        description="Reviewing the supplied text for practice suggestions."
         durationMs={7200}
         steps={[
           "Reading conversation history",
-          "Scoring language performance",
+          "Preparing text-based practice notes",
           "Summarizing feedback",
           "Preparing your report",
         ]}
@@ -180,7 +213,8 @@ export default function VoiceReport() {
   }
 
   return (
-    <div className="min-h-screen pb-8">
+    <div className="studio-page studio-page-reading feedback-workbench">
+      <p role="note" className="mx-4 mt-4 glass rounded-xl p-3 text-sm text-amber-200">Legacy numeric scores are heuristic, model estimates or simulated values. They are not measured pronunciation, eye contact or verified skill improvement. New Impact feedback uses transcript evidence.</p>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
         <button onClick={() => navigate("/voice")} className="p-2 rounded-xl hover:bg-white/5">
@@ -188,48 +222,70 @@ export default function VoiceReport() {
         </button>
         <div>
           <h2 className="font-semibold text-foreground">Speaking Summary</h2>
-          <p className="text-[10px] text-muted-foreground">Scoring: {scoringLabel}</p>
+          <p className="text-[10px] text-muted-foreground">Practice context: {scoringLabel}</p>
         </div>
       </div>
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="feedback-content">
+        <section className="feedback-summary">
+          <p className="room-eyebrow">SESSION COMPLETE · {scenario.title}</p>
+          <h2>Your next conversation starts here.</h2>
+          <p>{report?.suggestions?.[0] || report?.scoring_framework?.descriptor || (hasReportedScore(displayedTotal) ? getScoreDescriptor(displayedTotal, scoring) : "") || 'Review your saved conversation and choose one thing to practise again.'}</p>
+          <button type="button" onClick={() => navigate(`/voice/chat?${new URLSearchParams({ scenario: scenarioId, mode, dialogMode, scoring })}`)}>Practise this conversation again →</button>
+        </section>
         {reportError && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4 border border-amber-400/30">
             <p className="text-sm font-medium text-amber-200">Report generation issue</p>
             <p className="mt-1 text-xs text-amber-100/90 break-words">{reportError}</p>
           </motion.div>
         )}
+        {report?.source === 'measured' && <>
         {/* Radar Chart */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4">
           <h3 className="text-sm font-semibold text-center mb-2">📊 Performance Overview</h3>
-          {report?.scores && <RadarChart scores={report.scores} maxScore={maxScore} />}
+          {report?.scores && <RadarChart scores={displayScores} maxScore={maxScore} />}
         </motion.div>
 
         {/* Total Score */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="glass rounded-2xl p-5 text-center">
           <h3 className="text-sm font-semibold mb-2">📈 Total Score</h3>
-          <div className="text-4xl font-bold font-space text-primary">{computedTotal}</div>
+          <div className="report-total text-4xl font-bold font-space text-primary">{displayScore(displayedTotal)}</div>
           <p className="text-xs text-muted-foreground mt-1">out of {maxScore}</p>
+          <p className="text-[11px] text-primary/80 mt-2">{report?.scoring_framework?.practice_estimate ? "Practice estimate · not an official test score" : `${getExamStandard(scoring).label} practice`}</p>
+          {(report?.scoring_framework?.descriptor || (hasReportedScore(displayedTotal) ? getScoreDescriptor(displayedTotal, scoring) : "")) && <p className="text-xs text-muted-foreground mt-2 max-w-sm mx-auto">{report?.scoring_framework?.descriptor || (hasReportedScore(displayedTotal) ? getScoreDescriptor(displayedTotal, scoring) : "")}</p>}
           {report?.scores && (
             <div className="grid grid-cols-2 gap-2 mt-4">
               {Object.entries(report.scores).map(([key, val]) => (
                 <div key={key} className="glass rounded-xl px-3 py-2">
                   <p className="text-[10px] text-muted-foreground">{key}</p>
-                  <p className="text-sm font-semibold text-foreground">{val}/{maxScore}</p>
+                  <p className="text-sm font-semibold text-foreground">{displayScore(displayScores[key])}/{maxScore}</p>
                 </div>
               ))}
             </div>
           )}
         </motion.div>
 
+        </>}
+        {report?.source !== 'measured' && <p className="glass rounded-xl p-4">AI Coaching Suggestion or local text heuristic. No pronunciation, acoustic fluency, exam score or verified speaking improvement was measured.</p>}
+        <details className="glass rounded-2xl p-4">
+          <summary className="cursor-pointer text-sm font-semibold">Exam criteria · reference only, no measured score</summary>
+          <p className="text-xs text-muted-foreground mt-3">{report?.scoring_framework?.strategy || getExamStandard(scoring).strategy}</p>
+          <div className="grid grid-cols-1 gap-2 mt-3">
+            {(report?.scoring_framework?.criteria || getExamStandard(scoring).criteria).map(criteria => (
+              <div key={criteria.key} className="rounded-xl bg-white/5 px-3 py-2"><p className="text-xs font-medium">{criteria.label}</p><p className="text-[11px] text-muted-foreground mt-1">{criteria.focus}</p></div>
+            ))}
+          </div>
+          {scoring === "toefl" && <p className="text-[11px] text-amber-200/80 mt-3">TOEFL changed to a 1–6 score scale on January 21, 2026. Older 0–30 comparisons may still appear during the transition.</p>}
+        </details>
+
         {/* Detailed Feedback */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass rounded-2xl p-4 space-y-4">
-          <h3 className="text-sm font-semibold">🔍 Detailed Feedback</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="feedback-full glass rounded-2xl p-5 space-y-4">
+          <h3 className="text-sm font-semibold">Practice suggestions · check against your own words</h3>
 
           {report?.grammar_analysis?.length > 0 && (
             <FeedbackSection title="Grammar Analysis" items={report.grammar_analysis.map(g => `"${g.error}" → "${g.correction}" (${g.category})`)} />
           )}
-          
+
           {report?.vocabulary_analysis && (
             <FeedbackSection title="Vocabulary Analysis" items={[
               `Range: ${report.vocabulary_analysis.range}`,
@@ -238,7 +294,7 @@ export default function VoiceReport() {
             ]} />
           )}
 
-          {report?.pronunciation_analysis && (
+          {report?.source === 'measured' && report?.pronunciation_analysis && (
             <FeedbackSection title="Pronunciation Analysis" items={[
               ...(report.pronunciation_analysis.problem_sounds || []).map(s => `Problem sound: ${s}`),
               `Word stress: ${report.pronunciation_analysis.word_stress}`,
@@ -246,7 +302,7 @@ export default function VoiceReport() {
             ]} />
           )}
 
-          {report?.fluency_analysis && (
+          {report?.source === 'measured' && report?.fluency_analysis && (
             <FeedbackSection title="Fluency Analysis" items={[
               `Speech rate: ${report.fluency_analysis.speech_rate}`,
               `Pauses: ${report.fluency_analysis.unnatural_pauses}`,
@@ -261,9 +317,9 @@ export default function VoiceReport() {
             <h3 className="text-sm font-semibold mb-3">📝 Conversation Review</h3>
             <div className="space-y-3">
               {report.conversation_review.map((item, i) => (
-                <div key={i} className="glass rounded-xl p-3">
-                  <p className="text-xs text-muted-foreground">You: "{item.original}"</p>
-                  <p className="text-xs text-success mt-1">✓ {item.correction}</p>
+                <div key={i} className="feedback-pair glass rounded-xl p-3">
+                  <div className="feedback-original"><span>Original</span><p>{item.original}</p></div>
+                  <div className="feedback-suggested"><span>Suggested wording</span><p>{item.correction}</p></div>
                   <p className="text-[10px] text-muted-foreground/60 mt-1">📊 {item.category}</p>
                 </div>
               ))}
@@ -306,7 +362,8 @@ export default function VoiceReport() {
         )}
 
         {/* Action Buttons */}
-        <div className="flex gap-3">
+        <div className="feedback-actions">
+          <Button variant="outline" onClick={() => navigate(`/voice/chat?${new URLSearchParams({ scenario: scenarioId, mode, dialogMode, scoring })}`)} className="rounded-2xl border-white/10"><RotateCcw className="w-4 h-4 mr-2" />Retry</Button>
           <Button
             onClick={handleSave}
             disabled={saved || saving}
@@ -331,14 +388,14 @@ export default function VoiceReport() {
 
 function FeedbackSection({ title, items }) {
   return (
-    <div>
-      <h4 className="text-xs font-medium text-foreground mb-2">【{title}】</h4>
+    <details className="feedback-section" open>
+      <summary>{title}</summary>
       <div className="glass rounded-xl p-3 space-y-1">
         {items.map((item, i) => (
           <p key={i} className="text-xs text-muted-foreground">• {item}</p>
         ))}
       </div>
-    </div>
+    </details>
   );
 }
 

@@ -1,0 +1,20 @@
+{
+  "readiness": "Not Ready",
+  "evidenceLevel": "No independent human judgements supplied; no learning effect has been established.",
+  "realPairs": 0,
+  "summaries": [],
+  "comparison": {
+    "comparablePairs": 0,
+    "aiImproved": 0,
+    "humanPreferredAfterAmongAiImproved": 0,
+    "aiImprovedPrecision": null,
+    "disagreements": 0
+  },
+  "priority": {
+    "independentReviews": 0,
+    "sameCategory": 0,
+    "sameCategoryRate": null,
+    "meanHumanImportance": null,
+    "limitation": "Category agreement is not agreement on the exact sentence, priority importance or learning effectiveness. Preserve reviewer reasons and adjudicate differences."
+  }
+}

@@ -1,3 +1,4 @@
+import { countModelRequest, countModelUsage } from './_requestContext.js';
 export function safeJsonParse(text) {
   try {
     return JSON.parse(text);
@@ -48,6 +49,7 @@ async function requestCompatibleJson({ provider, apiKey, baseUrl, models, system
     for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
       const { signal, clear } = withTimeout(timeoutMs);
       try {
+        countModelRequest();
         const response = await fetch(`${baseUrl}/chat/completions`, {
           method: "POST",
           headers: {
@@ -57,11 +59,12 @@ async function requestCompatibleJson({ provider, apiKey, baseUrl, models, system
           signal,
           body: JSON.stringify({
             model,
+            max_completion_tokens: 6000,
             messages: [
               { role: "system", content: systemText },
               { role: "user", content: userText },
             ],
-            temperature: 0.5,
+            ...(provider === "openai" ? {} : { temperature: 0.5 }),
             response_format: {
               type: "json_object",
             },
@@ -79,6 +82,7 @@ async function requestCompatibleJson({ provider, apiKey, baseUrl, models, system
         }
 
         const data = await response.json();
+        countModelUsage(data.usage);
         const parsed = safeJsonParse(data?.choices?.[0]?.message?.content || "");
         if (!parsed) {
           lastError = new Error(`provider=${provider} model=${model} invalid_model_payload`);
@@ -102,187 +106,45 @@ async function requestCompatibleJson({ provider, apiKey, baseUrl, models, system
   throw lastError || new Error(`provider=${provider} all_models_failed`);
 }
 
-async function requestOpenAIJson({ apiKey, models, systemText, userText, schema, schemaName, timeoutMs = 6000, maxModelsPerProvider = 1 }) {
-  let lastError = null;
-
-  for (const model of dedupeModels(models).slice(0, maxModelsPerProvider)) {
-    const { signal, clear } = withTimeout(timeoutMs);
-    try {
-      const response = await fetch("https://api.openai.com/v1/responses", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        signal,
-        body: JSON.stringify({
-          model,
-          text: {
-            format: {
-              type: "json_schema",
-              name: schemaName,
-              schema,
-            },
-          },
-          input: [
-            { role: "system", content: [{ type: "input_text", text: systemText }] },
-            { role: "user", content: [{ type: "input_text", text: userText }] },
-          ],
-        }),
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        lastError = new Error(`provider=openai model=${model} status=${response.status} body=${text}`);
-        continue;
-      }
-
-      const data = await response.json();
-      const parsed = safeJsonParse(data.output_text || "");
-      if (!parsed) {
-        lastError = new Error(`provider=openai model=${model} invalid_model_payload`);
-        continue;
-      }
-
-      return { provider: "openai", model, parsed };
-    } catch (error) {
-      lastError = new Error(`provider=openai model=${model} ${error?.message || "request_failed"}`);
-    } finally {
-      clear();
-    }
-  }
-
-  throw lastError || new Error("provider=openai all_models_failed");
+export function llmProviderConfiguration({ openaiModels = [process.env.OPENAI_MODEL, "gpt-5-mini", "gpt-5", "gpt-4.1"], openrouterModels = [process.env.OPENROUTER_VOICE_CHAT_MODEL, "openrouter/free"] } = {}) {
+  return [
+    { provider: "openai", apiKey: process.env.OPENAI_API_KEY, baseUrl: process.env.OPENAI_BASE_URL || "https://api.openai.com/v1", models: openaiModels },
+    { provider: "openrouter", apiKey: process.env.OPENROUTER_API_KEY, baseUrl: "https://openrouter.ai/api/v1", models: openrouterModels },
+    { provider: "deepseek", apiKey: process.env.DEEPSEEK_API_KEY, baseUrl: "https://api.deepseek.com", models: [process.env.DEEPSEEK_MODEL, "deepseek-chat"] },
+    { provider: "zhipu", apiKey: process.env.ZHIPU_API_KEY, baseUrl: "https://open.bigmodel.cn/api/paas/v4", models: [process.env.ZHIPU_MODEL, "glm-4.7-flash", "glm-4.5-flash"] },
+    { provider: "longcat", apiKey: process.env.LONGCAT_API_KEY, baseUrl: "https://api.longcat.chat/openai/v1", models: [process.env.LONGCAT_MODEL, "LongCat-Flash-Lite", "LongCat-Flash-Chat"] },
+    { provider: "partner", apiKey: process.env.PARTNER_API_KEY, baseUrl: process.env.PARTNER_BASE_URL, models: [process.env.PARTNER_MODEL] },
+  ].map(config => ({ ...config, baseUrl: config.baseUrl?.replace(/\/$/, ""), models: dedupeModels(config.models) }));
 }
 
-async function requestOpenRouterJson({ apiKey, models, systemText, userText, schema, schemaName, timeoutMs = 6000, maxModelsPerProvider = 1 }) {
-  let lastError = null;
-
-  for (const model of dedupeModels(models).slice(0, maxModelsPerProvider)) {
-    const { signal, clear } = withTimeout(timeoutMs);
-    try {
-      const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        signal,
-        body: JSON.stringify({
-          model,
-          messages: [
-            { role: "system", content: systemText },
-            { role: "user", content: userText },
-          ],
-          temperature: 0.5,
-          response_format: {
-            type: "json_schema",
-            json_schema: {
-              name: schemaName,
-              strict: true,
-              schema,
-            },
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        const text = await response.text();
-        lastError = new Error(`provider=openrouter model=${model} status=${response.status} body=${text}`);
-        continue;
-      }
-
-      const data = await response.json();
-      const parsed = safeJsonParse(data?.choices?.[0]?.message?.content || "");
-      if (!parsed) {
-        lastError = new Error(`provider=openrouter model=${model} invalid_model_payload`);
-        continue;
-      }
-
-      return { provider: "openrouter", model: data?.model || model, parsed };
-    } catch (error) {
-      lastError = new Error(`provider=openrouter model=${model} ${error?.message || "request_failed"}`);
-    } finally {
-      clear();
-    }
-  }
-
-  throw lastError || new Error("provider=openrouter all_models_failed");
+export function expressionServiceStatus() {
+  const selected = process.env.EXPRESSION_LLM_PROVIDER || process.env.LLM_PROVIDER || "auto";
+  const configurations = llmProviderConfiguration();
+  const configured = configurations.filter(c => c.apiKey && c.baseUrl && c.models.length);
+  // Explicit providers never silently spend on a different provider.
+  const candidates = configured.filter(c => selected === "auto" || c.provider === selected);
+  return { available: candidates.length > 0, selection: selected,
+    providers: candidates.map(c => ({ provider: c.provider, model: c.models[0] })),
+    connection: "not_tested", videoUploaded: false };
 }
 
-export async function requestStructuredLlm({ systemText, userText, schema, schemaName = "structured_reply", openaiModels = ["gpt-5-mini", "gpt-5", "gpt-4.1"], openrouterModels = [process.env.OPENROUTER_VOICE_CHAT_MODEL, "openrouter/free"], timeoutMs = 6000, maxModelsPerProvider = 1, retryOnce = true }) {
-  const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
-  const zhipuApiKey = process.env.ZHIPU_API_KEY;
-  const longcatApiKey = process.env.LONGCAT_API_KEY;
-
-  if (!deepseekApiKey && !zhipuApiKey && !longcatApiKey) {
-    throw new Error("no_llm_api_key_configured");
-  }
-
-  const providers = [
-    deepseekApiKey
-      ? () => requestCompatibleJson({
-          provider: "deepseek",
-          apiKey: deepseekApiKey,
-          baseUrl: "https://api.deepseek.com",
-          models: [
-            process.env.DEEPSEEK_MODEL,
-            "deepseek-chat",
-          ],
-          systemText: `${systemText}\nReturn strict JSON only matching the requested shape.`,
-          userText,
-          schemaName,
-          timeoutMs,
-          maxModelsPerProvider,
-          retryOnce,
-        })
-      : null,
-    zhipuApiKey
-      ? () => requestCompatibleJson({
-          provider: "zhipu",
-          apiKey: zhipuApiKey,
-          baseUrl: "https://open.bigmodel.cn/api/paas/v4",
-          models: [
-            process.env.ZHIPU_MODEL,
-            "glm-4.7-flash",
-            "glm-4.5-flash",
-          ],
-          systemText: `${systemText}\nReturn strict JSON only matching the requested shape.`,
-          userText,
-          schemaName,
-          timeoutMs,
-          maxModelsPerProvider,
-          retryOnce,
-        })
-      : null,
-    longcatApiKey
-      ? () => requestCompatibleJson({
-          provider: "longcat",
-          apiKey: longcatApiKey,
-          baseUrl: "https://api.longcat.chat/openai/v1",
-          models: [
-            process.env.LONGCAT_MODEL,
-            "LongCat-Flash-Lite",
-            "LongCat-Flash-Chat",
-          ],
-          systemText: `${systemText}\nReturn strict JSON only matching the requested shape.`,
-          userText,
-          schemaName,
-          timeoutMs: Math.max(timeoutMs, 7000),
-          maxModelsPerProvider,
-          retryOnce,
-        })
-      : null,
-  ].filter(Boolean);
-
+export async function requestStructuredLlm({ systemText, userText, schema, schemaName = "structured_reply", openaiModels, openrouterModels,
+  provider = process.env.LLM_PROVIDER || "auto", timeoutMs = 6000, maxModelsPerProvider = 1, retryOnce = true, totalTimeoutMs = Infinity }) {
+  const configurations = llmProviderConfiguration({ openaiModels, openrouterModels });
+  if (provider !== "auto" && !configurations.some(c => c.provider === provider)) throw new Error("unknown_llm_provider");
+  const candidates = configurations.filter(c => c.apiKey && c.baseUrl && c.models.length && (provider === "auto" || c.provider === provider));
+  if (!candidates.length) throw new Error("no_llm_api_key_configured");
+  if (systemText.length + userText.length > 40000) throw new Error('model_input_too_large');
   let lastError = null;
-  for (const request of providers) {
+  const deadline = Date.now() + totalTimeoutMs;
+  for (const config of candidates.slice(0, 2)) {
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) break;
     try {
-      return await request();
-    } catch (error) {
-      lastError = error;
-    }
+      return await requestCompatibleJson({ ...config,
+        systemText: `${systemText}\nReturn strict JSON only matching this schema: ${JSON.stringify(schema || {})}`,
+        userText, schemaName, timeoutMs: Math.min(timeoutMs, remaining), maxModelsPerProvider: Math.min(maxModelsPerProvider, 1), retryOnce: false });
+    } catch (error) { lastError = error; }
   }
-
   throw lastError || new Error("all_llm_providers_failed");
 }

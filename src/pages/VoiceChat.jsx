@@ -1,38 +1,20 @@
-import { useState, useRef, useEffect } from "react";
+import { lazy, Suspense, useState, useRef, useEffect, useMemo, useSyncExternalStore } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft, Mic, Volume2 } from "lucide-react";
 import { localApi } from "@/api/localClient";
 import { getScenario } from "@/lib/scenarios";
+import { VoiceInteraction } from "@/lib/voice/VoiceInteraction";
+import { resolveVoiceOrbState } from "@/lib/voiceOrbState";
+import "@/voice-room.css";
 import { audioManager } from "@/lib/audioManager";
 import { getDynamicSceneCue, getSceneAsset } from "@/lib/sceneAssets";
 import CharacterFigure from "@/components/CharacterFigure";
 import ChatMessage from "@/components/voice/ChatMessage";
 import RecordingControls from "@/components/voice/RecordingControls";
-import { toast } from "sonner";
+import '@/scenario-studio.css';
 
-function buildFallbackReply({ scenario, scenarioData, userText, isGoalOriented, scoring, mode }) {
-  const safeTopic = isGoalOriented
-    ? scenarioData?.goal || "the task"
-    : scenarioData?.topic || scenario?.title || "the topic";
-  const summary = (userText || "").trim().replace(/\s+/g, " ") || "your answer";
-  const wordCount = summary.split(/\s+/).filter(Boolean).length;
-  const styleTail = scoring === "ielts"
-    ? "Answer in a fuller, more natural way."
-    : scoring === "toefl"
-      ? "Keep your answer organized and precise."
-      : mode === "advanced"
-        ? "Keep it natural and specific."
-        : "Keep it simple and clear.";
-  const followUp = isGoalOriented
-    ? wordCount >= 10
-      ? "What result do you want me to confirm for you?"
-      : "Can you explain the problem and what help you need?"
-    : wordCount >= 10
-      ? "Can you give one concrete example to support that idea?"
-      : "Can you add one reason or one example?";
-
-  return `Okay. We're still talking about ${safeTopic.toLowerCase()}. ${followUp} ${styleTail}`;
-}
+const VoiceOrb = lazy(() => import('@/components/spatial/VoiceOrb'));
+const ScenarioStage = lazy(() => import('@/components/ScenarioStage'));
 
 export default function VoiceChat() {
   const navigate = useNavigate();
@@ -48,202 +30,87 @@ export default function VoiceChat() {
   const scenarioData = isGoalOriented ? scenario?.goalOriented : scenario?.freeTalk;
   const examinerScene = getSceneAsset(scenarioId)?.fallback || null;
 
-  const [messages, setMessages] = useState([]);
-  const [isAiThinking, setIsAiThinking] = useState(false);
-  const [activePlaybackId, setActivePlaybackId] = useState(null);
-  const [hasUserSpoken, setHasUserSpoken] = useState(false);
-  const [fallbackNotice, setFallbackNotice] = useState("");
-  const [autoPlayIntroPending, setAutoPlayIntroPending] = useState(true);
+  const [sceneOpen, setSceneOpen] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
   const [startTime] = useState(Date.now());
   const chatEndRef = useRef(null);
   const messageRefs = useRef({});
-  const sessionDataRef = useRef({ wordCount: 0, exchanges: 0 });
-  const lastSentRef = useRef({ text: "", time: 0 });
-  const messagesRef = useRef([]);
-
-  useEffect(() => {
-    messagesRef.current = messages;
-  }, [messages]);
-
-  useEffect(() => {
-    if (!scenario) {
-      navigate("/voice");
-    }
-  }, [navigate, scenario]);
-
-  // Initialize with AI first message
-  useEffect(() => {
-    if (!scenario || !scenarioData) return;
-    void localApi.integrations.Core.TrackActivity({
-      activity_type: "voice_practice_started",
-      scenario: scenarioId,
-      mode,
-      dialog_mode: dialogMode,
-      scoring_standard: scoring,
-    }).catch((error) => {
-      console.error("Failed to track voice practice start:", error);
+  const replyInputRef = useRef(null);
+  const sceneCueRef = useRef('');
+  const draftKey = `speaknow-voice-draft:${scenarioId}:${mode}:${dialogMode}:${scoring}`;
+  const requestCueIds = useMemo(() => new Map(), [draftKey]);
+  const interaction = useMemo(() => {
+    let initialDraft = '';
+    try { initialDraft = sessionStorage.getItem(draftKey) || ''; } catch { /* Storage unavailable. */ }
+    return new VoiceInteraction({
+      audio: audioManager, aiRole: scenario?.aiRole, voiceGender: scenario?.aiVoice,
+      initialDraft,
+      saveDraft: text => text ? sessionStorage.setItem(draftKey, text) : sessionStorage.removeItem(draftKey),
+      visualFor: text => getDynamicSceneCue(scenarioId, text),
+      initialMessage: scenarioData ? { id: `intro-${scenarioId}`, role: 'ai', content: scenarioData.firstMessage, aiRole: scenario?.aiRole, visual: getDynamicSceneCue(scenarioId, scenarioData.firstMessage), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) } : null,
+      request: (userText, { signal, history, turnId }) => {
+        // Retries retain the scene context of the original turn.
+        if (!requestCueIds.has(turnId)) requestCueIds.set(turnId, sceneCueRef.current);
+        return localApi.integrations.Core.InvokeLLM({ input: { kind: 'voice-chat', scenario, scenarioData, history, userText, mode, scoring, isGoalOriented, ...(scenarioId === 'cafe' ? { sceneCueId: requestCueIds.get(turnId) } : {}) } }, { signal });
+      },
     });
-    
-    const initMessage = {
-      id: `ai-${Date.now()}`,
-      role: "ai",
-      content: scenarioData.firstMessage,
-      aiRole: scenario.aiRole,
-      visual: getDynamicSceneCue(scenarioId, scenarioData.firstMessage),
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-    setMessages([initMessage]);
-    
-    setAutoPlayIntroPending(true);
-  }, [dialogMode, mode, scenario, scenarioData, scenarioId, scoring]);
-
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "auto" });
-  }, [messages]);
-
-  useEffect(() => {
-    if (!autoPlayIntroPending || !messages.length) return;
-    const firstAiMessage = messages[0];
-    if (!firstAiMessage || firstAiMessage.role !== "ai") return;
-
-    const timer = window.setTimeout(() => {
-      void audioManager.playAIVoice(firstAiMessage.content, scenario.aiVoice, {
-        concise: true,
-        maxSentences: 2,
-        maxChars: 180,
-        playbackId: firstAiMessage.id,
-      });
-      setAutoPlayIntroPending(false);
-    }, 250);
-
-    return () => window.clearTimeout(timer);
-  }, [autoPlayIntroPending, messages, scenario?.aiVoice]);
-
-  useEffect(() => {
-    audioManager.onPlaybackMetaChange = (playbackId) => {
-      setActivePlaybackId(playbackId);
-    };
-
-    return () => {
-      if (audioManager.onPlaybackMetaChange) {
-        audioManager.onPlaybackMetaChange = null;
-      }
-    };
-  }, []);
-
-  useEffect(() => () => {
-    audioManager.stop();
-  }, []);
-
-  const handleSend = async (userText) => {
-    const normalizedText = (userText || "").trim().replace(/\s+/g, " ");
-    if (!normalizedText) return;
-    const now = Date.now();
-    if (
-      lastSentRef.current.text === normalizedText &&
-      now - lastSentRef.current.time < 1500
-    ) {
-      return;
-    }
-    lastSentRef.current = { text: normalizedText, time: now };
-
-    const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    
-    // Count words
-    sessionDataRef.current.wordCount += normalizedText.split(/\s+/).length;
-    sessionDataRef.current.exchanges += 1;
-    setHasUserSpoken(true);
-
-    // Add user message (feedback will come from AI)
-    const userMsg = { id: `user-${now}`, role: "user", content: normalizedText, time };
-    setMessages(prev => [...prev, userMsg]);
-    setIsAiThinking(true);
-
-    let result = null;
-
-    try {
-      result = await localApi.integrations.Core.InvokeLLM({
-        input: {
-          kind: "voice-chat",
-          scenario,
-          scenarioData,
-          history: [...messages, userMsg],
-          userText: normalizedText,
-          mode,
-          scoring,
-          isGoalOriented,
-        },
-      });
-      if (result?.source === "fallback" || result?.fallback_reason) {
-        const nextReason = String(result?.fallback_reason || "unknown_fallback").slice(0, 220);
-        setFallbackNotice(nextReason);
-        toast.warning(`AI fallback reply: ${nextReason}`);
-      } else {
-        setFallbackNotice("");
-      }
-    } catch (error) {
-      console.error("Failed to generate AI reply:", error);
-      toast.error("Reply generation failed once. Using a fallback reply.");
-      setFallbackNotice(error?.message || "request_failed");
-      result = null;
-    } finally {
-      // Update user message with feedback without relying on findLastIndex for browser compatibility.
-      setMessages(prev => {
-        const updated = [...prev];
-        let lastUserIdx = -1;
-        for (let i = updated.length - 1; i >= 0; i -= 1) {
-          if (updated[i].role === "user") {
-            lastUserIdx = i;
-            break;
-          }
-        }
-        if (lastUserIdx >= 0 && result?.feedback) {
-          updated[lastUserIdx] = { ...updated[lastUserIdx], feedback: result.feedback };
-        }
-        return updated;
-      });
-
-      const replyText = result?.reply?.trim() || buildFallbackReply({
-        scenario,
-        scenarioData,
-        userText: normalizedText,
-        isGoalOriented,
-        scoring,
-        mode,
-      });
-      const aiTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      const nextPlaybackId = `ai-${Date.now()}`;
-      setMessages(prev => {
-        const nextVisual = getDynamicSceneCue(scenarioId, replyText);
-        const lastAiVisualKey = [...prev]
-          .reverse()
-          .find((entry) => entry.role === "ai" && entry.visual?.key)?.visual?.key;
-        const visual = nextVisual?.key && nextVisual.key === lastAiVisualKey ? null : nextVisual;
-
-        const nextMessages = [
-          ...prev,
-          {
-            id: nextPlaybackId,
-            playbackId: nextPlaybackId,
-            role: "ai",
-            content: replyText,
-            source: result?.source || "fallback",
-            model: result?.model || null,
-            fallbackReason: result?.fallback_reason || null,
-            aiRole: scenario.aiRole,
-            visual,
-            time: aiTime,
-          },
-        ];
-        messagesRef.current = nextMessages;
-        return nextMessages;
-      });
-      setIsAiThinking(false);
-    }
+  }, [draftKey, scenario, scenarioData, scenarioId, mode, scoring, isGoalOriented, requestCueIds]);
+  const state = useSyncExternalStore(interaction.subscribe, interaction.getSnapshot, interaction.getSnapshot);
+  const messages = state.messages;
+  const hasUserSpoken = messages.some(message => message.role === 'user');
+  const isAiThinking = state.status === 'processing';
+  const isSpeaking = state.status === 'speaking';
+  const activePlaybackId = state.activePlaybackId;
+  const inputState = state.status;
+  const energyRef = interaction.energyRef;
+  const hasInputEnergy = state.energyAvailable;
+  const fallbackNotice = state.error;
+  const timing = state.timings[state.timings.length - 1];
+  const timingDuration = (begin, end) => begin == null || end == null ? 'Not available yet' : `${Math.round(Math.max(0, end - begin))} ms`;
+  const orbState = resolveVoiceOrbState({ status: state.status });
+  const exchanges = messages.filter(message => message.role === 'user').length;
+  const wordCount = messages.filter(message => message.role === 'user').reduce((total, message) => total + message.content.split(/\s+/).filter(Boolean).length, 0);
+  const latestPartnerMessage = [...messages].reverse().find(message => message.role === 'ai');
+  const canUseSceneDraft = !['requesting_permission', 'starting', 'listening', 'stopping', 'finalizing', 'submitting', 'processing', 'completed'].includes(state.status);
+  const cafeCueDisabledReason = ['requesting_permission', 'starting', 'listening', 'stopping', 'finalizing', 'submitting', 'processing', 'completed'].includes(state.status)
+    ? 'Finish the current turn before choosing a reply draft.'
+    : [state.typedText, state.finalText, state.interimText].some(text => text.trim())
+      ? 'Your unsent words are kept. Send or clear them before choosing a draft.' : '';
+  const focusReply = () => { replyInputRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' }); replyInputRef.current?.focus({ preventScroll: true }); };
+  const useSceneCue = cue => {
+    if (cafeCueDisabledReason) return;
+    sceneCueRef.current = cue.id;
+    interaction.setTypedText(cue.phrase);
+    focusReply();
   };
+  useEffect(() => { sceneCueRef.current = ''; }, [draftKey]);
 
-  const handleEnd = () => {
-    audioManager.stop();
+  useEffect(() => {
+    if (!scenario) navigate('/voice');
+  }, [navigate, scenario]);
+  useEffect(() => {
+    if (!scenario || !scenarioData) return () => interaction.dispose();
+    interaction.activate();
+    void localApi.integrations.Core.TrackActivity({ activity_type: 'voice_practice_started', scenario: scenarioId, mode, dialog_mode: dialogMode, scoring_standard: scoring }).catch(error => console.error('Failed to track voice practice start:', error));
+    // Initial playback is attempted without an artificial delay. Browsers may
+    // require a gesture; text and the explicit Play audio action remain.
+    if (interaction.getSnapshot().messages[0]) void interaction.playMessage(interaction.getSnapshot().messages[0].id);
+    return () => interaction.dispose();
+  }, [interaction, scenario, scenarioData, scenarioId, mode, dialogMode, scoring]);
+  useEffect(() => {
+    const timer = window.setInterval(() => setElapsed(Math.floor((Date.now() - startTime) / 1000)), 1000);
+    return () => window.clearInterval(timer);
+  }, [startTime]);
+  useEffect(() => {
+    if (!(scenarioId === 'cafe' && sceneOpen)) chatEndRef.current?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
+  }, [messages, sceneOpen, scenarioId]);
+
+  const handleEnd = async () => {
+    const finished = await interaction.complete();
+    if (!finished || interaction.disposed) return;
+    const endedMessages = finished.messages;
+    const endedUsers = endedMessages.filter(message => message.role === "user");
+    const endedWords = endedUsers.reduce((sum, message) => sum + message.content.split(/\s+/).filter(Boolean).length, 0);
     const duration = Math.floor((Date.now() - startTime) / 1000);
     const endParams = new URLSearchParams({
       scenario: scenarioId,
@@ -251,12 +118,12 @@ export default function VoiceChat() {
       dialogMode,
       scoring,
       duration: duration.toString(),
-      words: sessionDataRef.current.wordCount.toString(),
-      exchanges: sessionDataRef.current.exchanges.toString(),
+      words: endedWords.toString(),
+      exchanges: endedUsers.length.toString(),
     });
-    
+
     // Store messages in sessionStorage for report
-    sessionStorage.setItem("voiceMessages", JSON.stringify(messagesRef.current));
+    sessionStorage.setItem("voiceMessages", JSON.stringify(endedMessages));
     sessionStorage.setItem(
       "voiceReportContext",
       JSON.stringify({
@@ -265,15 +132,15 @@ export default function VoiceChat() {
         dialogMode,
         scoring,
         duration,
-        words: sessionDataRef.current.wordCount,
-        exchanges: sessionDataRef.current.exchanges,
+        words: endedWords,
+        exchanges: endedUsers.length,
       })
     );
     navigate(`/voice/report?${endParams.toString()}`);
   };
 
   const handleExit = () => {
-    audioManager.stop();
+    interaction.dispose();
     navigate("/voice");
   };
 
@@ -282,24 +149,48 @@ export default function VoiceChat() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className={`speaking-room${scenarioId === 'cafe' && sceneOpen ? ' is-cafe-scene-active' : ''}`} data-interaction-state={state.status}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 glass">
+      <div className="room-header glass">
         <button onClick={handleExit} className="flex items-center gap-1 text-sm text-accent font-medium">
           <ArrowLeft className="w-4 h-4" />
           Exit
         </button>
         <div className="text-center">
-          <p className="text-xs text-muted-foreground">{scenario.aiRole}</p>
+          <p className="room-eyebrow">LIVE SPEAKING STUDIO</p><h1>{scenario.title}</h1><p className="text-xs text-muted-foreground">{scenario.aiRole} · {exchanges} exchanges</p>
         </div>
         <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-medium uppercase">
           {scoring}
         </span>
       </div>
 
+      <div className="room-workspace">
+      <section className="room-presence" aria-label="AI speaking studio" onPointerMove={event => {
+        if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const rect = event.currentTarget.getBoundingClientRect();
+        event.currentTarget.style.setProperty('--room-x', `${((event.clientX - rect.left) / rect.width - 0.5) * 8}px`);
+        event.currentTarget.style.setProperty('--room-y', `${((event.clientY - rect.top) / rect.height - 0.5) * 6}px`);
+      }} onPointerLeave={event => { event.currentTarget.style.setProperty('--room-x', '0px'); event.currentTarget.style.setProperty('--room-y', '0px'); }}>
+        <div className="room-task"><span className="room-eyebrow">{isGoalOriented ? 'YOUR MISSION' : 'YOUR CONVERSATION'}</span><p>{isGoalOriented ? scenarioData?.goal : scenarioData?.topic || scenario.title}</p></div>
+        <Suspense fallback={<div className="voice-orb"><div className="orb-fallback" /></div>}><VoiceOrb state={orbState} energyRef={energyRef} /></Suspense>
+        <div className="room-status" data-state={orbState} role="status"><span className="room-status-dot" /><strong>{{ idle: 'Ready when you are', requesting_permission: 'Allow microphone access', starting: 'Connecting voice input', listening: 'Listening to you', stopping: 'Stopping your microphone', finalizing: 'Confirming your words', submitting: 'Sending your reply', processing: 'Your coach is thinking', speaking: 'Your coach is speaking', completed: 'Practice complete', error: 'Ready to recover' }[state.status]}</strong></div>
+        <p className="room-status-detail">{isSpeaking ? 'Browser voice playback' : inputState === 'listening' ? (hasInputEnergy ? 'Your voice, reflected in real time' : 'Listening · voice visualization unavailable in this browser') : 'A little space to find your words.'}</p>
+        <div className="room-session-meta"><span>{String(Math.floor(elapsed / 60)).padStart(2, '0')}:{String(elapsed % 60).padStart(2, '0')}</span><span>{wordCount} words</span><span>{scoring?.toUpperCase()}</span></div>
+      </section>
       {/* Chat Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-        {isGoalOriented && examinerScene && (
+      <div className="room-conversation space-y-4" aria-label="Conversation and coaching">
+        <button type="button" className="voice-scene-toggle" aria-expanded={sceneOpen} aria-controls="conversation-scene" onClick={() => setSceneOpen(open => !open)}><span>{sceneOpen ? 'Return to the conversation' : `Step into ${scenario.title} · explore your surroundings`}</span><span aria-hidden="true">{sceneOpen ? '−' : '↗'}</span></button>
+        {sceneOpen && <div id="conversation-scene" className="voice-scene-panel"><Suspense fallback={<div className="scenario-stage scenario-stage-loading">Preparing your scene…</div>}><ScenarioStage scenario={scenario}
+          onUseCue={scenarioId === 'cafe' ? useSceneCue : null}
+          cueDisabledReason={cafeCueDisabledReason}
+          conversation={scenarioId === 'cafe' ? { status: state.status, reply: latestPartnerMessage?.content || '', isLocal: latestPartnerMessage?.source === 'fallback', canReply: canUseSceneDraft, onReply: focusReply } : null}
+          cueOverrides={scenarioId === 'cafe' && !isGoalOriented ? {
+            menu: { detail: 'Browse the café menu and ask about the barista’s favourites.', phrase: 'What coffee would you recommend today?' },
+            coffee: { detail: 'Talk about how you like your coffee, or ask about milk options.', phrase: 'I usually have a latte. How does it taste with oat milk?' },
+            pastry: { detail: 'Ask about pastries and the café’s morning routine.', phrase: 'Which pastry do you enjoy with your morning coffee?' },
+          } : null}
+        /></Suspense></div>}
+        {!sceneOpen && isGoalOriented && examinerScene && (
           <div className="flex justify-center">
             <div className="w-full max-w-sm overflow-hidden rounded-[28px] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.12),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.06),rgba(15,23,42,0.32))] px-5 py-6 shadow-[0_24px_80px_rgba(0,0,0,0.32)]">
               <div className="text-center">
@@ -318,28 +209,33 @@ export default function VoiceChat() {
           </div>
         )}
         {fallbackNotice && (
-          <div className="glass rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3">
-            <p className="text-xs font-medium text-amber-200">AI fallback mode</p>
+          <div className="voice-coach-status glass rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3">
+            <p className="text-xs font-medium text-amber-200">Speaking needs your attention</p>
             <p className="mt-1 text-xs text-amber-100/90 break-words">{fallbackNotice}</p>
           </div>
         )}
+        <p className="room-eyebrow">CONVERSATION · YOUR WORDS, THEIR RESPONSE</p>
         {messages.map((msg, i) => (
           <ChatMessage
             key={msg.id || i}
             message={msg}
             voiceGender={scenario.aiVoice}
-            isActive={activePlaybackId === (msg.playbackId || msg.id)}
+            isLatest={i === messages.length - 1}
+            isActive={isSpeaking && activePlaybackId === (msg.playbackId || msg.id)}
+            onPlay={() => interaction.playMessage(msg.id)}
+            playbackDisabled={["requesting_permission", "starting", "listening", "stopping", "finalizing", "submitting", "processing", "completed"].includes(state.status)}
+            feedbackInitiallyOpen={scenarioId !== 'cafe'}
             registerRef={(node) => {
               if (!msg.id && !msg.playbackId) return;
               messageRefs.current[msg.playbackId || msg.id] = node;
             }}
           />
         ))}
-        
+
         {isAiThinking && (
           <div className="flex gap-3 items-center">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-xs font-bold text-white">
-              AI
+              <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white">
+              Coach
             </div>
             <div className="glass rounded-2xl rounded-tl-md px-4 py-3">
               <div className="flex gap-1">
@@ -353,22 +249,30 @@ export default function VoiceChat() {
         <div ref={chatEndRef} />
       </div>
 
-      <div className="border-t border-white/5 glass px-4 py-3 space-y-3">
+      </div>
+      <div className="room-controls glass space-y-3">
         {!hasUserSpoken && (
-          <div className="glass rounded-2xl px-4 py-3">
-            <div className="flex items-center gap-2 mb-2">
+          <details className="room-guidance">
+            <summary className="flex items-center gap-2 mb-2">
               <Mic className="w-4 h-4 text-primary" />
-              <h3 className="text-[15px] font-semibold text-foreground">Speaking Guidance</h3>
-            </div>
+              <span className="text-[15px] font-semibold text-foreground">Speaking Guidance</span>
+            </summary>
             <div className="space-y-1.5">
               <p className="text-[14px] text-muted-foreground">1. Answer in full sentences before sending.</p>
               <p className="text-[14px] text-muted-foreground">2. Add one reason or example to sound more natural.</p>
               <p className="text-[14px] text-muted-foreground">3. Use the replay button on AI replies if you want listening support.</p>
             </div>
-          </div>
+          </details>
         )}
-        <RecordingControls onSend={handleSend} disabled={isAiThinking} />
+        <RecordingControls interaction={interaction} state={state} replyInputRef={replyInputRef} />
+        {timing && <details className="voice-timing"><summary>Response timing</summary><dl>
+          <div><dt>Final recognition</dt><dd>{timingDuration(timing.t1, timing.t2)}</dd></div>
+          <div><dt>Coach response</dt><dd>{timingDuration(timing.requestStarted, timing.t3)}</dd></div>
+          <div><dt>Voice start</dt><dd>{timingDuration(timing.t3, timing.t4)}</dd></div>
+          <div><dt>Voice duration</dt><dd>{timingDuration(timing.t4, timing.t5)}</dd></div>
+        </dl><p>Measured events from this turn. Missing stages stay unavailable; network and browser voice delays vary.</p></details>}
         <button
+          disabled={["stopping", "finalizing", "completed"].includes(state.status)}
           onClick={handleEnd}
           className="w-full h-12 rounded-2xl bg-accent/15 text-accent hover:bg-accent/20 transition-colors text-[16px] font-medium flex items-center justify-center gap-2"
         >

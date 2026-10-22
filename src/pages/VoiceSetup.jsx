@@ -5,6 +5,7 @@ import { ArrowLeft, Mic, User, Bot, BookOpen, MessageSquare, Volume2 } from "luc
 import { getScenario } from "@/lib/scenarios";
 import { audioManager } from "@/lib/audioManager";
 import GlowCTAButton from "@/components/GlowCTAButton";
+import { getExamStandard } from "@/lib/examStandards";
 
 export default function VoiceSetup() {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ export default function VoiceSetup() {
   const scenarioData = isGoalOriented ? scenario.goalOriented : scenario.freeTalk;
   const Icon = scenario.icon;
   const voiceLabel = scenario.aiVoice === "female" ? "Professional Female" : "Professional Male";
+  const standard = getExamStandard(scoring);
 
   const handleStart = () => {
     audioManager.stop();
@@ -104,7 +106,7 @@ export default function VoiceSetup() {
               {isGoalOriented ? "Goal-Oriented" : "Free Talk"}
             </span>
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 font-medium uppercase">
-              {scoring}
+              {standard.label} · {standard.max === 6 ? "1–6" : standard.max === 9 ? "1–9" : "coaching"}
             </span>
           </div>
         </motion.div>

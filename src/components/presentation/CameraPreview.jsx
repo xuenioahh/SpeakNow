@@ -7,10 +7,12 @@ export default function CameraPreview() {
 
   useEffect(() => {
     let stream = null;
+    let active = true;
     
     const start = async () => {
       try {
         stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (!active) { stream.getTracks().forEach(t => t.stop()); return; }
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
           setStatus("active");
@@ -23,6 +25,7 @@ export default function CameraPreview() {
     start();
 
     return () => {
+      active = false;
       stream?.getTracks().forEach(t => t.stop());
     };
   }, []);

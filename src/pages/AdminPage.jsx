@@ -1,3 +1,4 @@
+import { apiFetch } from "@/api/http";
 import { useEffect, useMemo, useState } from "react";
 import { Activity, ChevronDown, ChevronUp, Download, Mic, Plus, Presentation, RefreshCw, Search, Shield, Trash2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -36,16 +37,9 @@ export default function AdminPage() {
     try {
       setLoading(true);
       setError("");
-      const headers = adminKey
-        ? {
-            "x-user-id": sessionStorage.getItem("speaknow_current_user_id") || "",
-            "x-admin-key": adminKey,
-          }
-        : {
-            "x-user-id": sessionStorage.getItem("speaknow_current_user_id") || "",
-          };
+      const headers = {};
       const [dashboardResponse, settings] = await Promise.all([
-        fetch("/api/admin-track", { headers }),
+        apiFetch("/api/admin-track", { headers }),
         localApi.admin.listSettings(),
       ]);
       if (!dashboardResponse.ok) {
@@ -172,7 +166,7 @@ export default function AdminPage() {
     : [];
 
   return (
-    <div className="min-h-screen pb-12">
+    <div className="admin-dashboard min-h-screen pb-12">
       <div className="px-5 pt-6 pb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
@@ -522,7 +516,7 @@ export default function AdminPage() {
       </div>
 
       <Dialog open={Boolean(selectedUser)} onOpenChange={(open) => !open && setSelectedUser(null)}>
-        <DialogContent className="max-w-3xl bg-[#171717] border-white/10 text-foreground">
+        <DialogContent className="admin-user-dialog max-w-3xl bg-[#171717] border-white/10 text-foreground">
           <DialogHeader>
             <DialogTitle>{selectedUser?.full_name || "User detail"}</DialogTitle>
             <DialogDescription>

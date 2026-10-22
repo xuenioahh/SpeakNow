@@ -1,3 +1,4 @@
+import { protectedApi } from "./_apiGuard.js";
 function fallbackAnalysis(fileName, pageTexts) {
   const totalPages = Math.max((pageTexts || []).length, 1);
   return {
@@ -157,7 +158,7 @@ function normalizeAnalysisShape(parsed, fallback) {
   };
 }
 
-export default async function handler(req, res) {
+async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
@@ -207,3 +208,5 @@ export default async function handler(req, res) {
     });
   }
 }
+
+export default protectedApi(handler, { ai: true });

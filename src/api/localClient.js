@@ -1,3 +1,4 @@
+import { apiFetch } from "@/api/http";
 import { localStore } from "@/lib/localStore";
 import { emitActivitySync } from "@/lib/activitySync";
 import {
@@ -13,11 +14,10 @@ function redirectTo(path) {
 }
 
 async function apiRequest(action, payload = {}) {
-  const response = await fetch("/api/local-data", {
+  const response = await apiFetch("/api/local-data", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-user-id": localStore.session.currentUserIdOrNull(),
     },
     body: JSON.stringify({
       action,
@@ -27,6 +27,7 @@ async function apiRequest(action, payload = {}) {
 
   const result = await response.json().catch(() => ({}));
   if (!response.ok || !result?.ok) {
+    /** @type {Error & { code?: string }} */
     const error = new Error(result?.error || `Request failed with ${response.status}`);
     if (result?.code) {
       error.code = result.code;
@@ -57,7 +58,7 @@ function buildEntityStore(entity, prefix) {
 async function syncAdminEvent(type, payload = {}) {
   try {
     const user = await apiRequest("me").catch(() => null);
-    await fetch("/api/admin-track", {
+    await apiFetch("/api/admin-track", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -109,8 +110,8 @@ export const localApi = {
       await syncAdminEvent("user_registered", { email: registered?.email || payload?.email || "" });
       return registered;
     },
-    logout(redirectPath = "/") {
-      void syncAdminEvent("user_logged_out", { redirectPath });
+    async logout(redirectPath = "/") {
+      await apiRequest("logout");
       localStore.session.clearCurrentUserId();
       emitActivitySync({ type: "auth:logout" });
       redirectTo(redirectPath);
@@ -129,14 +130,12 @@ export const localApi = {
     async removeEmail(email) {
       return apiRequest("removeAdminEmail", { email });
     },
-    async deleteRecord(collection, id, adminKey = "") {
-      const response = await fetch("/api/admin-track", {
+    async deleteRecord(collection, id, _adminKey = "") {
+      const response = await apiFetch("/api/admin-track", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-id": localStore.session.currentUserIdOrNull(),
-          ...(adminKey ? { "x-admin-key": adminKey } : {}),
-        },
+            },
         body: JSON.stringify({
           action: "delete_record",
           collection,
@@ -210,18 +209,20 @@ export const localApi = {
       },
       /**
        * @param {InvokeLlmRequest} request
+       * @param {{ signal?: AbortSignal }} options
        */
-      async InvokeLLM(request = {}) {
+      async InvokeLLM(request = {}, options = {}) {
         const { prompt, input } = request;
         const payload = input || {};
 
         if (payload.kind === "voice-chat") {
-          const response = await fetch("/api/voice-chat", {
+          const response = await apiFetch("/api/voice-chat", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
             body: JSON.stringify(payload),
+            signal: options.signal,
           });
 
           if (!response.ok) {
@@ -245,7 +246,7 @@ export const localApi = {
         }
 
         if (payload.kind === "presentation-report") {
-          const response = await fetch("/api/presentation-report", {
+          const response = await apiFetch("/api/presentation-report", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -261,7 +262,7 @@ export const localApi = {
         }
 
         if (payload.kind === "presentation-analysis") {
-          const response = await fetch("/api/presentation-analysis", {
+          const response = await apiFetch("/api/presentation-analysis", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -277,7 +278,7 @@ export const localApi = {
         }
 
         if (payload.kind === "presentation-pause-feedback") {
-          const response = await fetch("/api/presentation-pause-feedback", {
+          const response = await apiFetch("/api/presentation-pause-feedback", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

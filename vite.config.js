@@ -1,6 +1,7 @@
 import path from "node:path"
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
+import { buildExpressionWorker } from './scripts/build-expression-worker.mjs';
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -19,6 +20,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    { name: 'expression-worker', buildStart: buildExpressionWorker },
     react(),
   ]
 });

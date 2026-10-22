@@ -1,0 +1,21 @@
+import assert from 'node:assert/strict';
+import { describeTake, makePracticeRecord, savePracticeRecord, PRACTICE_DRILLS } from '../src/lib/expressionPractice.js';
+
+const before = { sessionId: 'first', text: 'We should start with a small trial.', start: 0, end: 8, events: [] };
+const after = { ...before, sessionId: 'second', text: 'A small trial lets us learn before spending more.' };
+const experiment = { id: 'experiment', before, beforeUrl: 'blob:private', intention: 'Explain the reason for a trial', drillId: 'point' };
+const input = { experiment, after, choice: 'second', reflection: 'The reason was easier to follow.', sameIdea: true };
+assert.equal(makePracticeRecord({ ...input, sameIdea: false }), null);
+assert.equal(makePracticeRecord({ ...input, after: before }), null);
+assert.equal(makePracticeRecord({ ...input, reflection: ' ' }), null);
+assert.equal(makePracticeRecord({ ...input, after: { ...after, text: '' } }), null);
+const record = makePracticeRecord(input);
+assert.equal(record.choice, 'second');
+assert(!JSON.stringify(record).includes('blob:'));
+assert(!('score' in record));
+assert.equal(savePracticeRecord([record], { ...record, choice: 'first' }).length, 1);
+assert.equal(makePracticeRecord({ ...input, choice: 'unsure' }).choice, 'unsure');
+assert.equal(describeTake(null).words, 0);
+assert.equal(new Set(PRACTICE_DRILLS.map(d => d.skill)).size, 4);
+assert(PRACTICE_DRILLS.every(d => d.steps.length === 3 && d.transfer && d.listenFor));
+console.log('PASS: same-idea and separate-take checks, reflection requirement, learner choice, no fake score, no video persistence, idempotent save and four complete drills.');

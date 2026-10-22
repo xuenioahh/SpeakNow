@@ -12,6 +12,87 @@ const TABLES = {
   settings: "app_settings",
 };
 
+export async function getUserById(id) {
+  if (!hasSupabase()) return (await readAppDb()).users.find(user => user.id === id) || null;
+  return (await supabaseRequest(TABLES.users, { query: `select=*&id=eq.${encodeURIComponent(id)}` }))[0] || null;
+}
+export async function getUserByEmail(email) {
+  if (!hasSupabase()) return (await readAppDb()).users.find(user => user.email === email) || null;
+  return (await supabaseRequest(TABLES.users, { query: `select=*&email=eq.${encodeURIComponent(email)}` }))[0] || null;
+}
+export async function saveUser(user, { insert = false } = {}) {
+  if (hasSupabase()) return supabaseRequest(TABLES.users, { method: 'POST', body: user, prefer: insert ? 'return=representation' : 'resolution=merge-duplicates,return=representation' });
+  await mutateAppDb(db => {
+    if (db.users.some(item => item.email === user.email && (insert || item.id !== user.id))) throw Object.assign(new Error('This email is already registered'), { status: 409 });
+    const index = db.users.findIndex(item => item.id === user.id);
+    if (index === -1) db.users.unshift(user); else db.users[index] = user;
+    return db;
+  });
+}
+export async function listOwned(collection, owner) {
+  if (!TABLES[collection] || collection === 'users' || collection === 'settings') throw new Error('Invalid collection');
+  if (!hasSupabase()) return (await readAppDb())[collection].filter(item => item.user_id === owner);
+  return supabaseRequest(TABLES[collection], { query: `select=*&user_id=eq.${encodeURIComponent(owner)}&order=created_date.desc` });
+}
+export async function getOwned(collection, owner, id) {
+  if (!hasSupabase()) return (await listOwned(collection, owner)).find(item => item.id === id) || null;
+  return (await supabaseRequest(TABLES[collection], { query: `select=*&user_id=eq.${encodeURIComponent(owner)}&id=eq.${encodeURIComponent(id)}` }))[0] || null;
+}
+export async function saveOwned(collection, owner, record, { update = false } = {}) {
+  if (update && !await getOwned(collection, owner, record.id)) throw Object.assign(new Error('Practice not found'), { status: 404 });
+  const value = { ...record, user_id: owner };
+  if (hasSupabase()) {
+    if (update) await supabaseRequest(TABLES[collection], { method: 'PATCH', query: `id=eq.${encodeURIComponent(record.id)}&user_id=eq.${encodeURIComponent(owner)}`, body: value });
+    else await supabaseRequest(TABLES[collection], { method: 'POST', body: value });
+  } else await mutateAppDb(db => {
+    const index = db[collection].findIndex(item => item.id === value.id && item.user_id === owner);
+    if (update) { if (index === -1) throw Object.assign(new Error('Practice not found'), { status: 404 }); db[collection][index] = value; }
+    else { if (db[collection].some(item => item.id === value.id)) throw Object.assign(new Error('Practice already exists'), { status: 409 }); db[collection].unshift(value); }
+    return db;
+  });
+  return value;
+}
+export async function deleteOwned(collection, owner, id) {
+  if (!await getOwned(collection, owner, id)) throw Object.assign(new Error('Practice not found'), { status: 404 });
+  if (hasSupabase()) await supabaseRequest(TABLES[collection], { method: 'DELETE', query: `id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(owner)}` });
+  else await mutateAppDb(db => { db[collection] = db[collection].filter(item => !(item.id === id && item.user_id === owner)); return db; });
+}
+
+export async function updateUserFields(id, patch) {
+  if (hasSupabase()) return (await supabaseRequest(TABLES.users, { method: 'PATCH', query: `id=eq.${encodeURIComponent(id)}`, body: patch }))[0];
+  let result;
+  await mutateAppDb(db => { const index = db.users.findIndex(user => user.id === id); if (index < 0) throw Object.assign(new Error('User not found'), { status: 404 }); db.users[index] = { ...db.users[index], ...patch }; result = db.users[index]; return db; });
+  return result;
+}
+export async function updateImpact(owner, id, operation, patch) {
+  if (hasSupabase()) {
+    const value = await supabaseRequest('rpc/speaknow_update_impact', { method: 'POST', body: { owner_id: owner, practice_id: id, operation, patch } });
+    if (!value) throw Object.assign(new Error('Practice not found'), { status: 404 });
+    return value;
+  }
+  let result;
+  await mutateAppDb(db => {
+    const session = db.presentationSessions.find(item => item.id === id && item.user_id === owner);
+    if (!session?.report?.impact) throw Object.assign(new Error('Practice not found'), { status: 404 });
+    const metadata = session.report.impact;
+    if (operation === 'append') {
+      const existing = metadata.recordings.find(recording => recording.id === patch.recording.id);
+      if (existing) {
+        if (existing.mime !== patch.recording.mime || existing.bytes !== patch.recording.bytes) throw Object.assign(new Error('The saved recording is immutable.'), { status: 409 });
+        result = session; return db;
+      }
+      if (metadata.recordings.length >= 20) throw Object.assign(new Error('Recording limit reached'), { status: 400 });
+      metadata.recordings.push(patch.recording); metadata.recordingIds.push(`${id}:${patch.recording.id}`);
+    } else if (operation === 'analysis') {
+      if (!metadata.analysis && !metadata.comparison) {
+        Object.assign(metadata, patch); session.report.source = 'ai';
+      }
+    } else throw new Error('Invalid Impact update');
+    result = session; return db;
+  });
+  return result;
+}
+
 function isMissingTableError(error, table) {
   const message = String(error?.message || "");
   return message.includes("PGRST205") && message.includes(`public.${table}`);
@@ -132,8 +213,7 @@ export async function readAppStore() {
     });
   } catch (error) {
     if (shouldFallbackToLocal(error)) {
-      console.warn("Supabase app store unavailable; falling back to local JSON.", error);
-      return toLocalShape(await readAppDb());
+      throw Object.assign(new Error("Persistent storage unavailable; no local fallback was used."), { status: 503 });
     }
     throw error;
   }
@@ -141,10 +221,7 @@ export async function readAppStore() {
 
 export async function mutateAppStore(mutator) {
   if (!hasSupabase()) {
-    const db = await readAppDb();
-    const nextDb = (await mutator(toLocalShape(db))) || db;
-    await mutateAppDb(() => nextDb);
-    return toLocalShape(nextDb);
+    return toLocalShape(await mutateAppDb(async db => await mutator(toLocalShape(db)) || db));
   }
 
   try {
@@ -161,7 +238,7 @@ export async function mutateAppStore(mutator) {
     ];
 
     await Promise.all(
-      [...nextUsers.values()].map((entry) =>
+      [...nextUsers.values()].filter(entry => JSON.stringify(entry) !== JSON.stringify(previousUsers.get(entry.id))).map((entry) =>
         supabaseRequest(TABLES.users, {
           method: "POST",
           prefer: "resolution=merge-duplicates,return=representation",
@@ -186,7 +263,7 @@ export async function mutateAppStore(mutator) {
       const nextMap = new Map(next[key].map((entry) => [entry.id, entry]));
 
       await Promise.all(
-        [...nextMap.values()].map((entry) =>
+        [...nextMap.values()].filter(entry => JSON.stringify(entry) !== JSON.stringify(previousMap.get(entry.id))).map((entry) =>
           supabaseRequest(table, {
             method: "POST",
             prefer: "resolution=merge-duplicates,return=representation",
@@ -211,11 +288,7 @@ export async function mutateAppStore(mutator) {
     return toLocalShape(next);
   } catch (error) {
     if (shouldFallbackToLocal(error)) {
-      console.warn("Supabase app store write failed; writing to local JSON instead.", error);
-      const db = await readAppDb();
-      const nextDb = (await mutator(toLocalShape(db))) || db;
-      await mutateAppDb(() => nextDb);
-      return toLocalShape(nextDb);
+      throw Object.assign(new Error("Persistent storage write failed; no local fallback was used."), { status: 503 });
     }
     throw error;
   }

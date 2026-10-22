@@ -1,5 +1,8 @@
-import { useState, useEffect, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import ImpactReport from '@/impact/ImpactReport';
+import { getPractice } from '@/impact/storage';
+import { hasReportedScore, displayScore, completeScoreVector } from '@/lib/reportDisplay';
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, Save, Home, CheckCircle, Loader2, ExternalLink, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -127,9 +130,10 @@ function buildFallbackReport({ durationStr, duration, totalPages, fileName }) {
   };
 }
 
-export default function PresentationReport() {
+function LegacyPresentationReport() {
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
+  const suppliedReport = useRef(null);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -215,7 +219,8 @@ export default function PresentationReport() {
         },
       });
 
-      const normalizedReport = normalizeOverallScore(result || buildFallbackReport({ durationStr, duration, totalPages, fileName }));
+      suppliedReport.current = result || buildFallbackReport({ durationStr, duration, totalPages, fileName });
+      const normalizedReport = normalizeOverallScore(suppliedReport.current);
       setReport(normalizedReport);
       setFallbackReason(normalizedReport?.fallback_reason || "");
       await localApi.integrations.Core.TrackActivity({
@@ -231,13 +236,16 @@ export default function PresentationReport() {
       setErrorMessage("");
     } catch (error) {
       console.error("Failed to generate presentation report:", error);
-      setReport(normalizeOverallScore(buildFallbackReport({ durationStr, duration, totalPages, fileName })));
+      suppliedReport.current = buildFallbackReport({ durationStr, duration, totalPages, fileName });
+      setReport(normalizeOverallScore(suppliedReport.current));
       setErrorMessage("The full summary could not be generated, so a fallback summary is shown instead.");
       setFallbackReason(error?.message || "request_failed");
     } finally {
       setLoading(false);
     }
   };
+
+  const totalAvailable = suppliedReport.current && (Object.prototype.hasOwnProperty.call(suppliedReport.current, 'overall_score') ? hasReportedScore(suppliedReport.current.overall_score) : completeScoreVector(suppliedReport.current.scores));
 
   const handleSave = async () => {
     try {
@@ -285,7 +293,7 @@ export default function PresentationReport() {
   }
 
   return (
-    <div className="min-h-screen pb-8">
+    <div className="studio-page studio-page-reading feedback-workbench">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
         <button onClick={() => navigate("/presentation")} className="p-2 rounded-xl hover:bg-white/5">
@@ -294,7 +302,8 @@ export default function PresentationReport() {
         <h2 className="font-semibold text-foreground">Presentation Summary</h2>
       </div>
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="feedback-content">
+        <section className="feedback-summary"><p className="room-eyebrow">REHEARSAL COMPLETE</p><h2>A clearer idea. A stronger delivery.</h2><p>{report?.key_takeaways?.[0] || normalizedReport.suggestions?.[0] || 'Review the feedback from your rehearsal and choose one change to try.'}</p><button type="button" onClick={() => navigate('/presentation')}>Start another rehearsal →</button></section>
         {errorMessage && (
           <div className="glass rounded-2xl px-4 py-3">
             <p className="text-[13px] text-amber-200">{errorMessage}</p>
@@ -320,7 +329,7 @@ export default function PresentationReport() {
         {/* Overall Score */}
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-5 text-center">
           <h3 className="text-sm font-semibold mb-2">Overall score</h3>
-          <div className="text-5xl font-bold font-space text-primary">{computedOverallScore}</div>
+          <div className="text-5xl font-bold font-space text-primary">{totalAvailable ? computedOverallScore : "—"}</div>
           <p className="text-[14px] text-muted-foreground mt-1">out of 10</p>
         </motion.div>
 
@@ -378,15 +387,16 @@ export default function PresentationReport() {
             <h3 className="text-sm font-semibold mb-3">Detailed scores</h3>
             <div className="space-y-2">
               {Object.entries(report.scores).map(([key, val]) => (
-                <div key={key} className="flex items-center gap-3">
-                  <span className="text-[14px] text-muted-foreground capitalize w-32">{key.replace(/_/g, " ")}</span>
-                  <div className="w-32 h-2 bg-white/10 rounded-full overflow-hidden">
+                <div key={key} className="report-score-row">
+                  <span className="text-[14px] text-muted-foreground capitalize report-score-label">{key.replace(/_/g, " ")}</span>
+                  <div className="report-score-meter h-2 bg-white/10 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-violet-500 to-indigo-600 rounded-full"
-                      style={{ width: `${val * 10}%` }}
+                      hidden={!hasReportedScore(val)}
+                      style={{ width: hasReportedScore(val) ? `${val * 10}%` : undefined }}
                     />
                   </div>
-                  <span className="text-[14px] font-semibold text-foreground w-8 text-right">{val}/10</span>
+                  <span className="text-[14px] font-semibold text-foreground report-score-number">{displayScore(val)}/10</span>
                 </div>
               ))}
             </div>
@@ -551,7 +561,8 @@ export default function PresentationReport() {
         )}
 
         {/* Buttons */}
-        <div className="flex gap-3">
+        <div className="feedback-actions">
+          <Button variant="outline" className="rounded-2xl border-white/10" onClick={() => navigate('/presentation')}>New rehearsal</Button>
           <Button
             onClick={handleSave}
             disabled={saved || saving}
@@ -572,4 +583,24 @@ export default function PresentationReport() {
       </div>
     </div>
   );
+}
+
+export default function PresentationReport() {
+  const location = useLocation();
+  const id = new URLSearchParams(location.search).get('session');
+  const [session, setSession] = useState(null), [loadError, setLoadError] = useState('');
+  useEffect(() => {
+    if (!id) return undefined;
+    let active = true; setSession(null); setLoadError('');
+    getPractice(id).then(value => { if (active) setSession(value) }).catch(error => { if (active) setLoadError(error.message) });
+    return () => { active = false; audioManager.stop(); };
+  }, [id]);
+  if (!id) return <LegacyPresentationReport />;
+  return <div className="studio-page impact-studio"><div className="impact-workspace">
+    <header className="impact-header"><h1>SpeakNow Impact Studio · Report</h1><Link className="history-retry" to="/presentation/history">History</Link></header>
+    {loadError && <p role="alert">{loadError}</p>}
+    {!session && !loadError && <p role="status">Loading your saved practice…</p>}
+    {session?.report?.impact && <ImpactReport key={session.id} session={session} />}
+    {session && !session.report?.impact && <p>This legacy record has no Impact evidence. It has been preserved in history.</p>}
+  </div></div>;
 }

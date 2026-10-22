@@ -1,0 +1,46 @@
+{
+  "task04": [
+    "src/components/voice/ModeSelector.jsx",
+    "src/components/voice/ScenarioCard.jsx",
+    "src/pages/Home.jsx",
+    "src/pages/MainLanding.jsx",
+    "src/spatial-studio.css"
+  ],
+  "task05": [
+    "src/components/report/PracticeTimeline.jsx",
+    "src/components/report/RadarChart.jsx",
+    "src/expression-practice.css",
+    "src/lib/reportDisplay.js",
+    "src/pages/PresentationHistory.jsx",
+    "src/pages/PresentationReport.jsx",
+    "src/pages/VoiceHistory.jsx",
+    "src/pages/VoiceReport.jsx",
+    "src/spatial-studio.css"
+  ],
+  "task06": [
+    "src/App.jsx",
+    "src/api/localClient.js",
+    "src/components/GlowCTAButton.jsx",
+    "src/components/LoadingProgressCard.jsx",
+    "src/components/presentation/LiveScorePanel.jsx",
+    "src/components/report/RadarChart.jsx",
+    "src/components/scene/createScene.js",
+    "src/components/spatial/VoiceOrb.jsx",
+    "src/components/ui/dialog.jsx",
+    "src/components/voice/ScenarioCard.jsx",
+    "src/hooks/useSessionHistory.js",
+    "src/index.css",
+    "src/lib/latestResource.js",
+    "src/lib/profileAnalytics.js",
+    "src/pages/AdminPage.jsx",
+    "src/pages/CasualVideo.jsx",
+    "src/pages/PresentationAnalysis.jsx",
+    "src/pages/PresentationFeedback.jsx",
+    "src/pages/PresentationHistory.jsx",
+    "src/pages/PresentationPractice.jsx",
+    "src/pages/VoiceHistory.jsx",
+    "src/spatial-studio.css",
+    "src/types/globals.d.ts",
+    "index.html"
+  ]
+}

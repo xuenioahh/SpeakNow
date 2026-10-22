@@ -1,0 +1,994 @@
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -16,19 +16,19 @@
+ // Page imports
+ import AuthPage from './pages/AuthPage';
+ import MainLanding from './pages/MainLanding';
+-import Home from './pages/Home';
+-import VoiceSetup from './pages/VoiceSetup';
++const Home = lazy(() => import('./pages/Home'));
++const VoiceSetup = lazy(() => import('./pages/VoiceSetup'));
+ const VoiceChat = lazy(() => import('./pages/VoiceChat'));
+ const CasualVideo = lazy(() => import('./pages/CasualVideo'));
+ const VoiceReport = lazy(() => import('./pages/VoiceReport'));
+-import Presentation from './pages/Presentation';
++const Presentation = lazy(() => import('./pages/Presentation'));
+ const PresentationAnalysis = lazy(() => import('./pages/PresentationAnalysis'));
+ const PresentationFeedback = lazy(() => import('./pages/PresentationFeedback'));
+ const PresentationPractice = lazy(() => import('./pages/PresentationPractice'));
+ const PresentationReport = lazy(() => import('./pages/PresentationReport'));
+ const Profile = lazy(() => import('./pages/Profile'));
+-import VoiceHistory from './pages/VoiceHistory';
+-import PresentationHistory from './pages/PresentationHistory';
++const VoiceHistory = lazy(() => import('./pages/VoiceHistory'));
++const PresentationHistory = lazy(() => import('./pages/PresentationHistory'));
+ const AdminPage = lazy(() => import('./pages/AdminPage'));
+ 
+ const AuthenticatedApp = () => {
+@@ -56,7 +56,7 @@
+ 
+   return (
+     <AnimatePresence mode="wait" initial={false}>
+-      <motion.div key={location.pathname} className="route-stage" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}>
++      <motion.div key={location.pathname} className="route-stage" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}>
+       <Suspense fallback={<div className="route-loading" role="status">Opening your studio…</div>}>
+     <Routes location={location}>
+       <Route path="/auth" element={<AuthPage />} />
+--- a/src/api/localClient.js
++++ b/src/api/localClient.js
+@@ -27,6 +27,7 @@
+ 
+   const result = await response.json().catch(() => ({}));
+   if (!response.ok || !result?.ok) {
++    /** @type {Error & { code?: string }} */
+     const error = new Error(result?.error || `Request failed with ${response.status}`);
+     if (result?.code) {
+       error.code = result.code;
+--- a/src/components/GlowCTAButton.jsx
++++ b/src/components/GlowCTAButton.jsx
+@@ -1,29 +1,30 @@
+-import { useState } from "react";
++import { useRef } from "react";
+ import { ArrowRight } from "lucide-react";
+ import { Button } from "@/components/ui/button";
+ import { cn } from "@/lib/utils";
+ 
+ export default function GlowCTAButton({
+   children,
+-  className,
+-  glowClassName,
+-  arrowClassName,
+-  onMouseMove,
+-  onMouseLeave,
++  className = "",
++  glowClassName = "",
++  arrowClassName = "",
++  onMouseMove = undefined,
++  onMouseLeave = undefined,
+   ...props
+ }) {
+-  const [glowPoint, setGlowPoint] = useState({ x: "50%", y: "50%", visible: false });
++  const glow = useRef(null);
+ 
+   const handleMouseMove = (event) => {
+     const rect = event.currentTarget.getBoundingClientRect();
+     const x = `${event.clientX - rect.left}px`;
+     const y = `${event.clientY - rect.top}px`;
+-    setGlowPoint({ x, y, visible: true });
++    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) { glow.current?.style.setProperty("--glow-x", x); glow.current?.style.setProperty("--glow-y", y); }
+     onMouseMove?.(event);
+   };
+ 
+   const handleMouseLeave = (event) => {
+-    setGlowPoint((current) => ({ ...current, visible: false }));
++    glow.current?.style.setProperty("--glow-x", "50%");
++    glow.current?.style.setProperty("--glow-y", "50%");
+     onMouseLeave?.(event);
+   };
+ 
+@@ -39,13 +40,13 @@
+       )}
+     >
+       <span
++        ref={glow}
+         aria-hidden="true"
+         className={cn(
+           "pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300 group-hover:opacity-100",
+-          glowPoint.visible ? "opacity-100" : "",
+         )}
+         style={{
+-          background: `radial-gradient(180px circle at ${glowPoint.x} ${glowPoint.y}, rgba(255,255,255,0.28), rgba(255,255,255,0.08) 38%, transparent 72%)`,
++          background: "radial-gradient(180px circle at var(--glow-x,50%) var(--glow-y,50%), rgba(255,255,255,0.28), rgba(255,255,255,0.08) 38%, transparent 72%)",
+         }}
+       />
+       <span
+--- a/src/components/LoadingProgressCard.jsx
++++ b/src/components/LoadingProgressCard.jsx
+@@ -1,4 +1,3 @@
+-import { useEffect, useMemo, useState } from "react";
+ import { motion } from "framer-motion";
+ import { Loader2 } from "lucide-react";
+ 
+@@ -15,26 +14,7 @@
+   steps = DEFAULT_STEPS,
+   durationMs = 9000,
+ }) {
+-  const safeSteps = useMemo(() => (Array.isArray(steps) && steps.length ? steps : DEFAULT_STEPS), [steps]);
+-  const [progress, setProgress] = useState(8);
+-
+-  useEffect(() => {
+-    setProgress(8);
+-    const startedAt = Date.now();
+-    const timer = window.setInterval(() => {
+-      const elapsed = Date.now() - startedAt;
+-      const ratio = Math.min(elapsed / Math.max(durationMs, 1000), 1);
+-      const eased = 8 + ratio * 84;
+-      setProgress((current) => (eased > current ? Math.min(92, eased) : current));
+-    }, 180);
+-
+-    return () => window.clearInterval(timer);
+-  }, [durationMs, steps]);
+-
+-  const activeStepIndex = Math.min(
+-    safeSteps.length - 1,
+-    Math.max(0, Math.floor((progress / 100) * safeSteps.length)),
+-  );
++  const safeSteps = (Array.isArray(steps) && steps.length ? steps : DEFAULT_STEPS);
+ 
+   return (
+     <div className="min-h-screen flex items-center justify-center px-4">
+@@ -53,41 +33,9 @@
+           </div>
+         </div>
+ 
+-        <div className="mt-5">
+-          <div className="flex items-center justify-between text-[12px] text-muted-foreground mb-2">
+-            <span>{safeSteps[activeStepIndex]}</span>
+-            <span>{Math.round(progress)}%</span>
+-          </div>
+-          <div className="h-2.5 rounded-full bg-white/8 overflow-hidden">
+-            <motion.div
+-              className="h-full rounded-full bg-gradient-to-r from-violet-500 via-indigo-500 to-cyan-400"
+-              animate={{ width: `${progress}%` }}
+-              transition={{ ease: "easeOut", duration: 0.2 }}
+-            />
+-          </div>
+-        </div>
+-
++        <p className="mt-5 text-sm text-muted-foreground" role="status">Working on your actual request. This view closes when the result is ready.</p>
+         <div className="mt-5 space-y-2">
+-          {safeSteps.map((step, index) => {
+-            const isDone = index < activeStepIndex;
+-            const isActive = index === activeStepIndex;
+-            return (
+-              <div key={step} className="flex items-center gap-3">
+-                <div
+-                  className={`w-2.5 h-2.5 rounded-full ${
+-                    isDone ? "bg-emerald-400" : isActive ? "bg-primary" : "bg-white/15"
+-                  }`}
+-                />
+-                <p
+-                  className={`text-[13px] ${
+-                    isDone || isActive ? "text-foreground" : "text-muted-foreground"
+-                  }`}
+-                >
+-                  {step}
+-                </p>
+-              </div>
+-            );
+-          })}
++          {safeSteps.map(step => <p key={step} className="text-[13px] text-muted-foreground">{step}</p>)}
+         </div>
+       </motion.div>
+     </div>
+--- a/src/components/presentation/LiveScorePanel.jsx
++++ b/src/components/presentation/LiveScorePanel.jsx
+@@ -62,6 +62,7 @@
+ 
+   return (
+     <div className="glass rounded-xl p-5 space-y-4">
++      <p role="note" className="text-xs leading-relaxed text-amber-200">Demo indicators · these values are simulated, not measurements of this recording.</p>
+       {/* Overall */}
+       <div className="flex items-center justify-between">
+         <span className="text-[15px] font-semibold text-muted-foreground uppercase tracking-wide">Live Score</span>
+--- a/src/components/report/RadarChart.jsx
++++ b/src/components/report/RadarChart.jsx
+@@ -1,9 +1,10 @@
+ import { hasReportedScore, displayScore, displayRecordDate } from '@/lib/reportDisplay';
+ import { useId, useState } from 'react';
+ import { useReducedMotion } from 'framer-motion';
+-import { Radar, RadarChart as RechartsRadar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts';
++import { Radar, RadarChart as RechartsRadar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip, Text } from 'recharts';
+ 
+ export default function RadarChart({ scores, maxScore = 9, history = [] }) {
++  const [chartWidth, setChartWidth] = useState(0);
+   const [selected, setSelected] = useState(null);
+   const reduced = useReducedMotion();
+   const gradient = useId().replace(/:/g, '');
+@@ -16,11 +17,11 @@
+   }).sort((a, b) => new Date(a.created_date).getTime() - new Date(b.created_date).getTime()).slice(-5);
+   return <section className="skill-radar" aria-label="Skill scores">
+     <div className="w-full h-64" role="img" aria-label={data.map(item => `${item.subject}: ${item.score === null ? "not available" : item.label + " out of " + maxScore}`).join(', ')}>
+-      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+-        <RechartsRadar cx="50%" cy="50%" outerRadius="64%" data={data}>
++      <ResponsiveContainer width="100%" height="100%" minWidth={0} onResize={width => setChartWidth(current => current === Math.round(width) ? current : Math.round(width))}>
++        <RechartsRadar cx="50%" cy="50%" outerRadius={chartWidth ? Math.max(40, Math.min(chartWidth / 2 - 72, 88)) : "60%"} data={data}>
+           <defs><linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#c5a7ff" stopOpacity={0.48} /><stop offset="100%" stopColor="#8061ce" stopOpacity={0.14} /></linearGradient></defs>
+           <PolarGrid stroke="rgba(205,190,232,0.14)" />
+-          <PolarAngleAxis dataKey="subject" tick={{ fill: '#c7bdd8', fontSize: 11 }} />
++          <PolarAngleAxis dataKey="subject" tick={({ x, y, textAnchor, payload }) => <Text x={x} y={y} textAnchor={textAnchor} verticalAnchor="middle" width={64} maxLines={3} breakAll fontSize={11} fill="#c7bdd8">{payload.value}</Text>} />
+           <PolarRadiusAxis angle={90} domain={[0, maxScore]} tick={{ fill: '#b0a6c0', fontSize: 9 }} />
+           <Tooltip formatter={value => [`${displayScore(value)} / ${maxScore}`, 'Score']} allowEscapeViewBox={{ x: false, y: false }} contentStyle={{ background: '#25202f', border: '1px solid #aa8bd540', borderRadius: 12, color: '#ede5f8' }} />
+           {canDraw && <Radar name="Score" dataKey="score" stroke="#bca1ef" fill={`url(#${gradient})`} strokeWidth={2} dot={({ cx, cy, payload }) => <circle key={payload.subject} cx={cx} cy={cy} r={selected === payload.subject ? 5 : 3} fill={selected === payload.subject ? '#f1e4ff' : '#d4bcff'} stroke={selected === payload.subject ? '#aa85ee' : 'transparent'} strokeWidth={2} />} isAnimationActive={!reduced} animationDuration={450} />}
+--- a/src/components/scene/createScene.js
++++ b/src/components/scene/createScene.js
+@@ -6,6 +6,8 @@
+   let frame = 0, disposed = false, visible = true, lastFrame = 0, elapsed = 0, drag = null;
+   const listeners = [];
+   const resources = [];
++  const projectionCache = new WeakMap();
++  const compact = window.matchMedia("(max-width: 640px)").matches;
+   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+   const listen = (element, type, handler, options) => { element.addEventListener(type, handler, options); listeners.push(() => element.removeEventListener(type, handler, options)); };
+   const dispose = () => {
+@@ -16,8 +18,8 @@
+     renderer?.dispose(); renderer?.forceContextLoss(); renderer?.domElement.remove();
+   };
+   try {
+-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
+-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
++    renderer = new THREE.WebGLRenderer({ antialias: !compact, alpha: false, powerPreference: 'low-power' });
++    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, compact ? 1.25 : 1.6));
+     renderer.outputColorSpace = THREE.SRGBColorSpace;
+     renderer.toneMapping = THREE.ACESFilmicToneMapping;
+     renderer.toneMappingExposure = 1.25;
+@@ -32,7 +34,7 @@
+     const fill = new THREE.HemisphereLight('#eff5e8', '#606950', 2.5); scene.add(fill);
+     const sun = new THREE.DirectionalLight(theme.light, 4); sun.position.set(2.5, 8, 5); sun.castShadow = true;
+     resources.push(sun.shadow);
+-    sun.shadow.mapSize.set(1024, 1024); sun.shadow.camera.left = -6; sun.shadow.camera.right = 6; sun.shadow.camera.top = 6; sun.shadow.camera.bottom = -6;
++    sun.shadow.mapSize.set(compact ? 512 : 1024, compact ? 512 : 1024); sun.shadow.camera.left = -6; sun.shadow.camera.right = 6; sun.shadow.camera.top = 6; sun.shadow.camera.bottom = -6;
+     sun.shadow.normalBias = 0.035; sun.shadow.bias = -0.0004; scene.add(sun);
+     const rim = new THREE.DirectionalLight('#c1d9e5', 1.3); rim.position.set(-4, 4, -1); scene.add(rim);
+     built = buildRoom(scenarioId, theme); scene.add(built.room);
+@@ -87,8 +89,12 @@
+       markers.forEach((marker, i) => {
+         if (!marker) return;
+         projected.copy(cuePoints[i]).project(camera);
+-        marker.style.transform = `translate(${(projected.x * 0.5 + 0.5) * width}px, ${(-projected.y * 0.5 + 0.5) * height}px) translate(-50%, -50%)`;
+-        marker.hidden = projected.z > 1 || projected.z < -1 || Math.abs(projected.x) > 0.95 || Math.abs(projected.y) > 0.91;
++        const transform = `translate(${(projected.x * 0.5 + 0.5) * width}px, ${(-projected.y * 0.5 + 0.5) * height}px) translate(-50%, -50%)`;
++        const hidden = projected.z > 1 || projected.z < -1 || Math.abs(projected.x) > 0.95 || Math.abs(projected.y) > 0.91;
++        const previous = projectionCache.get(marker);
++        if (!previous || previous.transform !== transform) marker.style.transform = transform;
++        if (!previous || previous.hidden !== hidden) marker.hidden = hidden;
++        if (!previous || previous.transform !== transform || previous.hidden !== hidden) projectionCache.set(marker, { transform, hidden });
+       });
+       const moving = Math.abs(current.theta - desired.theta) + Math.abs(current.phi - desired.phi) + Math.abs(current.radius - desired.radius) + current.target.distanceTo(desired.target) > 0.001;
+       if (!media.matches && (built.hasMotion || moving)) frame = requestAnimationFrame(render);
+@@ -131,6 +137,8 @@
+     listen(media, 'change', invalidate);
+     resizeObserver = new ResizeObserver(() => {
+       const rect = container.getBoundingClientRect(); width = Math.max(1, rect.width); height = Math.max(1, rect.height);
++      const nextRatio = Math.min(window.devicePixelRatio || 1, window.matchMedia('(max-width: 640px)').matches ? 1.25 : 1.6);
++      if (renderer.getPixelRatio() !== nextRatio) renderer.setPixelRatio(nextRatio);
+       renderer.setSize(width, height); camera.aspect = width / height; camera.updateProjectionMatrix();
+       if (view === 'overview') desired.radius = overviewRadius();
+       invalidate();
+--- a/src/components/spatial/VoiceOrb.jsx
++++ b/src/components/spatial/VoiceOrb.jsx
+@@ -45,7 +45,8 @@
+   useEffect(() => {
+     const node = host.current;
+     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+-    const compact = window.matchMedia('(max-width: 640px)').matches;
++    let compact = window.matchMedia('(max-width: 640px)').matches;
++    let renderWidth = 0, renderHeight = 0, pixelRatio = 0;
+     let renderer, observer, frame = 0, visible = true, disposed = false, broken = false, elapsed = 0, last = 0, energy = 0;
+     let scene, geometry, material, shellMaterial, shellGeometry;
+     let previousState = "idle", completionAge = 0;
+@@ -105,8 +106,14 @@
+       const resize = new ResizeObserver(() => {
+         if (disposed) return;
+         const { width, height } = node.getBoundingClientRect();
+-        renderer.setSize(Math.max(1, width), Math.max(1, height));
+-        camera.aspect = width / Math.max(1, height); camera.updateProjectionMatrix(); schedule();
++        const nextWidth = Math.max(1, Math.round(width)), nextHeight = Math.max(1, Math.round(height));
++        compact = window.matchMedia('(max-width: 640px)').matches;
++        const nextRatio = Math.min(window.devicePixelRatio || 1, compact ? 1.25 : 1.5);
++        if (renderWidth === nextWidth && renderHeight === nextHeight && pixelRatio === nextRatio) return;
++        renderWidth = nextWidth; renderHeight = nextHeight; pixelRatio = nextRatio;
++        renderer.setPixelRatio(nextRatio);
++        renderer.setSize(nextWidth, nextHeight);
++        camera.aspect = nextWidth / nextHeight; camera.updateProjectionMatrix(); schedule();
+       });
+       resize.observe(node);
+       observer = resize;
+@@ -125,7 +132,7 @@
+         window.removeEventListener('focus', schedule); window.removeEventListener('blur', pause);
+         reduced.removeEventListener('change', schedule); node.removeEventListener('orb-update', schedule);
+         renderer.domElement.removeEventListener('webglcontextlost', fail);
+-        geometry.dispose(); shellGeometry.dispose(); material.dispose(); shellMaterial.dispose(); renderer.dispose(); renderer.domElement.remove();
++        geometry.dispose(); shellGeometry.dispose(); material.dispose(); shellMaterial.dispose(); renderer.dispose(); renderer.forceContextLoss?.(); renderer.domElement.remove();
+       };
+     } catch {
+       renderer?.dispose(); renderer?.domElement.remove(); geometry?.dispose(); material?.dispose(); shellGeometry?.dispose(); shellMaterial?.dispose(); observer?.disconnect(); fail();
+--- a/src/components/ui/dialog.jsx
++++ b/src/components/ui/dialog.jsx
+@@ -14,7 +14,9 @@
+ 
+ const DialogClose = DialogPrimitive.Close
+ 
+-const DialogOverlay = React.forwardRef(({ className, ...props }, ref) => (
++const DialogOverlay = React.forwardRef(
++  /** @param {React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>} props @param {React.ForwardedRef<React.ElementRef<typeof DialogPrimitive.Overlay>>} ref */
++  ({ className, ...props }, ref) => (
+   <DialogPrimitive.Overlay
+     ref={ref}
+     className={cn(
+@@ -25,19 +27,21 @@
+ ))
+ DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
+ 
+-const DialogContent = React.forwardRef(({ className, children, ...props }, ref) => (
++const DialogContent = React.forwardRef(
++  /** @param {React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>} props @param {React.ForwardedRef<React.ElementRef<typeof DialogPrimitive.Content>>} ref */
++  ({ className, children, ...props }, ref) => (
+   <DialogPortal>
+     <DialogOverlay />
+     <DialogPrimitive.Content
+       ref={ref}
+       className={cn(
+-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
++        "fixed left-[50%] top-[50%] z-50 grid w-[calc(100%-32px)] max-w-lg max-h-[calc(100dvh-32px)] overflow-y-auto translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+         className
+       )}
+       {...props}>
+       {children}
+       <DialogPrimitive.Close
+-        className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
++        className="absolute right-2 top-2 min-h-11 min-w-11 flex items-center justify-center rounded-xl opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+         <X className="h-4 w-4" />
+         <span className="sr-only">Close</span>
+       </DialogPrimitive.Close>
+@@ -47,17 +51,17 @@
+ DialogContent.displayName = DialogPrimitive.Content.displayName
+ 
+ const DialogHeader = ({
+-  className,
++  className = "",
+   ...props
+ }) => (
+   <div
+-    className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)}
++    className={cn("flex flex-col space-y-1.5 pr-10 text-center sm:text-left", className)}
+     {...props} />
+ )
+ DialogHeader.displayName = "DialogHeader"
+ 
+ const DialogFooter = ({
+-  className,
++  className = "",
+   ...props
+ }) => (
+   <div
+@@ -66,7 +70,9 @@
+ )
+ DialogFooter.displayName = "DialogFooter"
+ 
+-const DialogTitle = React.forwardRef(({ className, ...props }, ref) => (
++const DialogTitle = React.forwardRef(
++  /** @param {React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>} props @param {React.ForwardedRef<React.ElementRef<typeof DialogPrimitive.Title>>} ref */
++  ({ className, ...props }, ref) => (
+   <DialogPrimitive.Title
+     ref={ref}
+     className={cn("text-lg font-semibold leading-none tracking-tight", className)}
+@@ -74,7 +80,9 @@
+ ))
+ DialogTitle.displayName = DialogPrimitive.Title.displayName
+ 
+-const DialogDescription = React.forwardRef(({ className, ...props }, ref) => (
++const DialogDescription = React.forwardRef(
++  /** @param {React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>} props @param {React.ForwardedRef<React.ElementRef<typeof DialogPrimitive.Description>>} ref */
++  ({ className, ...props }, ref) => (
+   <DialogPrimitive.Description
+     ref={ref}
+     className={cn("text-sm text-muted-foreground", className)}
+--- a/src/components/voice/ScenarioCard.jsx
++++ b/src/components/voice/ScenarioCard.jsx
+@@ -54,9 +54,10 @@
+         <div className="w-full aspect-[16/9] overflow-hidden rounded-t-2xl relative">
+           <img
+             src={imgUrl}
++            srcSet={`${imgUrl.replace("w=400", "w=200")} 200w, ${imgUrl} 400w`}
+             alt=""
+             width="400" height="225"
+-            sizes="(max-width: 600px) 50vw, (max-width: 900px) 33vw, 25vw"
++            sizes="(max-width: 600px) calc((100vw - 44px) / 2), (max-width: 900px) calc((100vw - 64px) / 3), (max-width: 1120px) calc((100vw - 80px) / 4), 260px"
+             loading="lazy"
+             decoding="async"
+             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+--- /dev/null
++++ b/src/hooks/useSessionHistory.js
+@@ -0,0 +1,25 @@
++import { useEffect, useRef, useState } from 'react';
++import { subscribeActivitySync } from '@/lib/activitySync';
++import { createLatestResource } from '@/lib/latestResource';
++
++// Both existing history pages have exactly the same list/reload lifecycle.
++export function useSessionHistory(entity) {
++  const [sessions, setSessions] = useState([]);
++  const [loading, setLoading] = useState(true);
++  const [loadError, setLoadError] = useState('');
++  const resource = useRef(null);
++  useEffect(() => {
++    const reader = createLatestResource({
++      load: () => entity.list('-created_date', 50),
++      onStart: () => setLoading(true),
++      onValue: data => { setSessions(data || []); setLoadError(''); },
++      onError: () => setLoadError('Your saved sessions could not be loaded. Existing records are kept; try again.'),
++      onEnd: () => setLoading(false),
++    });
++    resource.current = reader;
++    void reader.refresh();
++    const unsubscribe = subscribeActivitySync(() => void reader.refresh());
++    return () => { reader.dispose(); unsubscribe(); if (resource.current === reader) resource.current = null; };
++  }, [entity]);
++  return { sessions, setSessions: update => { if (resource.current) setSessions(update); }, loading, loadError, loadSessions: () => resource.current?.refresh() };
++}
+--- a/src/index.css
++++ b/src/index.css
+@@ -1,4 +1,3 @@
+-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+ 
+ @tailwind base;
+ @tailwind components;
+@@ -94,7 +93,7 @@
+ 
+   body {
+     @apply bg-background text-foreground font-inter text-base leading-relaxed;
+-    min-width: 320px;
++    min-width: 0;
+     overflow-x: hidden;
+   }
+ }
+--- /dev/null
++++ b/src/lib/latestResource.js
+@@ -0,0 +1,27 @@
++// Serialize the existing read operation and suppress obsolete/unmounted results.
++// No API, stored data or sort/filter semantics are added here.
++export function createLatestResource({ load, onStart = () => {}, onValue, onError = (_error) => {}, onEnd = () => {} }) {
++  let disposed = false, pending = null, queued = false, version = 0;
++  async function refresh() {
++    if (disposed) return;
++    if (pending) { queued = true; version++; return pending; }
++    const generation = ++version;
++    onStart();
++    let finish = () => {};
++    pending = new Promise(resolve => { finish = () => resolve(undefined); });
++    const operation = pending;
++    try {
++      const value = await load();
++      if (!disposed && generation === version) onValue(value);
++    } catch (error) {
++      if (!disposed && generation === version) onError(error);
++    } finally {
++      pending = null;
++      if (!disposed && queued) { queued = false; void refresh(); }
++      else if (!disposed) onEnd();
++      finish();
++    }
++    return operation;
++  }
++  return { refresh, dispose() { disposed = true; queued = false; version++; } };
++}
+--- a/src/lib/profileAnalytics.js
++++ b/src/lib/profileAnalytics.js
+@@ -14,7 +14,7 @@
+     ...voiceSessions.map(s => ({ ...s, kind: "voice" })),
+     ...presentationSessions.map(s => ({ ...s, kind: "presentation" })),
+   ].filter(s => s && Number.isFinite(new Date(s.created_date).getTime()) && new Date(s.created_date) <= now)
+-    .sort((a, b) => new Date(a.created_date) - new Date(b.created_date));
++    .sort((a, b) => new Date(a.created_date).getTime() - new Date(b.created_date).getTime());
+   const start = new Date(now);
+   start.setHours(0, 0, 0, 0);
+   start.setDate(start.getDate() - days + 1);
+--- a/src/pages/AdminPage.jsx
++++ b/src/pages/AdminPage.jsx
+@@ -172,7 +172,7 @@
+     : [];
+ 
+   return (
+-    <div className="min-h-screen pb-12">
++    <div className="admin-dashboard min-h-screen pb-12">
+       <div className="px-5 pt-6 pb-4 flex items-center justify-between gap-3">
+         <div className="flex items-center gap-3">
+           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+@@ -522,7 +522,7 @@
+       </div>
+ 
+       <Dialog open={Boolean(selectedUser)} onOpenChange={(open) => !open && setSelectedUser(null)}>
+-        <DialogContent className="max-w-3xl bg-[#171717] border-white/10 text-foreground">
++        <DialogContent className="admin-user-dialog max-w-3xl bg-[#171717] border-white/10 text-foreground">
+           <DialogHeader>
+             <DialogTitle>{selectedUser?.full_name || "User detail"}</DialogTitle>
+             <DialogDescription>
+--- a/src/pages/CasualVideo.jsx
++++ b/src/pages/CasualVideo.jsx
+@@ -74,6 +74,14 @@
+   const practiceKey = `${key}.practice`;
+   const beforeUrlRef = useRef('');
+   const video = useRef(null);
++  /** @type {import('react').MutableRefObject<{
++   * active: boolean, mounted: boolean, worker: Worker | null,
++   * stream: MediaStream | null, recorder: MediaRecorder | null,
++   * recognition: SpeechRecognition | null, timer: ReturnType<typeof setInterval> | null,
++   * url: string, samples: any[], utterances: any[], id: string,
++   * start?: number, brief?: any, blob?: Blob,
++   * pendingUtterance?: { start: number, text: string } | null
++   * }>} */
+   const run = useRef({ active: false, mounted: true, worker: null, stream: null, recorder: null, recognition: null, timer: null, url: '', samples: [], utterances: [], id: '' });
+ 
+   useEffect(() => {
+--- a/src/pages/PresentationAnalysis.jsx
++++ b/src/pages/PresentationAnalysis.jsx
+@@ -133,7 +133,7 @@
+   }
+ 
+   return (
+-    <div className="min-h-screen pb-8">
++    <div className="studio-page studio-page-reading">
+       <div className="px-4 pt-5 space-y-4">
+         {errorMessage && (
+           <div className="glass rounded-2xl px-4 py-3">
+--- a/src/pages/PresentationFeedback.jsx
++++ b/src/pages/PresentationFeedback.jsx
+@@ -1,3 +1,4 @@
++import { createLatestResource } from '@/lib/latestResource';
+ import { useEffect, useRef, useState } from "react";
+ import { useNavigate } from "react-router-dom";
+ import { ArrowLeft, Play, Volume2 } from "lucide-react";
+@@ -13,54 +14,48 @@
+   const [audioFailed, setAudioFailed] = useState(false);
+   const [fallbackReason, setFallbackReason] = useState("");
+   const spokenSnapshotRef = useRef(null);
++  const mountedRef = useRef(true);
++  const playbackGeneration = useRef(0);
++  const [loadError, setLoadError] = useState("");
+ 
+   const speakText = async (text) => {
+     if (!text) return;
++    const generation = ++playbackGeneration.current;
+     const ok = await audioManager.playAIVoice(text, "female");
+-    setAudioFailed(!ok);
++    if (mountedRef.current && generation === playbackGeneration.current) setAudioFailed(!ok);
+   };
+ 
+   useEffect(() => {
+-    let mounted = true;
+-    let lastSeenUpdatedAt = null;
+-
+-    const refreshFeedback = async () => {
+-      const payload = JSON.parse(
+-        sessionStorage.getItem("presentationPauseFeedbackLive") ||
+-        sessionStorage.getItem("presentationPauseFeedbackPayload") ||
+-        "null"
+-      );
+-
+-      if (!payload) {
+-        navigate("/presentation/practice");
+-        return;
+-      }
+-
+-      if (lastSeenUpdatedAt === payload.updatedAt) {
+-        return;
+-      }
+-
+-      const result = await localApi.integrations.Core.InvokeLLM({
+-        input: {
+-          kind: "presentation-pause-feedback",
+-          ...payload,
+-        },
+-      });
+-
+-      if (!mounted) return;
+-      lastSeenUpdatedAt = payload.updatedAt;
+-      setFeedback(result);
+-      setFallbackReason(result?.fallback_reason || "");
+-      setLastUpdatedAt(payload.updatedAt || Date.now());
++    mountedRef.current = true;
++    let latestPayload, lastRequestedKey = null, retryAfter = 0;
++    const reader = createLatestResource({
++      load: async () => {
++        const payload = latestPayload;
++        const result = await localApi.integrations.Core.InvokeLLM({ input: { kind: 'presentation-pause-feedback', ...payload } });
++        return { result, payload };
++      },
++      onValue: ({ result, payload }) => {
++        setFeedback(result);
++        setFallbackReason(result?.fallback_reason || '');
++        setLastUpdatedAt(payload.updatedAt || Date.now());
++        setLoadError('');
++      },
++      onError: () => { setLoadError('Feedback could not be refreshed. Your practice data is kept; return to practice or wait for retry.'); lastRequestedKey = null; retryAfter = Date.now() + 1500; },
++    });
++    const refreshFeedback = () => {
++      if (Date.now() < retryAfter) return;
++      try {
++        const payload = JSON.parse(sessionStorage.getItem('presentationPauseFeedbackLive') || sessionStorage.getItem('presentationPauseFeedbackPayload') || 'null');
++        if (!payload) { navigate('/presentation/practice'); return; }
++        const key = JSON.stringify(payload);
++        if (key === lastRequestedKey) return;
++        lastRequestedKey = key; latestPayload = payload;
++        void reader.refresh();
++      } catch { setLoadError('Saved feedback data could not be read. Return to practice and pause again.'); }
+     };
+-
+     refreshFeedback();
+     const interval = window.setInterval(refreshFeedback, 300);
+-
+-    return () => {
+-      mounted = false;
+-      window.clearInterval(interval);
+-    };
++    return () => { mountedRef.current = false; reader.dispose(); window.clearInterval(interval); };
+   }, [navigate]);
+ 
+   useEffect(() => {
+@@ -76,12 +71,15 @@
+       .filter(Boolean)
+       .join(" ");
+ 
++    const generation = ++playbackGeneration.current;
+     audioManager.playAIVoice(summary, "female").then((ok) => {
++      if (!mountedRef.current || generation !== playbackGeneration.current) return;
+       setAudioFailed(!ok);
+       spokenSnapshotRef.current = lastUpdatedAt;
+     });
+ 
+     return () => {
++      if (generation === playbackGeneration.current) playbackGeneration.current++;
+       audioManager.stop();
+     };
+   }, [feedback, lastUpdatedAt]);
+@@ -89,7 +87,7 @@
+   if (!feedback) {
+     return (
+       <div className="min-h-screen flex items-center justify-center">
+-        <p className="text-[15px] text-muted-foreground">Preparing feedback...</p>
++        <div className="text-center space-y-3"><p className="text-[15px] text-muted-foreground" role={loadError ? 'alert' : 'status'}>{loadError || 'Preparing feedback...'}</p>{loadError && <Button onClick={() => navigate('/presentation/practice?resume=1')}>Return to practice</Button>}</div>
+       </div>
+     );
+   }
+@@ -106,6 +104,7 @@
+         </div>
+       </div>
+ 
++      {loadError && <p role="alert" className="px-4 py-3 text-sm text-amber-200">{loadError}</p>}
+       {audioFailed && (
+         <div className="px-4 pt-3">
+           <p className="text-[13px] text-accent">Voice playback is unavailable right now in this browser.</p>
+--- a/src/pages/PresentationHistory.jsx
++++ b/src/pages/PresentationHistory.jsx
+@@ -1,5 +1,6 @@
++import { useSessionHistory } from '@/hooks/useSessionHistory';
+ import { hasReportedScore, displayScore, completeScoreVector, displayRecordDate, displayDuration } from '@/lib/reportDisplay';
+-import { useState, useEffect } from "react";
++import { useState, useEffect, useRef } from "react";
+ import { useLocation, useNavigate } from "react-router-dom";
+ import { motion, AnimatePresence } from "framer-motion";
+ import { ArrowLeft, ChevronDown, ChevronUp, Monitor, Trash2, Calendar, Clock, FileText, ExternalLink } from "lucide-react";
+@@ -7,7 +8,6 @@
+ import { Button } from "@/components/ui/button";
+ import { toast } from "sonner";
+ import BottomNav from "@/components/BottomNav";
+-import { subscribeActivitySync } from "@/lib/activitySync";
+ 
+ const TED_TALKS = [
+   {
+@@ -54,50 +54,31 @@
+ export default function PresentationHistory() {
+   const location = useLocation();
+   const navigate = useNavigate();
+-  const [sessions, setSessions] = useState([]);
+-  const [loading, setLoading] = useState(true);
+-  const [loadError, setLoadError] = useState("");
++  const { sessions, setSessions, loading, loadError, loadSessions } = useSessionHistory(localApi.entities.PresentationSession);
+   const [expanded, setExpanded] = useState(null);
++  const openedLink = useRef("");
++  const deleting = useRef(new Set());
+   useEffect(() => {
+     const id = new URLSearchParams(location.search).get('session');
+-    if (id && sessions.some(session => session.id === id)) {
++    const linkKey = `${location.key}:${id}`;
++    if (id && openedLink.current !== linkKey && sessions.some(session => session.id === id)) {
++      openedLink.current = linkKey;
+       setExpanded(id);
+-      requestAnimationFrame(() => document.getElementById(`saved-session-${id}`)?.scrollIntoView({ behavior: 'auto', block: 'start' }));
++      const frame = requestAnimationFrame(() => document.getElementById(`saved-session-${id}`)?.scrollIntoView({ behavior: 'auto', block: 'start' }));
++      return () => cancelAnimationFrame(frame);
+     }
+-  }, [location.search, sessions]);
+-
+-  const loadSessions = async () => {
+-    setLoading(true);
+-    try {
+-      const data = await localApi.entities.PresentationSession.list("-created_date", 50);
+-      setSessions(data || []);
+-      setLoadError("");
+-    } catch {
+-      setLoadError("Your saved sessions could not be loaded. Existing records are kept; try again.");
+-    } finally { setLoading(false); }
+-  };
+-
+-  useEffect(() => {
+-    loadSessions();
+-  }, []);
+-
+-  useEffect(() => {
+-    if (location.pathname === "/presentation/history") {
+-      loadSessions();
+-    }
+-  }, [location.pathname]);
+-
+-  useEffect(() => {
+-    return subscribeActivitySync(() => {
+-      loadSessions();
+-    });
+-  }, []);
++  }, [location.key, location.search, sessions]);
+ 
+   const handleDelete = async (id, e) => {
+     e.stopPropagation();
+-    await localApi.entities.PresentationSession.delete(id);
+-    setSessions(prev => prev.filter(s => s.id !== id));
+-    toast.success("Session deleted");
++    if (deleting.current.has(id)) return;
++    deleting.current.add(id);
++    try {
++      await localApi.entities.PresentationSession.delete(id);
++      setSessions(prev => prev.filter(s => s.id !== id));
++      toast.success("Session deleted");
++    } catch { toast.error("Session could not be deleted. Your records are kept; try again."); }
++    finally { deleting.current.delete(id); }
+   };
+ 
+   const formatDate = displayRecordDate;
+@@ -122,7 +103,7 @@
+ 
+       <div className="px-4 py-4 space-y-3">
+         {loadError && <div role="alert" className="glass rounded-2xl p-4"><p className="text-sm text-muted-foreground">{loadError}</p><button type="button" onClick={loadSessions} disabled={loading} className="history-retry">Try loading again</button></div>}
+-        {loading ? (
++        {loading && sessions.length === 0 ? (
+           <div className="flex items-center justify-center py-20">
+             <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+           </div>
+--- a/src/pages/PresentationPractice.jsx
++++ b/src/pages/PresentationPractice.jsx
+@@ -352,7 +352,7 @@
+   }
+ 
+   return (
+-    <div className="h-dvh flex flex-col bg-background overflow-hidden">
++    <div className="presentation-room h-dvh flex flex-col bg-background overflow-hidden">
+       <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 glass flex-shrink-0">
+         <button onClick={handleExit} className="flex items-center gap-1.5 text-[15px] text-accent font-medium">
+           <X className="w-4 h-4" />
+@@ -365,13 +365,14 @@
+         <div className="text-[15px] text-muted-foreground truncate max-w-[150px] text-right">{fileName}</div>
+       </div>
+ 
+-      <div className="flex-1 flex gap-3 p-3 min-h-0">
++      <div className="presentation-workspace flex-1 flex gap-3 p-3 min-h-0">
+         <div className="flex-1 flex flex-col min-h-0 min-w-0">
+-          <div className="flex-1 glass rounded-2xl overflow-hidden relative min-h-0">
++          <div className="presentation-document flex-1 glass rounded-2xl overflow-hidden relative min-h-0">
+             <DocumentViewer currentPage={currentPage} onTotalPages={setTotalPages} />
+           </div>
+           <div className="flex items-center justify-between mt-2 px-1">
+             <button
++              aria-label="Previous slide"
+               onClick={handlePrev}
+               disabled={currentPage <= 1}
+               className="p-2 rounded-xl glass hover:bg-white/10 disabled:opacity-30 transition-all"
+@@ -382,6 +383,7 @@
+               Page {currentPage} / {totalPages}
+             </span>
+             <button
++              aria-label="Next slide"
+               onClick={handleNext}
+               disabled={currentPage >= totalPages}
+               className="p-2 rounded-xl glass hover:bg-white/10 disabled:opacity-30 transition-all"
+@@ -400,7 +402,7 @@
+           </div>
+         </div>
+ 
+-        <div className="w-56 flex-shrink-0 flex flex-col gap-2">
++        <div className="presentation-sidebar w-56 flex-shrink-0 flex flex-col gap-2">
+           <CameraPreview />
+           <div className="flex-1 overflow-auto min-h-0">
+             <LiveScorePanel onScoresChange={setLiveScores} />
+@@ -408,7 +410,7 @@
+         </div>
+       </div>
+ 
+-      <div className="border-t border-white/5 glass px-4 py-3 flex items-center gap-3">
++      <div className="presentation-controls border-t border-white/5 glass px-4 py-3 flex items-center gap-3">
+         <div className="flex-1">
+           <Button
+             onClick={handlePause}
+--- a/src/pages/VoiceHistory.jsx
++++ b/src/pages/VoiceHistory.jsx
+@@ -1,6 +1,7 @@
++import { useSessionHistory } from '@/hooks/useSessionHistory';
+ import { hasReportedScore, displayScore, completeScoreVector, displayRecordDate, displayDuration } from '@/lib/reportDisplay';
+ import PracticeTimeline from '@/components/report/PracticeTimeline';
+-import { useState, useEffect } from "react";
++import { useState, useEffect, useRef } from "react";
+ import { useLocation, useNavigate } from "react-router-dom";
+ import { motion, AnimatePresence } from "framer-motion";
+ import { ArrowLeft, ChevronDown, ChevronUp, Mic, Trash2, Calendar, Clock } from "lucide-react";
+@@ -11,57 +12,37 @@
+ import BottomNav from "@/components/BottomNav";
+ import RadarChart from "@/components/report/RadarChart";
+ import { buildVoiceHistorySummary } from "@/lib/profileInsights";
+-import { subscribeActivitySync } from "@/lib/activitySync";
+ import { scoreMax } from "@/lib/examStandards";
+ 
+ export default function VoiceHistory() {
+   const location = useLocation();
+   const navigate = useNavigate();
+-  const [sessions, setSessions] = useState([]);
+-  const [loading, setLoading] = useState(true);
+-  const [loadError, setLoadError] = useState("");
++  const { sessions, setSessions, loading, loadError, loadSessions } = useSessionHistory(localApi.entities.VoiceSession);
+   const [expanded, setExpanded] = useState(null);
++  const openedLink = useRef("");
++  const deleting = useRef(new Set());
+   useEffect(() => {
+     const id = new URLSearchParams(location.search).get('session');
+-    if (id && sessions.some(session => session.id === id)) {
++    const linkKey = `${location.key}:${id}`;
++    if (id && openedLink.current !== linkKey && sessions.some(session => session.id === id)) {
++      openedLink.current = linkKey;
+       setExpanded(id);
+-      requestAnimationFrame(() => document.getElementById(`saved-session-${id}`)?.scrollIntoView({ behavior: 'auto', block: 'start' }));
++      const frame = requestAnimationFrame(() => document.getElementById(`saved-session-${id}`)?.scrollIntoView({ behavior: 'auto', block: 'start' }));
++      return () => cancelAnimationFrame(frame);
+     }
+-  }, [location.search, sessions]);
++  }, [location.key, location.search, sessions]);
+   const historySummary = buildVoiceHistorySummary(sessions);
+-
+-  const loadSessions = async () => {
+-    setLoading(true);
+-    try {
+-      const data = await localApi.entities.VoiceSession.list("-created_date", 50);
+-      setSessions(data || []);
+-      setLoadError("");
+-    } catch {
+-      setLoadError("Your saved sessions could not be loaded. Existing records are kept; try again.");
+-    } finally { setLoading(false); }
+-  };
+-
+-  useEffect(() => {
+-    loadSessions();
+-  }, []);
+-
+-  useEffect(() => {
+-    if (location.pathname === "/voice/history") {
+-      loadSessions();
+-    }
+-  }, [location.pathname]);
+-
+-  useEffect(() => {
+-    return subscribeActivitySync(() => {
+-      loadSessions();
+-    });
+-  }, []);
+ 
+   const handleDelete = async (id, e) => {
+     e.stopPropagation();
+-    await localApi.entities.VoiceSession.delete(id);
+-    setSessions(prev => prev.filter(s => s.id !== id));
+-    toast.success("Session deleted");
++    if (deleting.current.has(id)) return;
++    deleting.current.add(id);
++    try {
++      await localApi.entities.VoiceSession.delete(id);
++      setSessions(prev => prev.filter(s => s.id !== id));
++      toast.success("Session deleted");
++    } catch { toast.error("Session could not be deleted. Your records are kept; try again."); }
++    finally { deleting.current.delete(id); }
+   };
+ 
+   const formatDate = displayRecordDate;
+@@ -90,7 +71,7 @@
+ 
+       <div className="px-4 py-4 space-y-3">
+         {loadError && <div role="alert" className="glass rounded-2xl p-4"><p className="text-sm text-muted-foreground">{loadError}</p><button type="button" onClick={loadSessions} disabled={loading} className="history-retry">Try loading again</button></div>}
+-        {loading ? (
++        {loading && sessions.length === 0 ? (
+           <div className="flex items-center justify-center py-20">
+             <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+           </div>
+--- a/src/spatial-studio.css
++++ b/src/spatial-studio.css
+@@ -910,3 +910,44 @@
+ }
+ .history-page .text-muted-foreground\/60,.feedback-workbench .text-muted-foreground\/60 { color: var(--spatial-text-secondary); }
+ @media(max-width:480px) { .history-page>div:first-child { flex-wrap: wrap; row-gap: 8px; } }
++/* Task 06: intrinsic sizing across existing layouts and accessible viewports. */
++.studio-page input,.studio-page textarea,.speaking-room input,.speaking-room textarea { min-width: 0; }
++.studio-page button:disabled,.practice-mode-dialog button:disabled { pointer-events: auto; }
++.studio-page img,.studio-page video,.profile-dashboard img { max-width: 100%; }
++.studio-page-reading h1,.studio-page-reading h2,.studio-page-reading h3 { overflow-wrap: anywhere; }
++.studio-page-reading summary { min-height: 40px; line-height: 1.6; }
++@media(max-width:480px) {
++  .feedback-content .grid-cols-2 { gap: 10px; }
++  .studio-nav-item { font-size: 11px; min-height: 52px; }
++  .scenario-stage-controls { flex-wrap: wrap; }
++  .scene-cue-list button,.scene-tools button,.scene-view-switch button { min-height: 44px; }
++  .speaking-room input,.speaking-room textarea { scroll-margin-bottom: 24px; }
++  .practice-mode-dialog .p-5 { padding: 20px 16px; }
++}
++.scenario-selection .scenario-card .scenario-card-copy { min-height: 114px; padding: 18px; }
++.scenario-selection .scenario-card { transition: transform 220ms var(--spatial-ease),border-color 220ms,box-shadow 220ms !important; }
++.admin-dashboard p,.admin-user-dialog p { overflow-wrap: anywhere; }
++.admin-dashboard .grid>div,.admin-user-dialog .grid>div { min-width: 0; }
++.presentation-room button { min-height: 44px; }
++.presentation-workspace { min-width: 0; }
++.presentation-controls>div { min-width: 0; }
++.presentation-controls button { white-space: normal; line-height: 1.4; }
++@media(max-width:768px) {
++  .presentation-room { height: auto; min-height: 100dvh; overflow: visible; }
++  .presentation-workspace { display: grid; grid-template-columns: minmax(0,1fr); }
++  .presentation-document { min-height: 300px; height: min(58dvh,480px); }
++  .presentation-sidebar { width: 100%; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
++  .presentation-controls { align-items: stretch; padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
++}
++@media(max-width:480px) {
++  .scenario-selection .scenario-card .scenario-card-copy { min-height: 122px; padding: 14px; }
++  .presentation-sidebar { grid-template-columns: minmax(0,1fr); }
++  .presentation-controls { flex-direction: column; }
++  .admin-dashboard>div:first-child { flex-wrap: wrap; }
++  .admin-dashboard .grid-cols-2,.admin-user-dialog .grid-cols-3 { grid-template-columns: minmax(0,1fr); }
++}
++.skill-detail,.skill-history span { overflow-wrap: anywhere; min-width: 0; }
++@media(prefers-reduced-motion:reduce) {
++  .scenario-selection .scenario-card { transition: none !important; }
++  .speaknow-entry-link:hover .speaknow-entry-card,.speaknow-entry-card:hover .speaknow-entry-action-arrow { transform: none; }
++}
+--- a/src/types/globals.d.ts
++++ b/src/types/globals.d.ts
+@@ -38,6 +38,7 @@
+     onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+     onend: (() => void) | null;
+     onstart: (() => void) | null;
++    onspeechstart: (() => void) | null;
+     onaudiostart: (() => void) | null;
+     onaudioend: (() => void) | null;
+     abort(): void;
+@@ -46,6 +47,7 @@
+   }
+ 
+   interface SpeechRecognitionEvent {
++    resultIndex: number;
+     results: SpeechRecognitionResultList;
+   }
+ 
+--- a/index.html
++++ b/index.html
+@@ -2,8 +2,11 @@
+ <html lang="en">
+   <head>
+     <meta charset="UTF-8" />
+-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
++    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+     <link rel="manifest" href="/manifest.json" />
++    <link rel="preconnect" href="https://fonts.googleapis.com" />
++    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
++    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" />
+     <title>SpeakNow</title>
+   </head>
+   <body>

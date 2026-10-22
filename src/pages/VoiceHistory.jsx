@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+import { useSessionHistory } from '@/hooks/useSessionHistory';
+import { hasReportedScore, displayScore, completeScoreVector, displayRecordDate, displayDuration } from '@/lib/reportDisplay';
+import PracticeTimeline from '@/components/report/PracticeTimeline';
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronDown, ChevronUp, Mic, Trash2, Calendar, Clock } from "lucide-react";
@@ -9,56 +12,42 @@ import { toast } from "sonner";
 import BottomNav from "@/components/BottomNav";
 import RadarChart from "@/components/report/RadarChart";
 import { buildVoiceHistorySummary } from "@/lib/profileInsights";
-import { subscribeActivitySync } from "@/lib/activitySync";
+import { scoreMax } from "@/lib/examStandards";
 
 export default function VoiceHistory() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [sessions, setSessions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { sessions, setSessions, loading, loadError, loadSessions } = useSessionHistory(localApi.entities.VoiceSession);
   const [expanded, setExpanded] = useState(null);
-  const historySummary = buildVoiceHistorySummary(sessions);
-
-  const loadSessions = async () => {
-    setLoading(true);
-    const data = await localApi.entities.VoiceSession.list("-created_date", 50);
-    setSessions(data || []);
-    setLoading(false);
-  };
-
+  const openedLink = useRef("");
+  const deleting = useRef(new Set());
   useEffect(() => {
-    loadSessions();
-  }, []);
-
-  useEffect(() => {
-    if (location.pathname === "/voice/history") {
-      loadSessions();
+    const id = new URLSearchParams(location.search).get('session');
+    const linkKey = `${location.key}:${id}`;
+    if (id && openedLink.current !== linkKey && sessions.some(session => session.id === id)) {
+      openedLink.current = linkKey;
+      setExpanded(id);
+      const frame = requestAnimationFrame(() => document.getElementById(`saved-session-${id}`)?.scrollIntoView({ behavior: 'auto', block: 'start' }));
+      return () => cancelAnimationFrame(frame);
     }
-  }, [location.pathname]);
-
-  useEffect(() => {
-    return subscribeActivitySync(() => {
-      loadSessions();
-    });
-  }, []);
+  }, [location.key, location.search, sessions]);
+  const historySummary = buildVoiceHistorySummary(sessions.filter(session => session.report?.source === 'measured'));
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();
-    await localApi.entities.VoiceSession.delete(id);
-    setSessions(prev => prev.filter(s => s.id !== id));
-    toast.success("Session deleted");
+    if (deleting.current.has(id)) return;
+    deleting.current.add(id);
+    try {
+      await localApi.entities.VoiceSession.delete(id);
+      setSessions(prev => prev.filter(s => s.id !== id));
+      toast.success("Session deleted");
+    } catch { toast.error("Session could not be deleted. Your records are kept; try again."); }
+    finally { deleting.current.delete(id); }
   };
 
-  const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  };
+  const formatDate = displayRecordDate;
 
-  const formatDuration = (secs) => {
-    const m = Math.floor((secs || 0) / 60);
-    const s = (secs || 0) % 60;
-    return `${m}m ${s}s`;
-  };
+  const formatDuration = displayDuration;
 
   const getScoringColor = (scoring) => {
     if (scoring === "ielts") return "text-blue-400 bg-blue-400/10";
@@ -67,10 +56,11 @@ export default function VoiceHistory() {
   };
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="studio-page studio-page-reading history-page">
+      <p role="note" className="mx-4 mt-4 glass rounded-xl p-3 text-sm text-amber-200">Legacy numeric scores are heuristic, model estimates or simulated values. They are not measured pronunciation, eye contact or verified skill improvement. New Impact feedback uses transcript evidence.</p>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
-        <button onClick={() => navigate("/voice")} className="p-2 rounded-xl hover:bg-white/5">
+        <button aria-label="Back to practice" onClick={() => navigate("/voice")} className="p-2 rounded-xl hover:bg-white/5">
           <ArrowLeft className="w-5 h-5 text-muted-foreground" />
         </button>
         <div className="flex items-center gap-2">
@@ -81,11 +71,12 @@ export default function VoiceHistory() {
       </div>
 
       <div className="px-4 py-4 space-y-3">
-        {loading ? (
+        {loadError && <div role="alert" className="glass rounded-2xl p-4"><p className="text-sm text-muted-foreground">{loadError}</p><button type="button" onClick={loadSessions} disabled={loading} className="history-retry">Try loading again</button></div>}
+        {loading && sessions.length === 0 ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
           </div>
-        ) : sessions.length === 0 ? (
+        ) : loadError && sessions.length === 0 ? null : sessions.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 space-y-3">
             <Mic className="w-12 h-12 text-muted-foreground/30 mx-auto" />
             <p className="text-sm text-muted-foreground">No saved sessions yet</p>
@@ -151,33 +142,39 @@ export default function VoiceHistory() {
               )}
             </motion.div>
 
+            <section className="glass rounded-2xl p-4"><p className="room-eyebrow mb-4">YOUR PRACTICE JOURNEY</p><PracticeTimeline sessions={sessions} onSelect={id => { setExpanded(id); document.getElementById(`saved-session-${id}`)?.scrollIntoView({ behavior: 'auto', block: 'start' }); }} /></section>
             {sessions.map((session, i) => {
             const scenario = getScenario(session.scenario);
             const isOpen = expanded === session.id;
             const report = session.report;
             const isIelts = session.scoring_standard === "ielts";
             const isToefl = session.scoring_standard === "toefl";
-            const maxScore = isIelts ? 9 : isToefl ? 30 : 10;
+            const legacyToefl = isToefl && !report?.scoring_framework && Object.values(report?.scores || {}).some(value => Number(value) > 6);
+            const maxScore = legacyToefl ? 30 : scoreMax(session.scoring_standard);
 
             // Compute total from subscores average
             const computedTotal = report?.scores
               ? (() => {
                   const vals = Object.values(report.scores);
                   const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
-                  return isIelts ? Math.round(avg * 10) / 10 : Math.round(avg);
+                  return isIelts ? Math.round(avg * 10) / 10 : isToefl ? Math.round(avg * 2) / 2 : Math.round(avg);
                 })()
               : report?.totalScore;
 
+            const totalAvailable = report?.scores ? completeScoreVector(report.scores) : hasReportedScore(report?.totalScore);
             return (
               <motion.div
+                id={`saved-session-${session.id}`}
                 key={session.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04 }}
-                className="glass rounded-2xl overflow-hidden"
+                transition={{ delay: Math.min(i * 0.025, 0.15), duration: 0.25 }}
+                className="history-record glass rounded-2xl overflow-hidden"
               >
                 {/* Card Header */}
                 <button
+                  aria-expanded={isOpen}
+                  aria-controls={`saved-session-detail-${session.id}`}
                   onClick={() => setExpanded(isOpen ? null : session.id)}
                   className="w-full flex items-center gap-3 p-4 text-left hover:bg-white/5 transition-colors"
                 >
@@ -204,8 +201,8 @@ export default function VoiceHistory() {
                   </div>
                   {computedTotal != null && (
                     <div className="text-right flex-shrink-0">
-                      <p className="text-lg font-bold text-primary">{computedTotal}</p>
-                      <p className="text-[9px] text-muted-foreground">/{maxScore}</p>
+                      <p className="text-lg font-bold text-primary">{displayScore(totalAvailable ? computedTotal : null)}</p>
+                      <p className="text-[9px] text-muted-foreground">/{maxScore}{legacyToefl ? " legacy" : ""}</p>
                     </div>
                   )}
                   <div className="ml-2">
@@ -220,6 +217,8 @@ export default function VoiceHistory() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
+                      id={`saved-session-detail-${session.id}`}
+                      transition={{ duration: 0.25 }}
                       className="overflow-hidden border-t border-white/5"
                     >
                       <div className="p-4 space-y-4">
@@ -227,7 +226,7 @@ export default function VoiceHistory() {
                         {report.scores && (
                           <div className="glass rounded-2xl p-3">
                             <p className="text-[10px] font-medium text-muted-foreground mb-2 text-center uppercase">📊 Performance Overview</p>
-                            <RadarChart scores={report.scores} maxScore={maxScore} />
+                            <RadarChart scores={report.scores} maxScore={maxScore} history={sessions.filter(item => item.scoring_standard === session.scoring_standard && (item.scoring_standard !== "toefl" || (Object.values(item.report?.scores || {}).some(value => Number(value) > 6) === legacyToefl)))} />
                           </div>
                         )}
 
@@ -239,7 +238,7 @@ export default function VoiceHistory() {
                               {Object.entries(report.scores).map(([key, val]) => (
                                 <div key={key} className="glass rounded-xl px-3 py-2">
                                   <p className="text-[10px] text-muted-foreground">{key}</p>
-                                  <p className="text-sm font-semibold text-foreground">{val}/{maxScore}</p>
+                                  <p className="text-sm font-semibold text-foreground">{displayScore(val)}/{maxScore}</p>
                                 </div>
                               ))}
                             </div>

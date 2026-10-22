@@ -1,0 +1,15 @@
+{
+  "status": "PASS engineering core loop",
+  "checks": [
+    "new user authenticates through real backend; homepage explains the presentation task",
+    "no attachment, generated recording, mid-session exit and re-entry restore unsent text and audio",
+    "network response loss and reload recover one immutable saved practice/recording; feedback remains a suggestion",
+    "feedback → attachment-free targeted retry → comparison; reload preserves target and original recording",
+    "original report re-entry and 320–1440px layouts remain usable",
+    "valid PDF is rendered and its spoken attempt reaches saved feedback",
+    "attachment failure, analysis network failure and explicit retry preserve speech; no forced primary issue",
+    "typed fallback is explicitly distinguished from spoken measurements"
+  ],
+  "browserErrors": [],
+  "evidence": "Actual HTTP authentication/storage, actual MediaRecorder with generated Chrome audio, controlled ASR, synthetic provider. NOT real user effectiveness or paid model validation."
+}

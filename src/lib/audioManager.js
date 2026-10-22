@@ -1,7 +1,7 @@
 // Stable Audio Manager using browser SpeechSynthesis as primary TTS.
 // This keeps voice playback behavior in one place so pages only need to request
 // speech, stop speech, and react to playback state changes.
-class StableAudioManager {
+export class StableAudioManager {
   constructor() {
     this.isPlaying = false;
     this.onSpeakingChange = null;
@@ -10,6 +10,9 @@ class StableAudioManager {
     this._playRequestId = 0;
     this._voicesReady = false;
     this._voicesLoadedCallbacks = [];
+    this._listeners = new Set();
+    this._voiceWaits = new Set();
+    this._cancelUtterance = null;
 
     if (window.speechSynthesis) {
       const voices = window.speechSynthesis.getVoices();
@@ -40,52 +43,56 @@ class StableAudioManager {
     }) || englishVoices[0] || voices?.[0] || null;
   }
 
-  _speakUtterance(utterance) {
+  subscribe(listener) {
+    this._listeners.add(listener);
+    return () => this._listeners.delete(listener);
+  }
+
+  _publish(type, playbackId, reason = '') {
+    this.isPlaying = type === 'start';
+    this.currentPlaybackId = this.isPlaying ? playbackId : null;
+    this.onSpeakingChange?.(this.isPlaying);
+    this.onPlaybackMetaChange?.(this.currentPlaybackId);
+    for (const listener of this._listeners) listener({ type, playbackId, reason });
+  }
+
+  _speakUtterance(utterance, requestId, playbackId, startTimeoutMs = 5000) {
     return new Promise((resolve) => {
       let finished = false;
-      let startTimer = null;
-
-      const cleanup = () => {
-        if (startTimer) {
-          window.clearTimeout(startTimer);
-          startTimer = null;
-        }
-      };
-
-      const done = (ok) => {
+      let startTimer, endTimer;
+      const done = (ok, reason) => {
         if (finished) return;
         finished = true;
-        cleanup();
+        window.clearTimeout(startTimer); window.clearTimeout(endTimer);
+        if (this._cancelUtterance === cancel) this._cancelUtterance = null;
+        utterance.onstart = utterance.onend = utterance.onerror = utterance.onpause = utterance.onresume = null;
+        if (requestId === this._playRequestId) this._publish('end', playbackId, reason);
         resolve(ok);
       };
-
-      utterance.onstart = () => {
-        this.isPlaying = true;
-        this.onSpeakingChange?.(true);
+      const cancel = () => done(false, 'cancelled');
+      this._cancelUtterance = cancel;
+      const start = () => {
+        if (finished || requestId !== this._playRequestId) return;
+        window.clearTimeout(startTimer);
+        this._publish('start', playbackId);
       };
-      utterance.onend = () => {
-        this.isPlaying = false;
-        this.currentPlaybackId = null;
-        this.onSpeakingChange?.(false);
-        this.onPlaybackMetaChange?.(null);
-        done(true);
+      utterance.onstart = start;
+      utterance.onresume = start;
+      utterance.onpause = () => {
+        if (!finished && requestId === this._playRequestId) this._publish('pause', playbackId, 'paused');
       };
-      utterance.onerror = (error) => {
-        console.error("TTS error:", error);
-        this.isPlaying = false;
-        this.currentPlaybackId = null;
-        this.onSpeakingChange?.(false);
-        this.onPlaybackMetaChange?.(null);
-        done(false);
-      };
-
+      utterance.onend = () => done(requestId === this._playRequestId, 'ended');
+      utterance.onerror = () => done(false, 'playback_error');
       startTimer = window.setTimeout(() => {
-        if (!this.isPlaying) {
-          done(false);
-        }
-      }, 1200);
-
-      window.speechSynthesis.speak(utterance);
+        done(false, 'start_timeout');
+        try { window.speechSynthesis.cancel(); } catch { /* Browser blocked playback. */ }
+      }, startTimeoutMs);
+      endTimer = window.setTimeout(() => {
+        done(false, 'playback_timeout');
+        try { window.speechSynthesis.cancel(); } catch { /* Browser speech stalled. */ }
+      }, Math.min(90000, Math.max(15000, utterance.text.length * 150 / (utterance.rate || 1))));
+      try { window.speechSynthesis.speak(utterance); }
+      catch { done(false, 'playback_error'); }
     });
   }
 
@@ -97,11 +104,16 @@ class StableAudioManager {
     return new Promise((resolve) => {
       const voices = window.speechSynthesis.getVoices();
       if (voices.length > 0) return resolve(voices);
-      const timeout = window.setTimeout(() => resolve(window.speechSynthesis.getVoices()), 1200);
-      this._voicesLoadedCallbacks.push(() => {
+      let timeout;
+      const finish = () => {
         window.clearTimeout(timeout);
+        this._voiceWaits.delete(finish);
+        this._voicesLoadedCallbacks = this._voicesLoadedCallbacks.filter(callback => callback !== finish);
         resolve(window.speechSynthesis.getVoices());
-      });
+      };
+      timeout = window.setTimeout(finish, 1200);
+      this._voicesLoadedCallbacks.push(finish);
+      this._voiceWaits.add(finish);
     });
   }
 
@@ -171,20 +183,10 @@ class StableAudioManager {
     const speechText = this._condenseText(text, options);
     if (!this.isSupported() || !speechText) return false;
 
-    this._playRequestId += 1;
+    this.stop();
     const requestId = this._playRequestId;
     const playbackId = options.playbackId || null;
-    this.currentPlaybackId = playbackId;
-    this.onPlaybackMetaChange?.(playbackId);
-
-    try {
-      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
-        window.speechSynthesis.cancel();
-      }
-      window.speechSynthesis.resume();
-    } catch {
-      // ignore browser-specific speech state errors
-    }
+    try { window.speechSynthesis.resume(); } catch { /* Some browsers require a gesture. */ }
 
     const voices = await this._getVoices();
     if (requestId !== this._playRequestId) return false;
@@ -198,13 +200,13 @@ class StableAudioManager {
       utterance.pitch = voiceGender === 'female' ? 1.05 : 0.95;
       if (voice) utterance.voice = voice;
 
-      await new Promise((resolve) => window.setTimeout(resolve, 30));
+      if (requestId !== this._playRequestId) return false;
       try {
         window.speechSynthesis.resume();
       } catch {
         // ignore
       }
-      return this._speakUtterance(utterance);
+      return this._speakUtterance(utterance, requestId, playbackId, options.startTimeoutMs);
     };
 
     const speakChunks = async (voice = preferredVoice) => {
@@ -212,35 +214,26 @@ class StableAudioManager {
         if (requestId !== this._playRequestId) return false;
         const ok = await attemptSpeakChunk(chunk, voice);
         if (!ok) return false;
-        await new Promise((resolve) => window.setTimeout(resolve, 10));
+
       }
       return true;
     };
 
-    let ok = await speakChunks(preferredVoice);
-    if (!ok && requestId === this._playRequestId) {
-      try {
-        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
-          window.speechSynthesis.cancel();
-        }
-        window.speechSynthesis.resume();
-      } catch {
-        // ignore
-      }
-      ok = await speakChunks(null);
-    }
-
-    return ok;
+    return speakChunks(preferredVoice);
   }
 
   stop() {
+    const wasPlaying = this.isPlaying;
+    const playbackId = this.currentPlaybackId;
+    this._cancelUtterance?.();
     this._playRequestId += 1;
-    window.speechSynthesis?.cancel();
+    for (const finish of [...this._voiceWaits]) finish();
+    try { window.speechSynthesis?.cancel(); } catch { /* Already cancelled. */ }
+    if (this.isPlaying || wasPlaying && this.currentPlaybackId) this._publish('end', playbackId, 'cancelled');
     this.isPlaying = false;
     this.currentPlaybackId = null;
-    this.onSpeakingChange?.(false);
-    this.onPlaybackMetaChange?.(null);
   }
+
 }
 
 export const audioManager = new StableAudioManager();

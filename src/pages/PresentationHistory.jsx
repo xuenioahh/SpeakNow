@@ -1,4 +1,6 @@
-import { useState, useEffect } from "react";
+import { useSessionHistory } from '@/hooks/useSessionHistory';
+import { hasReportedScore, displayScore, completeScoreVector, displayRecordDate, displayDuration } from '@/lib/reportDisplay';
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronDown, ChevronUp, Monitor, Trash2, Calendar, Clock, FileText, ExternalLink } from "lucide-react";
@@ -6,7 +8,6 @@ import { localApi } from "@/api/localClient";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import BottomNav from "@/components/BottomNav";
-import { subscribeActivitySync } from "@/lib/activitySync";
 
 const TED_TALKS = [
   {
@@ -34,6 +35,7 @@ function clampPresentationScore(value, fallback = null) {
 }
 
 function resolveOverallScore(report) {
+  if (report?.source !== 'measured') return null;
   const direct = clampPresentationScore(report?.overall_score);
   if (Number.isFinite(direct)) {
     return Math.round(direct * 10) / 10;
@@ -53,73 +55,61 @@ function resolveOverallScore(report) {
 export default function PresentationHistory() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [sessions, setSessions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { sessions, setSessions, loading, loadError, loadSessions } = useSessionHistory(localApi.entities.PresentationSession);
   const [expanded, setExpanded] = useState(null);
-
-  const loadSessions = async () => {
-    setLoading(true);
-    const data = await localApi.entities.PresentationSession.list("-created_date", 50);
-    setSessions(data || []);
-    setLoading(false);
-  };
-
+  const openedLink = useRef("");
+  const deleting = useRef(new Set());
   useEffect(() => {
-    loadSessions();
-  }, []);
-
-  useEffect(() => {
-    if (location.pathname === "/presentation/history") {
-      loadSessions();
+    const id = new URLSearchParams(location.search).get('session');
+    const linkKey = `${location.key}:${id}`;
+    if (id && openedLink.current !== linkKey && sessions.some(session => session.id === id)) {
+      openedLink.current = linkKey;
+      setExpanded(id);
+      const frame = requestAnimationFrame(() => document.getElementById(`saved-session-${id}`)?.scrollIntoView({ behavior: 'auto', block: 'start' }));
+      return () => cancelAnimationFrame(frame);
     }
-  }, [location.pathname]);
-
-  useEffect(() => {
-    return subscribeActivitySync(() => {
-      loadSessions();
-    });
-  }, []);
+  }, [location.key, location.search, sessions]);
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();
-    await localApi.entities.PresentationSession.delete(id);
-    setSessions(prev => prev.filter(s => s.id !== id));
-    toast.success("Session deleted");
+    if (deleting.current.has(id)) return;
+    deleting.current.add(id);
+    try {
+      await localApi.entities.PresentationSession.delete(id);
+      setSessions(prev => prev.filter(s => s.id !== id));
+      toast.success("Session deleted");
+    } catch { toast.error("Session could not be deleted. Your records are kept; try again."); }
+    finally { deleting.current.delete(id); }
   };
 
-  const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-  };
+  const formatDate = displayRecordDate;
 
-  const formatDuration = (secs) => {
-    const m = Math.floor((secs || 0) / 60);
-    const s = (secs || 0) % 60;
-    return `${m}m ${s}s`;
-  };
+  const formatDuration = displayDuration;
 
   const scoreColor = (v) => v >= 8 ? "text-emerald-400" : v >= 6 ? "text-amber-400" : "text-accent";
 
   return (
-    <div className="min-h-screen pb-24">
+    <div className="studio-page studio-page-reading history-page">
+      <p role="note" className="mx-4 mt-4 glass rounded-xl p-3 text-sm text-amber-200">Legacy numeric scores are heuristic, model estimates or simulated values. They are not measured pronunciation, eye contact or verified skill improvement. New Impact feedback uses transcript evidence.</p>
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
-        <button onClick={() => navigate("/presentation")} className="p-2 rounded-xl hover:bg-white/5">
+        <button aria-label="Back to practice" onClick={() => navigate("/presentation")} className="p-2 rounded-xl hover:bg-white/5">
           <ArrowLeft className="w-5 h-5 text-muted-foreground" />
         </button>
         <div className="flex items-center gap-2">
           <Monitor className="w-5 h-5 text-amber-400" />
-          <h1 className="font-semibold text-foreground">Presentation History</h1>
+          <h1 className="font-semibold text-foreground">Your presentation attempts</h1>
         </div>
         <span className="ml-auto text-xs text-muted-foreground">{sessions.length} sessions</span>
       </div>
 
       <div className="px-4 py-4 space-y-3">
-        {loading ? (
+        {loadError && <div role="alert" className="glass rounded-2xl p-4"><p className="text-sm text-muted-foreground">{loadError}</p><button type="button" onClick={loadSessions} disabled={loading} className="history-retry">Try loading again</button></div>}
+        {loading && sessions.length === 0 ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
           </div>
-        ) : sessions.length === 0 ? (
+        ) : loadError && sessions.length === 0 ? null : sessions.length === 0 ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-20 space-y-3">
             <Monitor className="w-12 h-12 text-muted-foreground/30 mx-auto" />
             <p className="text-sm text-muted-foreground">No saved presentations yet</p>
@@ -132,18 +122,23 @@ export default function PresentationHistory() {
           sessions.map((session, i) => {
             const isOpen = expanded === session.id;
             const report = session.report;
-            const overallScore = resolveOverallScore(report);
+            const totalAvailable = Object.prototype.hasOwnProperty.call(report || {}, 'overall_score') ? hasReportedScore(report.overall_score) : completeScoreVector(report?.scores);
+            const overallScore = totalAvailable ? resolveOverallScore(report) : null;
 
             return (
               <motion.div
+                id={`saved-session-${session.id}`}
                 key={session.id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.04 }}
-                className="glass rounded-2xl overflow-hidden"
+                transition={{ delay: Math.min(i * 0.025, 0.15), duration: 0.25 }}
+                className="history-record glass rounded-2xl overflow-hidden"
               >
+                {report?.impact && <div className="p-4 border-b border-white/10"><Button variant="outline" onClick={() => navigate(`/presentation/report?session=${session.id}`)}>Open Impact Report</Button><span className="ml-3 text-xs text-muted-foreground">{report.impact.kind === 'moment' ? 'Targeted retry' : 'Presentation'} · {report.impact.context.targetAudience}</span></div>}
                 {/* Card Header */}
                 <button
+                  aria-expanded={isOpen}
+                  aria-controls={`saved-session-detail-${session.id}`}
                   onClick={() => setExpanded(isOpen ? null : session.id)}
                   className="w-full flex items-center gap-3 p-4 text-left hover:bg-white/5 transition-colors"
                 >
@@ -151,7 +146,7 @@ export default function PresentationHistory() {
                     <FileText className="w-5 h-5 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">{session.file_name}</p>
+                    <p className="history-record-title text-sm font-semibold text-foreground">{session.file_name}</p>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                       <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                         <Calendar className="w-2.5 h-2.5" />
@@ -184,6 +179,8 @@ export default function PresentationHistory() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
+                      id={`saved-session-detail-${session.id}`}
+                      transition={{ duration: 0.25 }}
                       className="overflow-hidden border-t border-white/5"
                     >
                       <div className="p-4 space-y-4">
@@ -200,15 +197,16 @@ export default function PresentationHistory() {
                             <p className="text-[10px] font-medium text-muted-foreground mb-2 uppercase">📈 Score Breakdown</p>
                             <div className="space-y-2">
                               {Object.entries(report.scores).map(([key, val]) => (
-                                <div key={key} className="flex items-center gap-3">
-                                  <span className="text-[10px] text-muted-foreground capitalize w-28">{key.replace(/_/g, " ")}</span>
-                                  <div className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
+                                <div key={key} className="report-score-row">
+                                  <span className="text-[10px] text-muted-foreground capitalize report-score-label">{key.replace(/_/g, " ")}</span>
+                                  <div className="report-score-meter h-2 bg-white/10 rounded-full overflow-hidden">
                                     <div
                                       className="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"
-                                      style={{ width: `${val * 10}%` }}
+                                      hidden={!hasReportedScore(val)}
+                                      style={{ width: hasReportedScore(val) ? `${val * 10}%` : undefined }}
                                     />
                                   </div>
-                                  <span className="text-[10px] font-semibold text-foreground w-8 text-right">{val}/10</span>
+                                  <span className="text-[10px] font-semibold text-foreground report-score-number">{displayScore(val)}/10</span>
                                 </div>
                               ))}
                             </div>

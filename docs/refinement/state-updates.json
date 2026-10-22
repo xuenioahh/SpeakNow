@@ -1,0 +1,11 @@
+{
+  "kind": "Controlled execution of actual components; counts setter invocations, not real paints/FPS.",
+  "glowPointer100Events": {
+    "before": 100,
+    "after": 0
+  },
+  "loadingMountAnd100TimerTicks": {
+    "before": 101,
+    "after": 0
+  }
+}

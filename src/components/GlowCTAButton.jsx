@@ -1,29 +1,30 @@
-import { useState } from "react";
+import { useRef } from "react";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export default function GlowCTAButton({
   children,
-  className,
-  glowClassName,
-  arrowClassName,
-  onMouseMove,
-  onMouseLeave,
+  className = "",
+  glowClassName = "",
+  arrowClassName = "",
+  onMouseMove = undefined,
+  onMouseLeave = undefined,
   ...props
 }) {
-  const [glowPoint, setGlowPoint] = useState({ x: "50%", y: "50%", visible: false });
+  const glow = useRef(null);
 
   const handleMouseMove = (event) => {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = `${event.clientX - rect.left}px`;
     const y = `${event.clientY - rect.top}px`;
-    setGlowPoint({ x, y, visible: true });
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) { glow.current?.style.setProperty("--glow-x", x); glow.current?.style.setProperty("--glow-y", y); }
     onMouseMove?.(event);
   };
 
   const handleMouseLeave = (event) => {
-    setGlowPoint((current) => ({ ...current, visible: false }));
+    glow.current?.style.setProperty("--glow-x", "50%");
+    glow.current?.style.setProperty("--glow-y", "50%");
     onMouseLeave?.(event);
   };
 
@@ -39,13 +40,13 @@ export default function GlowCTAButton({
       )}
     >
       <span
+        ref={glow}
         aria-hidden="true"
         className={cn(
           "pointer-events-none absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-300 group-hover:opacity-100",
-          glowPoint.visible ? "opacity-100" : "",
         )}
         style={{
-          background: `radial-gradient(180px circle at ${glowPoint.x} ${glowPoint.y}, rgba(255,255,255,0.28), rgba(255,255,255,0.08) 38%, transparent 72%)`,
+          background: "radial-gradient(180px circle at var(--glow-x,50%) var(--glow-y,50%), rgba(255,255,255,0.28), rgba(255,255,255,0.08) 38%, transparent 72%)",
         }}
       />
       <span
