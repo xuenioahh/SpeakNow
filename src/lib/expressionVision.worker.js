@@ -1,14 +1,13 @@
+import { landmarkMetrics } from './expressionLandmarks.js';
 import { FaceLandmarker, PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 
 let face;
 let pose;
-const valid = p => p && (p.visibility === undefined || p.visibility > 0.65);
-const distance = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
 self.onmessage = async ({ data }) => {
   if (data.type === 'init') {
     try {
-      const files = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22-rc.20250304/wasm');
+      const files = await FilesetResolver.forVisionTasks('/expression-vision');
       face = await FaceLandmarker.createFromOptions(files, {
         baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task' },
         runningMode: 'VIDEO', numFaces: 1,
@@ -18,34 +17,23 @@ self.onmessage = async ({ data }) => {
         runningMode: 'VIDEO', numPoses: 1,
       });
       self.postMessage({ type: 'ready' });
-    } catch { self.postMessage({ type: 'error' }); }
+    } catch (error) { console.warn('Visual analysis initialization failed:', error.message); self.postMessage({ type: 'error' }); }
     return;
   }
   if (data.type !== 'frame') return;
   try {
     const f = face.detectForVideo(data.frame, data.timestamp).faceLandmarks[0];
     const p = pose.detectForVideo(data.frame, data.timestamp).landmarks[0];
-    const metrics = {};
-    if (f) {
-      const width = distance(f[33], f[263]);
-      if (width > 0.03) {
-        metrics.head = (f[1].x - (f[33].x + f[263].x) / 2) / width;
-        metrics.headVertical = (f[1].y - (f[33].y + f[263].y) / 2) / width;
-        // Iris position proxy, not eye contact, emotion or attention inference.
-        if (f[468]) metrics.eyes = distance(f[468], f[33]) / Math.max(0.01, distance(f[133], f[33]));
-      }
-    }
-    if (p && valid(p[11]) && valid(p[12])) {
-      const width = distance(p[11], p[12]);
-      if (width > 0.03) {
-        metrics.posture = (p[11].y - p[12].y) / width;
-        if (valid(p[15]) && valid(p[16])) {
-          metrics.hands = (distance(p[15], p[11]) + distance(p[16], p[12])) / (2 * width);
-          metrics.leftHand = (p[15].y - p[11].y) / width;
-          metrics.rightHand = (p[16].y - p[12].y) / width;
-        }
-      }
-    }
+    const metrics = landmarkMetrics(f, p);
+    // Tiny downsample in the Worker; no frame pixels leave this process.
+    try {
+      const canvas = new OffscreenCanvas(16, 16), context = canvas.getContext('2d');
+      context.drawImage(data.frame, 0, 0, 16, 16);
+      const pixels = context.getImageData(0, 0, 16, 16).data;
+      let sum = 0;
+      for (let i = 0; i < pixels.length; i += 4) sum += (0.2126*pixels[i] + 0.7152*pixels[i+1] + 0.0722*pixels[i+2])/255;
+      metrics.luminance = sum / 256;
+    } catch { /* Pixel analysis unavailable; leave unassessed. */ }
     self.postMessage({ type: 'sample', time: data.time, ...metrics });
   } catch { self.postMessage({ type: 'sample', time: data.time }); }
   finally { data.frame.close(); }

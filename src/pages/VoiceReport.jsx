@@ -311,6 +311,7 @@ export default function VoiceReport() {
           )}
         </motion.div>
 
+        <details className="glass rounded-2xl p-4"><summary>Conversation and session details</summary>
         {/* Conversation Review */}
         {report?.conversation_review?.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="glass rounded-2xl p-4">
@@ -338,6 +339,7 @@ export default function VoiceReport() {
           </div>
         </motion.div>
 
+        </details>
         {/* Suggestions */}
         {report?.suggestions?.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="glass rounded-2xl p-4">
@@ -388,7 +390,7 @@ export default function VoiceReport() {
 
 function FeedbackSection({ title, items }) {
   return (
-    <details className="feedback-section" open>
+    <details className="feedback-section">
       <summary>{title}</summary>
       <div className="glass rounded-xl p-3 space-y-1">
         {items.map((item, i) => (

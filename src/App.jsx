@@ -11,11 +11,15 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import AppErrorBoundary from './components/AppErrorBoundary';
 import RouteScroll from './components/RouteScroll';
-import { MotionConfig, AnimatePresence, motion } from 'framer-motion';
+import { MotionConfig } from 'framer-motion';
 
 // Page imports
 import AuthPage from './pages/AuthPage';
 import MainLanding from './pages/MainLanding';
+const ExamSpeaking = lazy(() => import('./pages/ExamSpeaking'));
+const ExamPractice = lazy(() => import('./pages/ExamPractice'));
+const LearningReview = lazy(() => import('./pages/LearningReview'));
+const LearningHistory = lazy(() => import('./pages/LearningHistory'));
 const Home = lazy(() => import('./pages/Home'));
 const VoiceSetup = lazy(() => import('./pages/VoiceSetup'));
 const VoiceChat = lazy(() => import('./pages/VoiceChat'));
@@ -55,16 +59,19 @@ const AuthenticatedApp = () => {
   }
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div key={location.pathname} className="route-stage" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}>
+    <div key={location.pathname} className="route-stage">
       <Suspense fallback={<div className="route-loading" role="status">Opening your studio…</div>}>
     <Routes location={location}>
       <Route path="/auth" element={<AuthPage />} />
-      <Route element={<ProtectedRoute unauthenticatedElement={<AuthPage />} />}>
         <Route path="/" element={<MainLanding />} />
         <Route path="/voice" element={<Home />} />
+        <Route path="/exam" element={<ExamSpeaking />} />
+        <Route path="/exam/practice" element={<ExamPractice key={location.search} />} />
+        <Route path="/practice/review" element={<LearningReview key={location.search} />} />
+        <Route path="/practice/history" element={<LearningHistory />} />
         <Route path="/voice/setup" element={<VoiceSetup />} />
-        <Route path="/voice/chat" element={<VoiceChat />} />
+        <Route path="/voice/chat" element={<VoiceChat key={location.search} />} />
+      <Route element={<ProtectedRoute unauthenticatedElement={<AuthPage />} />}>
         <Route path="/voice/casual-video" element={<CasualVideo />} />
         <Route path="/voice/report" element={<VoiceReport />} />
         <Route path="/presentation" element={<Presentation />} />
@@ -80,8 +87,7 @@ const AuthenticatedApp = () => {
       <Route path="*" element={<PageNotFound />} />
     </Routes>
       </Suspense>
-      </motion.div>
-    </AnimatePresence>
+    </div>
   );
 };
 

@@ -1,11 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-import { House, Mic, Monitor, User } from "lucide-react";
+import { House, Mic, BookOpen, History } from "lucide-react";
 
 const NAV_ITEMS = [
   { path: "/", icon: House, label: "Home" },
   { path: "/voice", icon: Mic, label: "Speaking" },
-  { path: "/presentation", icon: Monitor, label: "Presentation" },
-  { path: "/profile", icon: User, label: "Profile" },
+  { path: "/exam", icon: BookOpen, label: "Exams" },
+  { path: "/practice/history", icon: History, label: "History" },
 ];
 
 export default function BottomNav() {

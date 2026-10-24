@@ -890,3 +890,7 @@
 .voice-coach-status {
   box-shadow: none;
 }
+
+@keyframes speaknow-route-enter { from { opacity: .65; } to { opacity: 1; } }
+.route-stage { animation: speaknow-route-enter .22s ease-out; }
+@media (prefers-reduced-motion: reduce) { .route-stage { animation: none; } }

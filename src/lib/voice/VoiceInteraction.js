@@ -1,3 +1,4 @@
+import { AudioTake } from './AudioTake.js';
 import { VoiceCapture } from './VoiceCapture.js';
 
 const clean = text => String(text || '').replace(/\s+/g, ' ').trim();
@@ -5,21 +6,23 @@ const stamp = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute:
 
 // One external store owns interaction state. UI and the orb only consume it.
 export class VoiceInteraction {
-  /** @param {{ request?: (text: string, options: {signal: AbortSignal, turnId: string, history: any[]}) => Promise<any>, audio?: any, voiceGender?: string, aiRole?: string, visualFor?: (text: string) => any, initialMessage?: any, environment?: any, now?: () => number, requestTimeoutMs?: number, captureOptions?: any, initialDraft?: string, saveDraft?: (text: string) => void }} options */
-  constructor({ request, audio, voiceGender = 'female', aiRole = 'Coach', visualFor = (_text) => null, initialMessage, environment = globalThis, now = () => performance.now(), requestTimeoutMs = 45000, captureOptions = {}, initialDraft = '', saveDraft = (_text) => {} } = {}) {
+  /** @param {{ request?: (text: string, options: {signal: AbortSignal, turnId: string, history: any[]}) => Promise<any>, audio?: any, voiceGender?: string, aiRole?: string, visualFor?: (text: string) => any, initialMessage?: any, environment?: any, now?: () => number, requestTimeoutMs?: number, captureOptions?: any, initialDraft?: string, saveDraft?: (text: string) => void, saveRecording?: (recording: any) => Promise<any>, initialMessages?: any[], initialRecordingId?: string }} options */
+  constructor({ request, audio, voiceGender = 'female', aiRole = 'Coach', visualFor = (_text) => null, initialMessage, environment = globalThis, now = () => performance.now(), requestTimeoutMs = 45000, captureOptions = {}, initialDraft = '', saveDraft = (_text) => {}, saveRecording, initialMessages, initialRecordingId } = {}) {
     this.request = request; this.audio = audio; this.voiceGender = voiceGender;
     this.aiRole = aiRole; this.visualFor = visualFor; this.env = environment; this.now = now;
     this.requestTimeoutMs = requestTimeoutMs; this.saveDraft = saveDraft;
-    this.listeners = new Set(); this.sequence = 0; this.playGeneration = 0; this.disposed = false;
+    this.audioTake = saveRecording ? new AudioTake({onSave:saveRecording,onError:message=>this.update({notice:message})}) : null;
+    if(this.audioTake && initialRecordingId){this.audioTake.id=initialRecordingId;this.audioTake.done=Promise.resolve(initialRecordingId);}
+    this.listeners = new Set(); this.sequence = initialMessages?.length || 0; this.playGeneration = 0; this.disposed = false;
     this.energyRef = { current: null };
     this.snapshot = { status: 'idle', inputActive: false, recordingSession: false, finalText: '', interimText: '', typedText: initialDraft,
-      messages: initialMessage ? [initialMessage] : [], activePlaybackId: null, energyAvailable: false,
+      messages: initialMessages?.length ? initialMessages : initialMessage ? [initialMessage] : [], activePlaybackId: null, energyAvailable: false,
       autoEnd: false, silenceMs: 2500, autoPlay: true, error: null, retryable: false,
       draftStorageUnavailable: false, notice: initialDraft ? 'Recovered unsent words from this tab. Review and send, or record again.' : '', timings: [] };
-    this.capture = new VoiceCapture({ ...captureOptions, environment, now, onEvent: event => this.captureEvent(event) });
+    this.capture = new VoiceCapture({ retainStream:Boolean(saveRecording), ...captureOptions, environment, now, onEvent: event => this.captureEvent(event) });
   }
   getSnapshot = () => this.snapshot;
-  subscribe = listener => { this.listeners.add(listener); return () => this.listeners.delete(listener); };
+  subscribe = listener => { this.listeners.add(listener); return () => { this.listeners.delete(listener); }; };
   update(patch) {
     if (this.disposed) return;
     this.snapshot = { ...this.snapshot, ...patch };
@@ -50,6 +53,8 @@ export class VoiceInteraction {
   }
   captureEvent(event) {
     if (this.disposed) return;
+    if (event.type === 'stream') this.audioTake?.start(event.stream);
+    if (event.type === 'energy' && !event.meter) void this.audioTake?.stop();
     if (event.type === 'phase') this.update({ status: event.phase, inputActive: event.phase === 'listening', recordingSession: event.phase === 'listening' || this.snapshot.recordingSession });
     if (event.type === 'energy') { this.energyRef.current = event.meter; this.update({ energyAvailable: Boolean(event.meter) }); }
     if (event.type === 'transcript') {
@@ -109,7 +114,10 @@ export class VoiceInteraction {
       if (!value) { this.update({ notice: 'Wait for confirmed words, or review and type your reply before sending.' }); return false; }
       this.stopPlayback();
       const id = `turn-${++this.sequence}`;
-      const user = { id: `user-${id}`, role: 'user', content: value, time: stamp() };
+      const recordingId = this.audioTake ? await this.audioTake.stop() : null;
+      if (this.audioTake) { this.audioTake.id=null;this.audioTake.done=null;this.audioTake.recorder=null; }
+      if (this.disposed || this.ended) return false;
+      const user = { recordingId, id: `user-${id}`, role: 'user', content: value, time: stamp() };
       const turn = { id, user, history: [...this.snapshot.messages, user], controller: new AbortController(), metrics: { ...this.captureTiming, turnId: id, t3: null, t4: null, t5: null } };
       this.captureTiming = null;
       this.previousDraft = '';

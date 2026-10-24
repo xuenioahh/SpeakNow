@@ -37,7 +37,7 @@ function buildSystemPrompt({ scenario, scenarioData, mode, scoring, isGoalOrient
 
 function buildUserPrompt({ history, userText, scenario }) {
   const recent = scenario?.id === 'cafe' ? cafeConversationHistory(history, userText) : (Array.isArray(history) ? history : [])
-    .slice(-2)
+    .slice(-12)
     .map((message) => `${message.role === "ai" ? "Assistant" : "User"}: ${message.content}`)
     .join("\n");
 
@@ -103,7 +103,7 @@ function fallbackPayload({ userText, isGoalOriented, scenarioData, scoring, mode
   };
 }
 
-async function handler(req, res) {
+export async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;

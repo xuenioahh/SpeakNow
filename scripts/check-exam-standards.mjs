@@ -16,7 +16,7 @@ assert.match(getScoreDescriptor(7, "ielts"), /Long turns/);
 assert.equal(EXAM_STANDARDS.toefl.max, 6);
 assert.equal(EXAM_STANDARDS.toefl.step, 0.5);
 assert.equal(roundExamScore(4.26, "toefl"), 4.5);
-assert.equal(normalizeExamScore(24, "toefl", { legacyToefl: true }), 5);
+assert.equal(normalizeExamScore(24, "toefl", { legacyToefl: true }), null);
 
 const report = generateVoiceReport({
   messages: [

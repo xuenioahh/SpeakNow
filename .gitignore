@@ -12,6 +12,7 @@ lerna-debug.log*
 
 node_modules/
 public/expression-worker.js
+public/expression-vision/
 dist/
 dist-ssr/
 .vite/

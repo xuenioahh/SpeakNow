@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "source": "Real MediaPipe models and WASM; Chromium synthetic video test pattern. No human accuracy claim.",
+  "windows": [
+    {
+      "start": 16,
+      "end": 19.752,
+      "metrics": {},
+      "observations": {
+        "luminance": 0.4133
+      },
+      "coverage": 0.9994669509594886
+    }
+  ],
+  "postRequests": [
+    "http://127.0.0.1:5194/api/local-data"
+  ],
+  "pageErrors": [],
+  "diagnostics": [
+    "⚠️ React Router Future Flag Warning: React Router will begin wrapping state updates in `React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_starttransition.",
+    "⚠️ React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use the `v7_relativeSplatPath` future flag to opt-in early. For more information, see https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.",
+    "Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "W1024 04:41:19.195000 1922656 face_landmarker_graph.cc:180] Sets FaceBlendshapesGraph acceleration to xnnpack by default.",
+    "W1024 04:41:19.235000 1922656 gl_context.cc:1072] OpenGL error checking is disabled",
+    "W1024 04:41:24.845000 1922656 gl_context.cc:1072] OpenGL error checking is disabled",
+    "INFO: Created TensorFlow Lite XNNPACK delegate for CPU.",
+    "W1024 04:41:25.031000 1922656 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.",
+    "W1024 04:41:25.044000 1922656 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.",
+    "INFO: Created TensorFlow Lite XNNPACK delegate for CPU.",
+    "W1024 04:41:25.164000 1922656 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors.",
+    "W1024 04:41:25.171000 1922656 inference_feedback_manager.cc:121] Feedback manager requires a model with a single signature inference. Disabling support for feedback tensors."
+  ]
+}

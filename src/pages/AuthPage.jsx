@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Loader2, LockKeyhole, Mail, UserRound } from "lucide-react";
 import { localApi } from "@/api/localClient";
@@ -17,6 +17,7 @@ const initialForm = {
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { checkUserAuth } = useAuth();
   const [mode, setMode] = useState("login");
   const [form, setForm] = useState(initialForm);
@@ -45,7 +46,8 @@ export default function AuthPage() {
         toast.success("Signed in");
       }
       await checkUserAuth();
-      navigate("/");
+      const target=new URLSearchParams(location.search).get('returnTo');
+      navigate(target?.startsWith('/')&&!target.startsWith('//') ? target : '/');
     } catch (error) {
       setErrorMessage(error?.message || "Unable to sign in. Please try again.");
     } finally {
@@ -78,7 +80,7 @@ export default function AuthPage() {
           </div>
         </div>
 
-        <p className="mb-6 text-sm leading-relaxed text-muted-foreground">{isRegister ? "Prepare a 5-minute English presentation. Record, review one suggested change, and try again." : "Welcome back. Continue your speaking practice."}</p>
+        <p className="mb-6 text-sm leading-relaxed text-muted-foreground">{isRegister ? "Practise exam speaking and everyday conversations. Save your feedback and retries across devices." : "Welcome back. Continue your speaking practice."}</p>
         <form onSubmit={handleSubmit} className="space-y-5" aria-busy={submitting}>
           {isRegister && (
             <label className="block space-y-2">

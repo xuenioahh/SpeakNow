@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/impact/*.test.js tests/consolidation/*.test.js tests/core-value/*.test.mjs",
+    "test": "node --test tests/impact/*.test.js tests/consolidation/*.test.js tests/core-value/*.test.mjs tests/learning/*.test.mjs",
     "dev": "node scripts/dev-with-backend.js",
     "dev:frontend": "vite",
     "dev:backend": "node backend/server.js",
@@ -12,7 +12,8 @@
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc -p ./jsconfig.json",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:learning:browser": "node tests/learning/browser.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

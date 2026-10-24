@@ -2,10 +2,11 @@ import { matchesBrief } from './expressionContext.js';
 export const FEATURE_VERSION = 2;
 export const EXPRESSION_CONTEXTS = ['Agreement', 'Disagreement', 'Explaining', 'Thinking aloud', 'Other'];
 export const EXPRESSION_METRICS = {
+  mouth: 'Visible mouth opening',
   head: 'Horizontal head movement', headVertical: 'Vertical head movement', eyes: 'Eye position',
   posture: 'Shoulder movement', hands: 'Hand movement', leftHand: 'Left wrist height', rightHand: 'Right wrist height',
 };
-const noiseFloor = { head: 0.04, headVertical: 0.04, eyes: 0.04, posture: 0.04, hands: 0.08, leftHand: 0.08, rightHand: 0.08 };
+const noiseFloor = { mouth: 0.04, head: 0.04, headVertical: 0.04, eyes: 0.04, posture: 0.04, hands: 0.08, leftHand: 0.08, rightHand: 0.08 };
 const median = values => { const sorted = [...values].sort((a, b) => a - b); const n = sorted.length; return n ? (sorted[Math.floor(n / 2)] + sorted[Math.floor((n - 1) / 2)]) / 2 : 0; };
 
 // Geometric trajectories, not gesture meanings. Gaps reset direction.
@@ -56,7 +57,11 @@ export function createReviewClips(samples, utterances, duration) {
     const trajectory = frames.filter((_, i) => i % Math.max(1, Math.ceil(frames.length / 24)) === 0).map(s =>
       Object.fromEntries([['time', Number(s.time.toFixed(2))], ...Object.keys(metrics).filter(k => Number.isFinite(s[k])).map(k => [k, Number(s[k].toFixed(4))])]));
     const coverage = Math.min(1, frames.length / Math.max(1, (end - start) * 4));
-    clips.push({ id: String(start), start, end, text, metrics, motion, events, trajectory, coverage,
+    const observations = Object.fromEntries(['faceX','faceY','faceSize','luminance'].flatMap(key => {
+      const values = frames.map(frame => frame[key]).filter(Number.isFinite);
+      return values.length >= 8 && values.length / Math.max(1, frames.length) >= 0.6 ? [[key, Number((values.reduce((a,b) => a+b,0)/values.length).toFixed(4))]] : [];
+    }));
+    clips.push({ observations, id: String(start), start, end, text, metrics, motion, events, trajectory, coverage,
       featureVersion: FEATURE_VERSION, context: '', decision: '', note: '', personalNote: '',
       reason: coverage < 0.5 || !Object.keys(metrics).length ? 'Limited visual evidence. Review manually before drawing a conclusion.'
         : events.length ? 'Repeated movement overlaps this part of your speech. Check whether it feels familiar.'

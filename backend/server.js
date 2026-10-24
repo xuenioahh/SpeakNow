@@ -70,7 +70,7 @@ async function readJsonBody(req) {
   let bytes = 0;
   for await (const chunk of req) {
     bytes += chunk.length;
-    const limit = req.url?.startsWith('/api/presentation-media') ? 16 * 1024 * 1024 : 512 * 1024;
+    const limit = req.url?.startsWith('/api/presentation-media') ? 16 * 1024 * 1024 : req.url?.startsWith('/api/speaking-practice') ? 4 * 1024 * 1024 : 512 * 1024;
     if (bytes > limit) throw Object.assign(new Error('Request body too large'), { status: 413 });
     chunks.push(chunk);
   }

@@ -1,4 +1,4 @@
-export const EXAM_STANDARDS_VERSION = '2026-09-18';
+export const EXAM_STANDARDS_VERSION = '2026-10-24';
 
 export const EXAM_STANDARDS = {
   ielts: {
@@ -47,7 +47,7 @@ export function roundExamScore(value, scoring = 'daily') {
   const n = Number(value);
   if (!Number.isFinite(n)) return null;
   const step = standard.step;
-  return Math.round(Math.max(0, Math.min(standard.max, n)) / step) * step;
+  return Math.round(Math.max(scoring === 'toefl' ? 1 : 0, Math.min(standard.max, n)) / step) * step;
 }
 
 export function normalizeExamScore(value, scoring = 'daily', { legacyToefl = false } = {}) {
@@ -55,7 +55,7 @@ export function normalizeExamScore(value, scoring = 'daily', { legacyToefl = fal
   const n = Number(value);
   if (!Number.isFinite(n)) return null;
   if (scoring === 'toefl' && (legacyToefl || n > 6)) {
-    return roundExamScore(1 + (Math.max(0, Math.min(30, n)) / 30) * 5, scoring);
+    return null; // Legacy 0–30 results are not a linear conversion to the 2026 scale.
   }
   return roundExamScore(n, scoring);
 }

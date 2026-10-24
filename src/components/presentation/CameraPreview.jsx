@@ -1,61 +1,37 @@
-import { useEffect, useRef, useState } from "react";
-import { CameraOff, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState } from 'react';
+import { startVisionSession } from '@/lib/expressionVisionSession';
 
-export default function CameraPreview() {
+// The parent mounts this preview only after the user chooses to enable their camera.
+export default function CameraPreview({ onSample = null, startedAt = 0 }) {
   const videoRef = useRef(null);
-  const [status, setStatus] = useState("loading"); // loading | active | error
-
+  const [status, setStatus] = useState('loading');
+  const [analysis, setAnalysis] = useState('loading');
   useEffect(() => {
-    let stream = null;
-    let active = true;
-    
-    const start = async () => {
+    let stream = null, active = true, stopVision = null;
+    const release = () => { stream?.getTracks().forEach(track => track.stop()); stopVision?.(); };
+    const onPageHide = () => { active = false; release(); setStatus('error'); };
+    window.addEventListener('pagehide', onPageHide);
+    const deadline = setTimeout(() => { active = false; release(); setStatus('error'); }, 20000);
+    (async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        if (!active) { stream.getTracks().forEach(t => t.stop()); return; }
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          setStatus("active");
+        stream = await navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 480 } }, audio: false });
+        if (!active) { release(); return; }
+        clearTimeout(deadline);
+        stream.getVideoTracks().forEach(track => { track.onended = onPageHide; });
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+        if (!active) { release(); return; }
+        setStatus('active');
+        if (onSample) {
+          try { stopVision = startVisionSession(videoRef.current, { onSample, onStatus: setAnalysis, clock: () => (Date.now() - startedAt) / 1000 }); }
+          catch { setAnalysis('unavailable'); }
         }
-      } catch {
-        setStatus("error");
-      }
-    };
-
-    start();
-
-    return () => {
-      active = false;
-      stream?.getTracks().forEach(t => t.stop());
-    };
-  }, []);
-
-  if (status === "error") {
-    return (
-      <div className="glass rounded-xl aspect-video flex items-center justify-center">
-        <div className="text-center">
-          <CameraOff className="w-6 h-6 text-muted-foreground mx-auto mb-1" />
-          <p className="text-[9px] text-muted-foreground">No camera</p>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="glass rounded-xl overflow-hidden aspect-video relative">
-      {status === "loading" && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Loader2 className="w-4 h-4 animate-spin text-primary" />
-        </div>
-      )}
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        className="w-full h-full object-cover"
-        style={{ display: status === "active" ? "block" : "none" }}
-      />
-    </div>
-  );
+      } catch { clearTimeout(deadline); release(); if (active) setStatus('error'); }
+    })();
+    return () => { active = false; clearTimeout(deadline); window.removeEventListener('pagehide', onPageHide); release(); };
+  }, [onSample, startedAt]);
+  return <div className="camera-preview">
+    <video ref={videoRef} autoPlay playsInline muted hidden={status !== 'active'} aria-label="Your camera preview" />
+    <p role="status">{status === 'error' ? 'Camera unavailable. Voice practice still works; turn the camera off and retry.' : status === 'loading' ? 'Requesting camera access…' : !onSample ? '' : analysis === 'ready' ? 'On-device analysis · video is not saved' : analysis === 'unavailable' ? 'Visual analysis unavailable · voice practice still works' : 'Loading visual analysis…'}</p>
+  </div>;
 }

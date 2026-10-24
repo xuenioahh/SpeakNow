@@ -1,6 +1,8 @@
 # SpeakNow
 
-Current repair status: [2026-10-13 progress and verification](docs/repair-progress-2026-10-13/REPORT.md). This report describes the local working tree; the deployed website has not been verified against these changes. Earlier completion reports are historical snapshots.
+Current product implementation: [2026-10-23–24 learning-loop audit, changes and verification](docs/product-2026-10-23/REPORT.md). The latest local build adds distinct TOEFL/IELTS tasks and daily conversation feedback/retries. This iteration has not been deployed to production.
+
+Earlier repair status: [2026-10-13 progress and verification](docs/repair-progress-2026-10-13/REPORT.md). This report describes the local working tree; the deployed website has not been verified against these changes. Earlier completion reports are historical snapshots.
 
 SpeakNow is a speaking-practice web application built for `ENT208TC Session 4 Group 25`. It combines scenario-based voice conversation, presentation rehearsal, progress tracking, reporting, and admin-side monitoring in one React + Vite project.
 
@@ -112,3 +114,5 @@ An existing hosted installation needs [repair_2026_10_13.sql](supabase/repair_20
 - [ADMIN_BACKEND_SETUP.md](./ADMIN_BACKEND_SETUP.md)
 - [COMPLETE_TECHNICAL_REPORT.md](./COMPLETE_TECHNICAL_REPORT.md)
 - [COMPLETE_TECHNICAL_REPORT_BILINGUAL.md](./COMPLETE_TECHNICAL_REPORT_BILINGUAL.md)
+
+Latest core-function audit and validation: [2026-10-24 implementation report](docs/product-2026-10-24/REPORT.md).

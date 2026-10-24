@@ -3,7 +3,8 @@ import { Volume2, ChevronDown, ChevronUp } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { audioManager } from "@/lib/audioManager";
 
-export default function ChatMessage({ message, voiceGender, isActive = false, isLatest = false, registerRef, onPlay, playbackDisabled = false, feedbackInitiallyOpen = true }) {
+export default function ChatMessage({ message, voiceGender, isActive = false, isLatest = false, registerRef, onPlay, playbackDisabled = false, feedbackInitiallyOpen = true, compact = false }) {
+  const [visualOpen,setVisualOpen]=useState(false);
   const isUser = message.role === "user";
   const [showFeedback, setShowFeedback] = useState(feedbackInitiallyOpen);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -54,7 +55,7 @@ export default function ChatMessage({ message, voiceGender, isActive = false, is
               Local
             </span>
           )}
-          {!isUser && message.model && (
+          {!compact && !isUser && message.model && (
             <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-muted-foreground">
               {message.model}
             </span>
@@ -76,7 +77,7 @@ export default function ChatMessage({ message, voiceGender, isActive = false, is
               Reason: {message.fallbackReason}
             </p>
           )}
-          {!isUser && message.visual && (
+          {!isUser && message.visual && (!compact || visualOpen) && (
             <div className="mt-3 max-w-[220px] rounded-2xl overflow-hidden border border-white/8 bg-black/20">
               <div className="aspect-[4/3] overflow-hidden">
                 <img
@@ -93,6 +94,7 @@ export default function ChatMessage({ message, voiceGender, isActive = false, is
           )}
         </div>
 
+        {!isUser&&message.visual&&compact&&<button className="text-xs text-muted-foreground mt-2" onClick={()=>setVisualOpen(open=>!open)}>{visualOpen?'Hide visual cue':'Visual cue'}</button>}
         {/* AI voice button */}
         {!isUser && (
           <div className="mt-1">

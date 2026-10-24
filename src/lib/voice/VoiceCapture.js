@@ -11,11 +11,12 @@ const permissionMessage = error => ({
 }[error?.name] || 'Microphone could not start. Check your input device or type your reply.');
 
 export class VoiceCapture {
-  /** @param {{ onEvent?: (event: any) => void, environment?: any, now?: () => number, maxRecordingMs?: number, finishTimeoutMs?: number, startTimeoutMs?: number, createMeter?: (stream: MediaStream) => any, retainStream?: boolean }} options */
-  constructor({ onEvent, environment = globalThis, now = () => performance.now(), maxRecordingMs = 120000, finishTimeoutMs = 3000, startTimeoutMs = 10000, createMeter = createAudioEnergy, retainStream = false } = {}) {
+  /** @param {{ onEvent?: (event: any) => void, environment?: any, now?: () => number, maxRecordingMs?: number, finishTimeoutMs?: number, startTimeoutMs?: number, createMeter?: (stream: MediaStream) => any, retainStream?: boolean, allowRecordingOnly?: boolean }} options */
+  constructor({ onEvent, environment = globalThis, now = () => performance.now(), maxRecordingMs = 120000, finishTimeoutMs = 3000, startTimeoutMs = 10000, createMeter = createAudioEnergy, retainStream = false, allowRecordingOnly = false } = {}) {
     this.onEvent = onEvent;
     this.createMeter = createMeter;
     this.retainStream = retainStream;
+    this.allowRecordingOnly = allowRecordingOnly;
     this.env = environment;
     this.now = now;
     this.config = { maxRecordingMs, finishTimeoutMs, startTimeoutMs };
@@ -53,7 +54,7 @@ export class VoiceCapture {
     const win = this.env.window || this.env;
     const nav = this.env.navigator;
     const Recognition = win.SpeechRecognition || win.webkitSpeechRecognition;
-    if (!Recognition || !nav?.mediaDevices?.getUserMedia) {
+    if ((!Recognition && !this.allowRecordingOnly) || !nav?.mediaDevices?.getUserMedia) {
       this.emit({ type: 'error', message: 'Live voice input is unavailable here. Use a supported browser or type your reply.' });
       return false;
     }
@@ -85,7 +86,8 @@ export class VoiceCapture {
         stream.getAudioTracks().forEach(track => { track.onended = () => this.fail('Microphone disconnected. Your words are kept. Reconnect it or type your reply.'); });
       } else stream.getTracks().forEach(track => track.stop());
       this.detector = new EndpointDetector({ silenceMs });
-      this.recognize(Recognition, generation);
+      if (Recognition) this.recognize(Recognition, generation);
+      else { this.startedAt=this.now();this.active=true;this.emit({type:'phase',phase:'listening'});this.emit({type:'notice',message:'Live transcription is unavailable. Record your answer, then add its transcript for text feedback.'});this.limitTimer=this.timer(()=>this.stop(),this.config.maxRecordingMs); }
       return true;
     } catch (error) {
       if (generation === this.generation && !this.disposed) this.fail(permissionMessage(error));
@@ -178,7 +180,7 @@ export class VoiceCapture {
     } catch (error) {
       if (!this.shared || !['TypeError', 'NotSupportedError'].includes(error?.name)) throw error;
       this.sharedRejected = true; this.shared = false;
-      this.releaseAudio();
+      if (!this.retainStream) this.releaseAudio();
       recognition.start();
     }
   }
