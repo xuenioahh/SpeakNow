@@ -1,0 +1,16 @@
+import fs from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const origin = 'http://localhost:5173';
+const capability = await fetch(`${origin}/api/voice-capabilities`).then(response => response.json());
+assert.equal(capability.transcription, 'local');
+const data = await fs.readFile('/private/tmp/speaknow-asr-check.wav');
+assert.ok(data.length > 10000, 'A nonempty spoken audio fixture is required');
+const started = Date.now();
+const response = await fetch(`${origin}/api/local-transcription`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: origin }, body: JSON.stringify({ data: data.toString('base64') }), signal: AbortSignal.timeout(100000) });
+const result = await response.json();
+assert.equal(response.status, 200, JSON.stringify(result));
+assert.match(result.text, /cup of tea/i);
+assert.match(result.text, /train.*coast/i);
+const report = { status: 'PASS', scope: 'Real faster-whisper model and local HTTP endpoint with macOS synthesized speech; NOT a physical microphone or production test', capability, result, wallMs: Date.now() - started };
+await fs.writeFile('docs/industrial-audit-2026-11-10/local-asr-real.json', JSON.stringify(report, null, 2));
+console.log(JSON.stringify(report));

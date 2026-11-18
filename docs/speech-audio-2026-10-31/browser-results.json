@@ -1,0 +1,10 @@
+{
+  "passed": [
+    "real browser recording gets quality checks in IELTS bank practice and feedback",
+    "assessment failure retains recording and text feedback; retry displays timestamped speech results",
+    "speech feedback fits a narrow screen and remains separate from typed feedback",
+    "IELTS bank audio survives missing transcription and still receives recording checks"
+  ],
+  "errors": [],
+  "fixture": "Real MediaRecorder and audio decoding; controlled ASR, text model and speech provider responses. No live pronunciation service key configured."
+}

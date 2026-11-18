@@ -1,4 +1,5 @@
 import { mutateAppDb, readAppDb } from "./_appDb.js";
+import { securityRequest } from './_securityStore.js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -15,6 +16,10 @@ const TABLES = {
 export async function getUserById(id) {
   if (!hasSupabase()) return (await readAppDb()).users.find(user => user.id === id) || null;
   return (await supabaseRequest(TABLES.users, { query: `select=*&id=eq.${encodeURIComponent(id)}` }))[0] || null;
+}
+export async function listAccountSummaries() {
+  const users = hasSupabase() ? await supabaseRequest(TABLES.users, { query: 'select=id,email,full_name,role,avatar_url,created_date&order=created_date.desc' }) : (await readAppDb()).users;
+  return users.map(user => ({ id: user.id, email: user.email, full_name: user.full_name || '', role: user.role || 'learner', avatar_url: user.avatar_url || '', created_date: user.created_date }));
 }
 export async function getUserByEmail(email) {
   if (!hasSupabase()) return (await readAppDb()).users.find(user => user.email === email) || null;
@@ -94,6 +99,7 @@ export async function updateImpact(owner, id, operation, patch) {
 }
 
 function isMissingTableError(error, table) {
+  if (error?.storageCode === 'PGRST205' && error.storageResource === table) return true;
   const message = String(error?.message || "");
   return message.includes("PGRST205") && message.includes(`public.${table}`);
 }
@@ -112,30 +118,10 @@ function shouldFallbackToLocal(error) {
 function hasSupabase() {
   return !FORCE_LOCAL_DATA && Boolean(SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY);
 }
+export function appStorageMode() { return hasSupabase() ? 'supabase' : 'server-local'; }
 
 async function supabaseRequest(table, { method = "GET", query = "", body, prefer } = {}) {
-  const url = `${SUPABASE_URL}/rest/v1/${table}${query ? `?${query}` : ""}`;
-  const response = await fetch(url, {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      Prefer: prefer || (method === "GET" ? "count=exact" : "return=representation"),
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Supabase ${method} ${table} failed: ${response.status} ${text}`);
-  }
-
-  if (response.status === 204) {
-    return null;
-  }
-
-  return response.json();
+  return securityRequest(table, { method, query, body, prefer: prefer || (method === 'GET' ? 'count=exact' : 'return=representation') });
 }
 
 function toLocalShape(db = {}) {

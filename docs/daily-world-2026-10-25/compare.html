@@ -1,0 +1,10 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>SpeakNow controlled render comparison</title><style>html,body{margin:0;background:#242c29}#scene{position:absolute;left:20px;right:20px;top:0;height:100vh}</style><div id="scene"></div><script type="module">
+import {createScene as before} from './baseline/createScene.js';
+import {createScene as after} from '/src/components/scene/createScene.js';
+import {IMMERSIVE_SCENARIOS} from '/src/lib/immersiveScenarios.js';
+const params=new URLSearchParams(location.search), id=params.get('scene')||'cafe', theme=IMMERSIVE_SCENARIOS[id], mode=params.get('mode')||'after';
+const api=(mode==='before'?before:after)(document.getElementById('scene'),theme,id,[],()=>{},()=>{});
+const cue=theme.cues[Number(params.get('cue')||0)];api.focus(cue.id);
+setTimeout(()=>{if(mode==='before')api.setCameraSnapshot(cue.cameraPosition,cue.cameraTarget);window.api=api;},500);
+window.addEventListener('pagehide',()=>api.dispose());
+</script></html>

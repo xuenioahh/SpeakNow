@@ -1,0 +1,77 @@
+{
+  "automatedTests": {
+    "passed": 168,
+    "failed": 0,
+    "scope": "Complete existing npm test suite including new daily tests"
+  },
+  "typecheck": "PASS",
+  "lint": "PASS",
+  "productionBuild": "PASS",
+  "realModel": {
+    "completedTurns": 24,
+    "checks": {
+      "completedTurns": 24,
+      "remembersPersonAndDay": true,
+      "respectsCorrection": true,
+      "remembersDrink": true,
+      "remembersBudget": true,
+      "usesLongHistorySummary": true,
+      "continuesPastOpeningTask": true,
+      "repliesWithoutQuestion": 19,
+      "stockPraiseCount": 0
+    },
+    "latency": {
+      "firstTokenMs": {
+        "median": 638,
+        "p95": 921
+      },
+      "completionMs": {
+        "median": 1259,
+        "p95": 1558
+      }
+    },
+    "feedbackStatus": 200
+  },
+  "camera": {
+    "status": "PASS physical camera capture and MediaPipe inference; human motion accuracy NOT VERIFIED",
+    "frames": 12,
+    "validSamples": {
+      "face": 12,
+      "body": 12,
+      "hands": 0
+    },
+    "render": {
+      "frames": 935,
+      "medianFrameMs": 16.69999999999891,
+      "p95FrameMs": 16.700000000000728,
+      "longTasks": []
+    },
+    "inference": {
+      "count": 12,
+      "totalMs": 2007.0000000149012,
+      "maxMs": 728.3999999910593
+    }
+  },
+  "normalPreview": {
+    "url": "http://localhost:5173",
+    "project": "/Users/zhangzhuoru/Desktop/master/speaknow-audit",
+    "deployment": "LOCAL ONLY"
+  },
+  "modelAssets": [
+    {
+      "name": "face_landmarker.task",
+      "bytes": 3758596,
+      "sha256": "64184e229b263107bc2b804c6625db1341ff2bb731874b0bcc2fe6544e0bc9ff"
+    },
+    {
+      "name": "pose_landmarker_lite.task",
+      "bytes": 5777746,
+      "sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a"
+    },
+    {
+      "name": "hand_landmarker.task",
+      "bytes": 7819105,
+      "sha256": "fbc2a30080c3c557093b5ddfc334698132eb341044ccee322ccf8bcf3607cde1"
+    }
+  ]
+}

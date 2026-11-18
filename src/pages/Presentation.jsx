@@ -3,8 +3,8 @@ import { contextFromSetup } from '@/impact/contracts';
 import { useAuth } from '@/lib/AuthContext';
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
-import { Upload, FileText, Presentation as PresentationIcon, Camera, CameraOff, Play, AlertCircle, X, FileType, History } from "lucide-react";
+import { motion } from "framer-motion";
+import { Upload, FileText, Presentation as PresentationIcon, Play, X, FileType, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import BottomNav from "@/components/BottomNav";
@@ -149,7 +149,7 @@ export default function Presentation() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
-                <PresentationIcon className="w-5 h-5 text-white" />
+                <PresentationIcon className="w-5 h-5 text-foreground" />
               </div>
               <div>
                 <h1 className="text-xl font-bold font-space text-foreground">Prepare your 5-minute English presentation</h1>
@@ -200,7 +200,7 @@ export default function Presentation() {
             {file ? (
               <div className="flex items-center gap-3 justify-center">
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
-                  <FileIcon className="w-6 h-6 text-white" />
+                  <FileIcon className="w-6 h-6 text-foreground" />
                 </div>
                 <div className="text-left flex-1 min-w-0">
                   <p className="text-sm font-medium text-foreground truncate">{file.name}</p>
@@ -238,79 +238,20 @@ export default function Presentation() {
           </div>
         </motion.div>
 
-        {fileError && <p role="alert" className="text-sm text-red-300">{fileError}</p>}
-
-        {/* Camera Setup */}
-        <motion.div initial={false} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <h2 className="text-sm font-semibold text-foreground mb-2">Optional camera preview</h2>
-          <div className="glass rounded-2xl p-4">
-            <AnimatePresence mode="wait">
-              {(cameraStatus === "active" || cameraStatus === "granted") ? (
-                <motion.div key="granted" initial={false} animate={{ opacity: 1 }} className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center">
-                    <Camera className="w-6 h-6 text-success" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-success">Ready ✓</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Camera preview only. Posture and eye contact are not measured.</p>
-                  </div>
-                  <button
-                    aria-label="Turn off video feedback"
-                    onClick={stopCamera}
-                    className="text-xs text-muted-foreground hover:text-accent"
-                  >
-                    <CameraOff className="w-4 h-4" />
-                  </button>
-                </motion.div>
-              ) : cameraStatus === "denied" ? (
-                <motion.div key="denied" initial={false} animate={{ opacity: 1 }} className="text-center py-4 space-y-2">
-                  <AlertCircle className="w-8 h-8 text-accent mx-auto" />
-                    <p className="text-sm text-foreground font-medium">Video access denied</p>
-                    <p className="text-xs text-muted-foreground">You can ignore this and start practice now, or allow access in browser settings later.</p>
-                  <Button onClick={requestCamera} size="sm" variant="outline" className="mt-2 border-white/10">
-                    Try Again
-                  </Button>
-                </motion.div>
-              ) : (
-                <motion.div key="idle" initial={false} animate={{ opacity: 1 }} className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center">
-                    <Camera className="w-6 h-6 text-muted-foreground" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">Optional</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">Turn this on for a camera preview. Posture and eye contact are not measured.</p>
-                  </div>
-                  <Button
-                    onClick={requestCamera}
-                    size="sm"
-                    className="bg-gradient-to-r from-violet-500 to-indigo-600 rounded-xl"
-                    disabled={cameraStatus === "requesting"}
-                  >
-                    {cameraStatus === "requesting" ? "Requesting..." : "Enable"}
-                  </Button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </motion.div>
+        {fileError && <p role="alert" className="text-sm text-red-800">{fileError}</p>}
 
         <div className="px-5 pb-5"><ImpactSetup value={impactContext} onChange={setImpactContext} /></div>
       {/* Start Button */}
         <motion.div initial={false} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-          {file && (
-            <p className="text-center text-xs text-muted-foreground mb-2">
-              Next: review the brief intro, then begin slide-by-slide practice.
-            </p>
-          )}
           {!canStart && (
             <p className="text-center text-xs text-muted-foreground mb-2">
-              {!file ? "Set a topic, core message and desired outcome to continue" : "You can start now. Video is optional."}
+              Set a topic, core message and desired outcome to continue.
             </p>
           )}
           <Button
             onClick={handleStart}
             disabled={!canStart || isStarting}
-            className="w-full h-14 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-semibold text-base disabled:opacity-40"
+            className="w-full h-14 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-foreground font-semibold text-base disabled:opacity-40"
           >
             <Play className="w-5 h-5 mr-2" />
             {isStarting ? "Opening..." : "Start Practice"}

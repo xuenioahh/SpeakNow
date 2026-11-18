@@ -1,0 +1,16 @@
+{
+  "passed": [
+    "IELTS selection → centered introduction → exam; no empty UI or teaching text",
+    "double Record/Stop are single flight; actual MediaRecorder audio and timer; editing retains raw ASR",
+    "three distinct questions; no early Finish; save, submit double-click, refresh and old session recovery",
+    "failed feedback keeps saved data; Retry real API; targeted retry/compare/original preserved",
+    "permission denied, missing/busy microphone recover; no unsolicited error",
+    "history continuation and browser Back retain clip; rererecord cancellation preserves previous take",
+    "empty ASR does not fake transcript; manual text with real audio submits; original raw remains empty",
+    "Part 2 preparation → recording → follow-up without second preparation; save exit recovery",
+    "TOEFL repeat requires actual playback and time cap stops tracks; refresh does not reintroduce intro",
+    "320/390 mobile introduction and active exam have no overflow or instructional copy"
+  ],
+  "pageErrors": [],
+  "environment": "Real Chrome MediaRecorder + fake microphone; controlled ASR/TTS; isolated backend AI fixture. Hardware microphone and external recognition/model quality not verified."
+}

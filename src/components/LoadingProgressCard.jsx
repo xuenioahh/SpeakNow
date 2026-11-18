@@ -21,11 +21,11 @@ export default function LoadingProgressCard({
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-lg glass rounded-[28px] border border-white/8 p-6"
+        className="w-full max-w-lg glass rounded-[28px] border border-slate-200 p-6"
       >
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
-            <Loader2 className="w-5 h-5 text-white animate-spin" />
+            <Loader2 className="w-5 h-5 text-foreground animate-spin" />
           </div>
           <div>
             <h2 className="text-lg font-semibold text-foreground">{title}</h2>

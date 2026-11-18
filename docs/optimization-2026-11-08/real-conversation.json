@@ -1,0 +1,207 @@
+{
+  "category": "real API integration",
+  "status": "completed; requires contextual review",
+  "physicalDevices": "not tested",
+  "traces": [
+    {
+      "turn": 1,
+      "userText": "I prefer tea because coffee makes me nervous. What would you recommend?",
+      "reply": "That makes sense — coffee can definitely hit hard. If you want something smooth, I'd go with our jasmine green tea or a rooibos if you'd like caffeine-free. Do you tend to like lighter, floral flavors or something a bit bolder?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 292,
+        "completion_tokens": 54,
+        "total_tokens": 346,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 164
+      },
+      "firstTokenMs": 679,
+      "totalMs": 1266
+    },
+    {
+      "turn": 2,
+      "userText": "Something without much caffeine, please.",
+      "reply": "Then I'd skip the jasmine green and go with rooibos — it's naturally caffeine-free and has a smooth, slightly sweet taste. If you want a little caffeine but not much, our white tea is a gentle option too.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 363,
+        "completion_tokens": 49,
+        "total_tokens": 412,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 235
+      },
+      "firstTokenMs": 807,
+      "totalMs": 1654
+    },
+    {
+      "turn": 3,
+      "userText": "I usually drink tea with my friend Maya on Sundays.",
+      "reply": "That sounds like a nice routine. Rooibos would work well for that — it's easy to sip slowly and stays smooth even if it sits a while. Does Maya drink tea too, or does she usually get something else?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 428,
+        "completion_tokens": 47,
+        "total_tokens": 475,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 172
+      },
+      "firstTokenMs": 601,
+      "totalMs": 994
+    },
+    {
+      "turn": 4,
+      "userText": "Actually, can we talk about a train trip to the coast instead?",
+      "reply": "Of course — a train trip to the coast sounds great. Are you thinking of a day trip, or staying a night or two once you get there?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 494,
+        "completion_tokens": 31,
+        "total_tokens": 525,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 238
+      },
+      "firstTokenMs": 712,
+      "totalMs": 1035
+    },
+    {
+      "turn": 5,
+      "userText": "I want to sketch buildings there. What should I bring?",
+      "reply": "For sketching buildings by the coast, I'd bring a small sketchbook and a couple of pencils or fineliners, plus maybe a travel watercolor set if you want to add color. A light folding stool helps too, since you'll probably want to sit and take your time. How long will you be there sketching?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 542,
+        "completion_tokens": 65,
+        "total_tokens": 607,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 158
+      },
+      "firstTokenMs": 766,
+      "totalMs": 1322
+    },
+    {
+      "turn": 6,
+      "userText": "What could I do if it rains all day?",
+      "reply": "Rain doesn't have to kill the trip — a lot of coastal towns have covered arcades, a station with an interesting old roof, or cafés with big windows where you can sketch the street from inside. A couple of days of wet weather is actually a good excuse to draw the same building twice, once from a doorway and once from across the square. Have you picked a town yet, or is that still open?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 622,
+        "completion_tokens": 85,
+        "total_tokens": 707,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 238
+      },
+      "firstTokenMs": 890,
+      "totalMs": 1793
+    },
+    {
+      "turn": 7,
+      "userText": "Maya cannot join this time; my brother Leo will come instead.",
+      "reply": "That's a good swap — Leo might even enjoy it more if he's into trains or just wandering around. Since he's coming, you might want to check whether he'd rather sketch alongside you or do his own thing while you draw. Is he the type to sit patiently while you work, or does he need a plan?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 725,
+        "completion_tokens": 66,
+        "total_tokens": 791,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 213
+      },
+      "firstTokenMs": 756,
+      "totalMs": 1385
+    },
+    {
+      "turn": 8,
+      "userText": "Who is coming with me now, and who cannot come?",
+      "reply": "Your brother Leo is coming with you now, and Maya can't make it this time.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 808,
+        "completion_tokens": 18,
+        "total_tokens": 826,
+        "prompt_tokens_details": {
+          "cached_tokens": 640
+        },
+        "prompt_cache_hit_tokens": 640,
+        "prompt_cache_miss_tokens": 168
+      },
+      "firstTokenMs": 246,
+      "totalMs": 390
+    },
+    {
+      "turn": 9,
+      "userText": "What drink did I say I preferred, and why?",
+      "reply": "You said you prefer tea because coffee makes you nervous. That's why I steered you toward the caffeine-free rooibos.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 842,
+        "completion_tokens": 27,
+        "total_tokens": 869,
+        "prompt_tokens_details": {
+          "cached_tokens": 640
+        },
+        "prompt_cache_hit_tokens": 640,
+        "prompt_cache_miss_tokens": 202
+      },
+      "firstTokenMs": 1000,
+      "totalMs": 1210
+    },
+    {
+      "turn": 10,
+      "userText": "The order is sorted, but I would like to keep chatting about travel. What interests you about old train stations?",
+      "reply": "Old stations interest me because the building itself tells you how people moved years ago — the high arched roofs, the clock, the little details people barely notice now. I like how they're both practical and a bit grand at the same time. Do the coastal stations you're planning to sketch have that kind of old architecture, or are they more modern?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 897,
+        "completion_tokens": 70,
+        "total_tokens": 967,
+        "prompt_tokens_details": {
+          "cached_tokens": 640
+        },
+        "prompt_cache_hit_tokens": 640,
+        "prompt_cache_miss_tokens": 257
+      },
+      "firstTokenMs": 388,
+      "totalMs": 1029
+    }
+  ]
+}

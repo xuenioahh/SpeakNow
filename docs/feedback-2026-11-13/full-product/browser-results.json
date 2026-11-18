@@ -1,0 +1,16 @@
+{
+  "passed": [
+    "all primary routes stay light even when the operating system requests dark mode",
+    "TOEFL practice never reveals the reference automatically and gets real audio checks",
+    "TOEFL exam hides references and transcript editing until the answer is submitted",
+    "IELTS Parts 1, 2 and 3 retain preparation and get recording quality results",
+    "complete IELTS and TOEFL mocks retain every question, recording, feedback and retry link",
+    "daily voice automatically recovers a transient AI outage without duplicating the learner turn",
+    "VIP trial is real, remains active on refresh and exposes all five allowances",
+    "administrator can revoke VIP, process a learner request and grant time-limited access",
+    "unavailable premium voice falls back to English browser speech and cancellation stays cancelled"
+  ],
+  "errors": [],
+  "accountId": "user_fdc70b00-3837-4a73-9144-14e0c3dac038",
+  "scope": "Real WebAudio, MediaRecorder, PCM decoding, IndexedDB, API sessions, quotas and membership actions. Controlled ASR, TTS and LLM responses. Azure Speech not configured."
+}

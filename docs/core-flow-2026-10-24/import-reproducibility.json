@@ -1,0 +1,8 @@
+{
+  "identicalOnReimport": true,
+  "sha256": {
+    "catalogue.json": "c6b6fce3d7617394b349b8529d89327e11080b8e90ef7349eacff5ec86473b17",
+    "import-report.json": "6278cc7f1f682213e49d986b3c653f84525d0220217ad6ab807e2cc2c1886c26"
+  },
+  "testedInActualProject": true
+}

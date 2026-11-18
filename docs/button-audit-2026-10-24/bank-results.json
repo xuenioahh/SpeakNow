@@ -1,0 +1,10 @@
+{
+  "passed": [
+    "selection exposes the two TOEFL bank routes and existing IELTS practice remains reachable",
+    "bank search, status, task card and individual question navigate to valid intro",
+    "bank filters and progress after saved answer",
+    "mock Start Practice immediately starts question audio/recording; no second confirmation"
+  ],
+  "pageErrors": [],
+  "environment": "Real Chromium fake microphone, controlled ASR and browser speech; isolated backend"
+}

@@ -40,7 +40,7 @@ function OralPresentationPractice({ setup, onExit, onSaved }) {
     {showSlides && <div className="glass rounded-2xl p-3">
       <DocumentViewer currentPage={currentPage} onTotalPages={setTotalPages} />
       <div className="impact-actions"><Button variant="outline" onClick={() => setShowSlides(false)}>Continue without slides</Button><Button variant="outline" disabled={currentPage <= 1} onClick={() => setCurrentPage(page => page - 1)}>Previous slide</Button><span>{currentPage} / {totalPages || '…'}</span><Button variant="outline" disabled={!totalPages || currentPage >= totalPages} onClick={() => setCurrentPage(page => page + 1)}>Next slide</Button></div>
-      <p className="text-sm text-muted-foreground">Slides are optional. A missing or unavailable PDF never blocks your recording.</p>
+
     </div>}
     <PresentationCapture key={setup.attemptId} attemptId={setup.attemptId} userId={setup.userId} context={setup.context} retry={setup} fileName={sessionStorage.getItem('presentationFile') || setup.context.topic} pageTimings={[]} totalPages={showSlides ? totalPages : 0} onSaved={onSaved} onExit={onExit} />
   </div></div>;
@@ -300,12 +300,7 @@ function LegacyPresentationPractice() {
   const handleExit = () => {
     clearInterval(timerRef.current);
     stopRecognition();
-    sessionStorage.removeItem("presentationElapsed");
-    sessionStorage.removeItem("presentationLiveTranscript");
-    sessionStorage.removeItem("presentationPauseFeedbackPayload");
-    sessionStorage.removeItem("presentationPauseHistory");
-    sessionStorage.removeItem("presentationTranscriptHistory");
-    sessionStorage.removeItem("presentationTranscriptCombined");
+    persistSession();
     navigate("/presentation");
   };
 
@@ -389,7 +384,7 @@ function LegacyPresentationPractice() {
 
   return (
     <div className="presentation-room h-dvh flex flex-col bg-background overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 glass flex-shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 glass flex-shrink-0">
         <button onClick={handleExit} className="flex items-center gap-1.5 text-[15px] text-accent font-medium">
           <X className="w-4 h-4" />
           Exit
@@ -446,19 +441,17 @@ function LegacyPresentationPractice() {
         </div>
       </div>
 
-      <div className="presentation-controls border-t border-white/5 glass px-4 py-3 flex items-center gap-3">
+      <div className="presentation-controls border-t border-slate-200 glass px-4 py-3 flex items-center gap-3">
         <div className="flex-1">
           <Button
             onClick={handlePause}
             variant="outline"
-            className="w-full h-12 rounded-2xl border-white/10 hover:bg-white/5 text-[16px]"
+            className="w-full h-12 rounded-2xl border-slate-200 hover:bg-white/5 text-[16px]"
           >
             <Pause className="w-4 h-4 mr-2" />
             Pause and Review
           </Button>
-          <p className="text-[11px] text-muted-foreground mt-1.5 px-1">
-            Use this when you want feedback on the current page before moving on.
-          </p>
+
         </div>
         <div className="flex-1">
           <Button
@@ -467,9 +460,7 @@ function LegacyPresentationPractice() {
           >
             Finish Session
           </Button>
-          <p className="text-[11px] text-muted-foreground mt-1.5 px-1">
-            Use this after the last page or when you want the full report now.
-          </p>
+
         </div>
       </div>
     </div>

@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "scope": "Controlled evidence and generated media fixtures; real browser, IndexedDB, report rendering and retry routing. No claim of human motion or real acoustic assessment.",
+  "checks": [
+    "seven dimensions",
+    "timestamped audio/video overlap",
+    "verified delivery evidence",
+    "unmeasured latency remains unassessed",
+    "320/390 layouts",
+    "targeted retry relationship"
+  ],
+  "runtimeErrors": []
+}

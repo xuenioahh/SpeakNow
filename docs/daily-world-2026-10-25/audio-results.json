@@ -1,0 +1,92 @@
+{
+  "fixture": "Decoded PCM tone through actual HTMLAudioElement, AudioContext analyser and PannerNode; blob fallback. External voice generation not verified.",
+  "speaking": {
+    "sceneId": "cafe",
+    "roomId": "bb4e3c37-1609-4896-812b-ed31e0b1c923",
+    "focusedId": "coffee",
+    "transitioning": false,
+    "frames": 96,
+    "cameraPosition": [
+      1.3200000167939225,
+      1.6500000181835606,
+      3.5000047947076416
+    ],
+    "cameraTarget": [
+      1.6499999965963745,
+      1.349999999278019,
+      -1.619999996658259
+    ],
+    "subtitleVisible": true,
+    "npc": [
+      {
+        "id": "menu",
+        "state": "idle",
+        "mouthEnergy": 0,
+        "uuid": "a8cca777-3750-4bf9-9028-b01c4a62da3e",
+        "position": [
+          0.05,
+          0.055,
+          -1.62
+        ],
+        "bones": 17,
+        "pose": "standing",
+        "bounds": [
+          0.6466853176497226,
+          1.9570000409148631,
+          0.4487706273327414
+        ]
+      },
+      {
+        "id": "coffee",
+        "state": "speaking",
+        "mouthEnergy": 0.5,
+        "uuid": "39a509fe-955d-4b79-97dd-8bf2a98531ac",
+        "position": [
+          1.65,
+          0.055,
+          -1.62
+        ],
+        "bones": 17,
+        "pose": "standing",
+        "bounds": [
+          0.6672707479792142,
+          1.9570000409148631,
+          0.47247861355645027
+        ]
+      },
+      {
+        "id": "pastry",
+        "state": "idle",
+        "mouthEnergy": 0,
+        "uuid": "6c0543d7-4937-4f57-a62a-ed2a4f4733b8",
+        "position": [
+          -2.25,
+          0.055,
+          1.15
+        ],
+        "bones": 17,
+        "pose": "seated",
+        "bounds": [
+          0.699378699605743,
+          1.7329744506993499,
+          0.8955922146054794
+        ]
+      }
+    ],
+    "fps": 22.89282399129398,
+    "renderMsP50": 3.7999999970197678,
+    "renderMsP95": 8.200000002980232,
+    "drawCalls": 125,
+    "triangles": 73978,
+    "memory": {
+      "geometries": 175,
+      "textures": 13
+    },
+    "reducedMotion": false,
+    "pixelRatio": 1,
+    "width": 1400,
+    "height": 900
+  },
+  "cleanup": true,
+  "errors": []
+}

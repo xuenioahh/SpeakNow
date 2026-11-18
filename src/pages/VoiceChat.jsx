@@ -3,20 +3,29 @@ import { createReviewClips } from '@/lib/expressionInsights';
 import { validateVisualEvidence } from '../../shared/visualEvidence';
 import { lazy, Suspense, useState, useRef, useEffect, useMemo, useCallback, useSyncExternalStore } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Volume2 } from "lucide-react";
+import { ArrowLeft, Volume2, VolumeX, Mic, Send, Camera, Info, Square } from "lucide-react";
 import { localApi } from "@/api/localClient";
 import { getScenario } from "@/lib/scenarios";
+import { getDailyTask } from '@/lib/dailyTasks';
+import { getDailyTasks } from '@/lib/dailyTasks';
+import { DailyLiveMetrics } from '@/lib/dailyLiveMetrics';
+import { selectLearningMoment } from '@/lib/dailyVideoMoment';
 import { VoiceInteraction } from "@/lib/voice/VoiceInteraction";
-import { resolveVoiceOrbState } from "@/lib/voiceOrbState";
+import { attachDailyTranscription } from '@/lib/dailyTranscription';
+import { VisionTimeline } from '@/lib/visionTimeline';
+import { buildDailyEvidence } from '../../shared/dailyEvidence';
 import "@/voice-room.css";
 import { audioManager } from "@/lib/audioManager";
 import { getDynamicSceneCue } from "@/lib/sceneAssets";
 import { useAuth } from '@/lib/AuthContext';
+import { conversationStream } from '@/api/conversationStream';
 import { apiJson } from '@/api/http';
 import { learningStore, saveAttempt } from '@/lib/learningStore';
-import ChatMessage from "@/components/voice/ChatMessage";
-import RecordingControls from "@/components/voice/RecordingControls";
+import { cacheRecordingQuality } from '@/lib/speechAssessment';
+import ConversationTranscript from '@/components/ConversationTranscript';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import '@/scenario-studio.css';
+import '@/daily-immersive.css';
 
 const VoiceOrb = lazy(() => import('@/components/spatial/VoiceOrb'));
 const ScenarioStage = lazy(() => import('@/components/ScenarioStage'));
@@ -26,119 +35,239 @@ export default function VoiceChat() {
   const location = useLocation();
   const params = new URLSearchParams(location.search);
   const scenarioId = params.get("scenario");
+  const cueId = params.get('cue');
+  const guidance = location.pathname === '/voice/prepare' && params.get('stage') !== 'conversation';
   const mode = params.get("mode") || "basic";
   const dialogMode = params.get("dialogMode") || "goal_oriented";
   const scoring = "daily";
   const { user } = useAuth();
   const parentId=params.get("retry")||null, focus=params.get("focus")||"";
-  const [cameraEnabled, setCameraEnabled] = useState(false);
+  const retryPrompt=params.get('retryPrompt')||'';
+  const [cameraEnabled, setCameraEnabled] = useState(['analysis', 'preview'].includes(params.get('camera')) && !guidance);
+  const [mediaPaused, setMediaPaused] = useState(false);
+  const [allowance, setAllowance] = useState(null);
+  const [cameraStatus, setCameraStatus] = useState('off');
+  const [previewAllowed, setPreviewAllowed] = useState(['analysis', 'preview'].includes(params.get('camera')));
+  const [analysisAllowed, setAnalysisAllowed] = useState(params.get('camera') === 'analysis');
+  const [clipAllowed, setClipAllowed] = useState(params.get('clip') === 'local');
+  const [selectedCue, setSelectedCue] = useState(cueId || '');
+  const [cameraMoving, setCameraMoving] = useState(true);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [cameraSettingsOpen, setCameraSettingsOpen] = useState(guidance && params.get('camera') === 'analysis');
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [metricView, setMetricView] = useState({});
+  const liveMetrics = useRef(new DailyLiveMetrics());
+  const cameraActiveRef = useRef(!guidance && cameraEnabled);
+  const cameraAnalysisAllowed = analysisAllowed;
+  const localClipAllowed = cameraAnalysisAllowed && clipAllowed;
   const visualSamples = useRef([]);
-  const collectVisual = useCallback(sample => { if (visualSamples.current.length < 4800) visualSamples.current.push(sample); }, []);
-  const [historyOpen,setHistoryOpen]=useState(false),[saveError,setSaveError]=useState("");
+  const vision = useRef(new VisionTimeline(null));
+  const analysisContext = useRef({speaker:'none',turnId:null});
+  const collectVisual = useCallback(sample => { if (!cameraActiveRef.current) return; visualSamples.current.push(sample); if(visualSamples.current.length>4800)visualSamples.current.shift(); vision.current.sample(sample,analysisContext.current);liveMetrics.current.videoSample(sample); setMetricView(liveMetrics.current.snapshot()); }, []);
+  const capturedClips = useRef([]);
+  const cameraControl=useRef(null),sessionStartRef=useRef(0);
+  const collectClip = useCallback(clip => { if (clip.sessionStartedAt===sessionStartRef.current) capturedClips.current = [...capturedClips.current.slice(-24), clip]; }, []);
+  const [saveError,setSaveError]=useState("");
+  const [starting,setStarting]=useState(false);
+  const startRequest=useRef(null);
+  useEffect(()=>()=>startRequest.current?.abort(),[]);
+  const [recordingQuality, setRecordingQuality] = useState(null);
   const attemptId=useRef(crypto.randomUUID()),endLock=useRef(false);
 
   const scenario = getScenario(scenarioId);
+  const tasks = useMemo(() => getDailyTasks(scenario), [scenario]);
+  const activeCue = selectedCue || cueId || tasks[0]?.id;
+  const task = useMemo(() => getDailyTask(scenario, activeCue), [scenario, activeCue]);
+  const conversationScenario = useMemo(() => task?.role ? { ...scenario, aiRole: task.role } : scenario, [scenario, task]);
   const isGoalOriented = dialogMode === "goal_oriented";
-  const scenarioData = isGoalOriented ? scenario?.goalOriented : scenario?.freeTalk;
+  const scenarioData = isGoalOriented ? task?.conversation : scenario?.freeTalk;
 
 
-  const [sceneOpen, setSceneOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-  const [startTime] = useState(Date.now());
-  const chatEndRef = useRef(null);
-  const messageRefs = useRef({});
+  const [startTime, setStartTime] = useState(Date.now());
+  sessionStartRef.current=startTime;
   const replyInputRef = useRef(null);
   const sceneCueRef = useRef('');
-  const draftKey = `speaknow-voice-draft:${user?.id||"guest"}:${scenarioId}:${mode}:${dialogMode}:${scoring}:${parentId||"new"}`;
+  const draftKey = `speaknow-voice-draft:${user?.id||"guest"}:${scenarioId}:${activeCue}:${mode}:${dialogMode}:${scoring}:${parentId||"new"}`;
   const requestCueIds = useMemo(() => new Map(), [draftKey]);
   const interaction = useMemo(() => {
+    attemptId.current = crypto.randomUUID();
     let initialDraft = '';
-    let initialMessages=[],initialRecordingId=null;
-    try { const saved=JSON.parse(localStorage.getItem(draftKey)||'null');initialDraft=saved?.draft||'';initialMessages=saved?.messages||[];if(saved?.attemptId)attemptId.current=saved.attemptId;
+    let initialMessages=[],initialRecordingId=null,savedSession=null;
+    try { const saved=JSON.parse(localStorage.getItem(draftKey)||'null');savedSession=saved;initialDraft=saved?.draft||'';initialMessages=saved?.messages||[];if(saved?.attemptId)attemptId.current=saved.attemptId;
       initialRecordingId=saved?.pendingRecordingId||null;
-      if(initialMessages.at(-1)?.role==='user'){const pending=initialMessages.pop();initialDraft=pending.content;initialRecordingId=pending.recordingId||initialRecordingId;}
+      if(initialMessages.at(-1)?.role==='user'&&initialMessages.at(-1).content.trim()===initialDraft.trim()){initialDraft='';initialRecordingId=null;}
     } catch { /* Storage unavailable. */ }
-    return new VoiceInteraction({
-      audio: audioManager, aiRole: scenario?.aiRole, voiceGender: scenario?.aiVoice,
+    if(!initialMessages.length&&retryPrompt)initialMessages=[{id:'retry-reference',role:'ai',content:retryPrompt.slice(0,2000),source:'retry-reference'}];
+    const session = new VoiceInteraction({
+      audio: audioManager, aiRole: conversationScenario?.aiRole, voiceGender: scenario?.aiVoice,
       initialDraft, initialMessages, initialRecordingId,
+      initialMessage: scenarioData?.firstMessage ? { id: 'opening', role: 'ai', content: scenarioData.firstMessage, source: 'scenario', aiRole: conversationScenario?.aiRole } : undefined,
+      captureOptions: { onUsage: usage => void apiJson('/api/membership', { action: 'measurement', sessionId: attemptId.current, id: crypto.randomUUID(), usageType: usage.usageType, seconds: usage.seconds }).catch(() => {}) },
       saveDraft: text => { const saved=JSON.parse(localStorage.getItem(draftKey)||"{}");localStorage.setItem(draftKey,JSON.stringify({...saved,draft:text})); },
-      saveRecording: async recording=>{await learningStore.put("recordings",recording);const previous=JSON.parse(localStorage.getItem(draftKey)||"{}");localStorage.setItem(draftKey,JSON.stringify({...previous,pendingRecordingId:recording.id}));},
+      saveRecording: async recording=>{await learningStore.put("recordings",recording);const previous=JSON.parse(localStorage.getItem(draftKey)||"{}");localStorage.setItem(draftKey,JSON.stringify({...previous,pendingRecordingId:recording.id}));void cacheRecordingQuality(recording).then(setRecordingQuality).catch(()=>{});},
       visualFor: text => getDynamicSceneCue(scenarioId, text),
-      initialMessage: scenarioData ? { id: `intro-${scenarioId}`, role: 'ai', content: focus ? `Let’s try that situation again. ${scenarioData.firstMessage}` : scenarioData.firstMessage, aiRole: scenario?.aiRole, visual: getDynamicSceneCue(scenarioId, scenarioData.firstMessage), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) } : null,
-      request: (userText, { signal, history, turnId }) => {
+      request: async (userText, { signal, history, turnId, onDelta }) => {
         // Retries retain the scene context of the original turn.
         if (!requestCueIds.has(turnId)) requestCueIds.set(turnId, sceneCueRef.current);
-        return apiJson('/api/speaking-feedback', { action:'conversation', scenario, scenarioData, history, userText, mode, scoring, isGoalOriented, ...(scenarioId === 'cafe' ? { sceneCueId: requestCueIds.get(turnId) } : {}) }, { signal });
+        await apiJson('/api/membership', { action: 'start', id: attemptId.current, kind: 'daily' });
+        return conversationStream({ sessionId: attemptId.current, turnId, scenario: conversationScenario, scenarioData, history, userText, mode, scoring, isGoalOriented, practiceFocus:focus, sceneCueId: task?.id || requestCueIds.get(turnId) }, { signal, onDelta });
       },
     });
-  }, [draftKey, scenario, scenarioData, scenarioId, mode, scoring, isGoalOriented, requestCueIds, focus]);
+    attachDailyTranscription(session);
+    session.sessionId=attemptId.current;session.startedAt=savedSession?.startedAt||Date.now();session.savedAnalysis=savedSession;
+    if(savedSession?.timings)session.update({timings:savedSession.timings, conversationContext:savedSession.conversationContext||null});
+    return session;
+  }, [draftKey, scenario, conversationScenario, scenarioData, scenarioId, mode, scoring, isGoalOriented, requestCueIds, focus, task,retryPrompt]);
   const state = useSyncExternalStore(interaction.subscribe, interaction.getSnapshot, interaction.getSnapshot);
   const messages = state.messages;
+  analysisContext.current={speaker:state.status==='listening'?'user':state.status==='speaking'?'ai':'none',turnId:state.status==='listening'?`turn-${interaction.sequence+1}`:state.status==='speaking'?interaction.lastTurn?.id||null:null};
+  useEffect(()=>{
+    setStartTime(interaction.startedAt);vision.current=new VisionTimeline(interaction.sessionId);
+    const saved=interaction.savedAnalysis;
+    vision.current.restore(saved?.visionTimeline);
+    if(saved?.liveMetrics){liveMetrics.current.metrics=saved.liveMetrics.metrics||{};liveMetrics.current.turns=(saved.liveMetrics.timeline||[]).filter(item=>item.kind==='turn');liveMetrics.current.pauseEvents=(saved.liveMetrics.timeline||[]).filter(item=>item.kind==='pause');}
+  },[interaction]);
 
-  const isAiThinking = state.status === 'processing';
-  const isSpeaking = state.status === 'speaking';
-  const activePlaybackId = state.activePlaybackId;
-  const inputState = state.status;
-  const energyRef = interaction.energyRef;
-  const hasInputEnergy = state.energyAvailable;
   const fallbackNotice = state.error;
 
-  const orbState = resolveVoiceOrbState({ status: state.status });
   const exchanges = messages.filter(message => message.role === 'user').length;
-  const wordCount = messages.filter(message => message.role === 'user').reduce((total, message) => total + message.content.split(/\s+/).filter(Boolean).length, 0);
   const latestPartnerMessage = [...messages].reverse().find(message => message.role === 'ai');
-  const canUseSceneDraft = !['requesting_permission', 'starting', 'listening', 'stopping', 'finalizing', 'submitting', 'processing', 'completed'].includes(state.status);
-  const cafeCueDisabledReason = ['requesting_permission', 'starting', 'listening', 'stopping', 'finalizing', 'submitting', 'processing', 'completed'].includes(state.status)
-    ? 'Finish the current turn before choosing a reply draft.'
-    : [state.typedText, state.finalText, state.interimText].some(text => text.trim())
-      ? 'Your unsent words are kept. Send or clear them before choosing a draft.' : '';
-  const focusReply = () => { replyInputRef.current?.scrollIntoView({ block: 'center', behavior: 'auto' }); replyInputRef.current?.focus({ preventScroll: true }); };
-  const useSceneCue = cue => {
-    if (cafeCueDisabledReason) return;
-    sceneCueRef.current = cue.id;
-    interaction.setTypedText(cue.phrase);
-    focusReply();
-  };
+  const recording = ['requesting_permission', 'starting', 'listening'].includes(state.status) || state.recordingSession;
+  const busy = ['stopping', 'finalizing', 'submitting', 'processing'].includes(state.status);
+  useEffect(() => { if (!guidance && state.error && !state.retryable) replyInputRef.current?.focus(); }, [guidance, state.error, state.retryable]);
   useEffect(() => { sceneCueRef.current = ''; }, [draftKey]);
+  const selectCue = useCallback(id => { if (id === activeCue) return; setCameraMoving(true); setSelectedCue(id); }, [activeCue]);
+  const onCameraTransition = useCallback(moving => setCameraMoving(moving), []);
+  useEffect(() => { if (guidance) { liveMetrics.current = new DailyLiveMetrics(); visualSamples.current = []; capturedClips.current = []; setMetricView({}); } }, [activeCue, guidance]);
+  async function beginVoice() {
+    try { const reservation=await apiJson('/api/membership', { action: 'start', id: attemptId.current, kind: 'daily' }); setAllowance(reservation);setMediaPaused(false);setSaveError(''); await interaction.startContinuous(); } catch (error) { setSaveError(error.message); }
+  }
+  async function startConversation() {
+    if(startRequest.current)return;
+    const controller=new AbortController();startRequest.current=controller;setStarting(true);setSaveError('');
+    try {
+    const reservation=await apiJson('/api/membership', { action: 'start', id: attemptId.current, kind: 'daily' }, {signal:controller.signal});
+    if(controller.signal.aborted)return;
+    setAllowance(reservation);setMediaPaused(false);
+    const next = new URLSearchParams(location.search);
+    next.set('cue', activeCue); next.set('stage', 'conversation'); next.set('dialogMode', dialogMode);
+    next.set('camera', analysisAllowed ? 'analysis' : previewAllowed ? 'preview' : 'off');
+    next.set('clip', clipAllowed && analysisAllowed ? 'local' : 'off');
+    if(!interaction.savedAnalysis)interaction.startedAt=Date.now();
+    setStartTime(interaction.startedAt); setElapsed(0); cameraActiveRef.current = previewAllowed; setCameraEnabled(previewAllowed);
+    navigate(`${location.pathname}?${next}`, { replace: true });
+    void interaction.startContinuous();
+    } catch (error) { if(!controller.signal.aborted)setSaveError(error.message); }
+    finally { startRequest.current=null;setStarting(false); }
+  }
+
+  useEffect(() => {
+    cameraActiveRef.current = cameraEnabled && !guidance && !mediaPaused;
+    if (!cameraActiveRef.current) { vision.current.flush();liveMetrics.current.cameraOff(); setMetricView(liveMetrics.current.snapshot()); }
+  }, [cameraEnabled, guidance, mediaPaused]);
+  useEffect(() => {
+    if (guidance) return;
+    const timer = window.setInterval(() => {
+      const time = (Date.now() - startTime) / 1000;
+      const meter = interaction.energyRef.current;
+      liveMetrics.current.audioSample(time, meter?.readRms?.(), state.status === 'listening', [state.finalText, state.interimText].filter(Boolean).join(' '),{...analysisContext.current,sessionId:attemptId.current});
+      if (state.status === 'listening' && meter) setMetricView(liveMetrics.current.snapshot());
+    }, 160);
+    return () => window.clearInterval(timer);
+  }, [guidance, interaction, startTime, state.status, state.finalText, state.interimText]);
+  const seenTurns = useRef(new Set()), seenFeedback = useRef(new Set());
+  useEffect(()=>{seenTurns.current=new Set(interaction.savedAnalysis?interaction.getSnapshot().messages.filter(message=>message.role==='user').map(message=>message.id):[]);seenFeedback.current=new Set();},[interaction]);
+  useEffect(() => {
+    if (guidance) return;
+    const time = (Date.now() - startTime) / 1000;
+    for (const message of messages) {
+      if (message.role !== 'user') continue;
+      if (!seenTurns.current.has(message.id)) { liveMetrics.current.turn(message.content, time); seenTurns.current.add(message.id); }
+      if (message.feedback && !seenFeedback.current.has(message.id)) { liveMetrics.current.feedback(message.feedback, time); seenFeedback.current.add(message.id); }
+    }
+    setMetricView(liveMetrics.current.snapshot());
+  }, [messages, guidance, startTime]);
 
   useEffect(() => {
     if (!scenario) navigate('/voice');
   }, [navigate, scenario]);
+  useEffect(() => () => interaction.dispose(), [interaction]);
   useEffect(() => {
-    if (!scenario || !scenarioData) return () => interaction.dispose();
+    if (guidance || !scenario || !scenarioData || cameraMoving) return;
     interaction.activate();
     if (user) void localApi.integrations.Core.TrackActivity({ activity_type: 'voice_practice_started', scenario: scenarioId, mode, dialog_mode: dialogMode, scoring_standard: scoring }).catch(error => console.error('Failed to track voice practice start:', error));
-    // Initial playback is attempted without an artificial delay. Browsers may
-    // require a gesture; text and the explicit Play audio action remain.
-    if (interaction.getSnapshot().messages[0]) void interaction.playMessage(interaction.getSnapshot().messages[0].id);
-    return () => interaction.dispose();
-  }, [interaction, scenario, scenarioData, scenarioId, mode, dialogMode, scoring, user]);
+  }, [interaction, scenario, scenarioData, scenarioId, mode, dialogMode, scoring, user, guidance, cameraMoving]);
   useEffect(() => {
+    if (guidance) return;
     const timer = window.setInterval(() => setElapsed(Math.floor((Date.now() - startTime) / 1000)), 1000);
     return () => window.clearInterval(timer);
-  }, [startTime]);
-  useEffect(() => {
-    if (messages.length > 1 && !window.matchMedia('(max-width: 760px)').matches && !(scenarioId === 'cafe' && sceneOpen)) chatEndRef.current?.scrollIntoView({ behavior: 'auto', block: 'nearest' });
-  }, [messages, sceneOpen, scenarioId]);
+  }, [startTime, guidance]);
 
-  useEffect(() => interaction.subscribe(() => {
+  useEffect(() => {
+    if (guidance) return;
+    return interaction.subscribe(() => {
     const current=interaction.getSnapshot();
-    try { localStorage.setItem(draftKey,JSON.stringify({pendingRecordingId:current.typedText||current.finalText||current.interimText?JSON.parse(localStorage.getItem(draftKey)||"{}").pendingRecordingId:null,attemptId:attemptId.current,href:location.pathname+location.search,title:scenario?.title,ownerId:user?.id||null,updatedAt:new Date().toISOString(),messages:current.messages,draft:current.typedText||[current.finalText,current.interimText].filter(Boolean).join(' ')})); }
+    try { localStorage.setItem(draftKey,JSON.stringify({...JSON.parse(localStorage.getItem(draftKey)||'{}'),startedAt:startTime,timings:current.timings,pendingRecordingId:current.typedText||current.finalText||current.interimText?JSON.parse(localStorage.getItem(draftKey)||"{}").pendingRecordingId:null,attemptId:attemptId.current,href:location.pathname+location.search,title:scenario?.title,ownerId:user?.id||null,updatedAt:new Date().toISOString(),messages:current.messages,draft:current.typedText||[current.finalText,current.interimText].filter(Boolean).join(' ')})); }
     catch { setSaveError('Draft storage is unavailable. Keep this page open until you save the practice.'); }
-  }),[interaction,draftKey]);
+    });
+  },[interaction,draftKey,guidance,location.pathname,location.search,scenario?.title,user?.id,startTime]);
+
+  useEffect(()=>{
+    if(guidance)return;
+    const persist=()=>{
+      if(interaction.ended)return;
+      const current=interaction.getSnapshot();
+      try{const value={...JSON.parse(localStorage.getItem(draftKey)||'{}'),id:draftKey,attemptId:attemptId.current,startedAt:startTime,href:location.pathname+location.search,title:scenario?.title,messages:current.messages,timings:current.timings,conversationContext:current.conversationContext,visionTimeline:vision.current.summary(),liveMetrics:liveMetrics.current.summary()};localStorage.setItem(draftKey,JSON.stringify({...value,visionTimeline:{...value.visionTimeline,featureSamples:[]}}));void learningStore.put('drafts',value).catch(()=>setSaveError('Session storage failed. Keep this page open and retry saving.'));}catch{setSaveError('Session storage failed. Keep this page open and retry saving.');}
+    };
+    const timer=setInterval(persist,5000);window.addEventListener('pagehide',persist);
+    return()=>{persist();clearInterval(timer);window.removeEventListener('pagehide',persist);};
+  },[guidance,interaction,draftKey,startTime,location.pathname,location.search,scenario?.title]);
 
   const handleEnd = async () => {
-    if(endLock.current)return;endLock.current=true;setSaveError('');setCameraEnabled(false);
+    if(endLock.current)return;endLock.current=true;setSaveError('');
+    vision.current.flush();
+    setMediaPaused(true);
+    const completion=interaction.complete();
+    const cameraFlush=cameraControl.current?.stop();
+    cameraActiveRef.current = false;
     try {
-      const finished=await interaction.complete();if(!finished||interaction.disposed)return;
+      await cameraFlush;setCameraEnabled(false);
+      const finished=await completion;if(!finished||interaction.disposed)return;
       const endedMessages=[...finished.messages];
       const unsent=finished.typedText||[finished.finalText,finished.interimText].filter(Boolean).join(' ');
-      if(unsent.trim()&&endedMessages.at(-1)?.content!==unsent.trim())endedMessages.push({role:'user',content:unsent.trim(),recordingId:await interaction.audioTake?.stop()});
-      const answers=endedMessages.flatMap((message,index)=>message.role==='user'?[{questionIndex:index,text:message.content,prompt:endedMessages[index-1]?.content||scenarioData?.goal||scenario.title,recordingId:message.recordingId||null,inputMode:message.recordingId?'voice':'text',durationSeconds:0,startSeconds:null}]:[]);
+      const pendingRecordingId = await interaction.audioTake?.stop();
+      if((unsent.trim() || pendingRecordingId) && (!unsent.trim() || endedMessages.at(-1)?.content!==unsent.trim()) && !endedMessages.some(message => message.recordingId && message.recordingId === pendingRecordingId)){endedMessages.push({role:'user',turnId:`turn-${interaction.sequence+1}`,sessionId:attemptId.current,startedAt:interaction.captureStartedAt,endedAt:Date.now(),content:unsent.trim(),rawTranscript:finished.finalText||null,recordingId:pendingRecordingId});if(unsent.trim())liveMetrics.current.turn(unsent,(Date.now()-startTime)/1000);}
+      const answers=endedMessages.flatMap((message,index)=>message.role==='user'?[{turnId:message.turnId,questionIndex:index,text:message.content,rawTranscript:message.rawTranscript,prompt:endedMessages[index-1]?.content||scenarioData?.goal||scenario.title,recordingId:message.recordingId||null,inputMode:message.recordingId?'voice':'text',durationSeconds:0,startSeconds:message.startedAt?Math.max(0,(message.startedAt-startTime)/1000):null}]:[]);
       if(!answers.length){setSaveError('Say or type an answer before finishing.');interaction.ended=false;interaction.completing=false;interaction.update({status:'idle'});return;}
       for (const answer of answers) { if (answer.recordingId) { const clip = await learningStore.get('recordings',answer.recordingId); answer.durationSeconds = clip?.durationSeconds || 0; answer.startSeconds = clip?.startedAt ? Math.max(0,(clip.startedAt-startTime)/1000) : null; } }
-      await saveAttempt({id:attemptId.current,track:'daily',taskId:`daily-${scenarioId}`,title:scenario.title,parentId,focus,answers,visualEvidence:validateVisualEvidence({source:'device-mediapipe',windows:createReviewClips(visualSamples.current,[],Math.min(720,(Date.now()-startTime)/1000))}),context:{scenario:scenarioId,mode,dialogMode},ownerId:user?.id||null,createdAt:new Date(startTime).toISOString()});
-      localStorage.removeItem(draftKey);navigate(`/practice/review?id=${attemptId.current}`);
+      const reviewWindows = cameraAnalysisAllowed ? createReviewClips(visualSamples.current,answers.filter(a=>Number.isFinite(a.startSeconds)).map(a=>({start:a.startSeconds,end:a.startSeconds+a.durationSeconds,text:a.text})),(Date.now()-startTime)/1000) : [];
+      const chosen = localClipAllowed ? selectLearningMoment(capturedClips.current, reviewWindows, answers) : null;
+      let videoClip = null;
+      if (chosen) {
+        await learningStore.put('recordings', { id: chosen.clip.id, blob: chosen.clip.blob, durationSeconds: chosen.clip.end - chosen.clip.start, startedAt: startTime + chosen.clip.start * 1000, kind: 'local-video' });
+        const faceX = chosen.window.observations?.faceX;
+        const left = faceX < .2;
+        const note = chosen.reason === 'framing' ? {
+          observation: `During this reply, your face was near the ${left ? 'left' : 'right'} edge of the camera frame.`,
+          why: 'Your expression is easier to see when your face remains within the frame.',
+          tryThis: 'Adjust the camera or your seat so your face stays comfortably within the frame.'
+        } : chosen.reason === 'hand movement' ? {
+          observation: 'Visible wrist position changed during this reply.',
+          why: 'The recording can help you check whether that movement supported what you were saying.',
+          tryThis: 'Replay this moment and decide whether your hand movement matches the point you wanted to make.'
+        } : {
+          observation: 'Your head direction changed during this reply.',
+          why: 'The recording can help you review where you faced while explaining your point.',
+          tryThis: 'Replay this moment and check whether the camera angle works for your next conversation.'
+        };
+        videoClip = { id: chosen.clip.id, start: chosen.clip.start, end: chosen.clip.end, startTime: chosen.clip.start, endTime: chosen.clip.end,
+          transcriptSegment: chosen.window.text, relatedMetrics: chosen.window.metrics, localOnly: true,
+          ...note };
+      }
+      await saveAttempt({id:attemptId.current,track:'daily',taskId:`daily-${scenarioId}`,title:`${scenario.title} · ${task?.title || 'Conversation'}`,parentId,focus,answers,turns:endedMessages,conversationContext:finished.conversationContext,multimodalEvidence:buildDailyEvidence({answers,visionTimeline:vision.current.summary(),liveMetrics:liveMetrics.current.summary()}),visionTimeline:vision.current.summary(),voiceTimings:finished.timings,visualEvidence:cameraAnalysisAllowed ? validateVisualEvidence({source:'device-mediapipe',windows:reviewWindows}) : null,videoClip,liveMetrics:liveMetrics.current.summary(),context:{scenario:scenarioId,cue:task?.id,mode,dialogMode},ownerId:user?.id||null,createdAt:new Date(startTime).toISOString()});
+      await apiJson('/api/membership', { action: 'finish', id: attemptId.current }).catch(() => {});
+      localStorage.removeItem(draftKey);await learningStore.remove('drafts',draftKey);navigate(`/practice/review?id=${attemptId.current}`);
     } catch(error){setSaveError(error.message);}
     finally{endLock.current=false;}
   };
@@ -148,109 +277,56 @@ export default function VoiceChat() {
     navigate("/voice");
   };
 
-  if (!scenario) {
-    return null;
+  if (!scenario) return null;
+  if (!task) return <main className="learning-page"><h1>Conversation unavailable</h1><button onClick={() => navigate(`/voice/prepare?scenario=${scenario.id}`)}>Choose a conversation</button></main>;
+
+  const statusText = ({ idle: state.continuous ? 'Your turn' : 'Paused', requesting_permission: 'Allow microphone access', starting: 'Connecting microphone…', listening: 'Listening to you', stopping: 'Saving your reply…', finalizing: 'Transcribing your recording…', submitting: 'Sending…', processing: `${task.npcName} is thinking…`, speaking: `${task.npcName} is speaking`, completed: 'Conversation saved', error: 'Connection needs attention' })[state.status] || 'Ready';
+  const isSpeaking = state.status === 'speaking';
+  const replyText = state.typedText || (!recording ? [state.finalText, state.interimText].filter(Boolean).join(' ') : '');
+  function toggleVoice() {
+    const enabled = !voiceEnabled; setVoiceEnabled(enabled); interaction.configure({ autoPlay: enabled });
+    if (!enabled && isSpeaking && state.continuous) void interaction.startRecording();
   }
-
-  return (
-    <div className={`speaking-room${scenarioId === 'cafe' && sceneOpen ? ' is-cafe-scene-active' : ''}`} data-interaction-state={state.status}>
-      {/* Header */}
-      <div className="room-header glass">
-        <button onClick={handleExit} className="flex items-center gap-1 text-sm text-accent font-medium">
-          <ArrowLeft className="w-4 h-4" />
-          Exit
-        </button>
-        <div className="text-center">
-          <h1>{scenario.title}</h1>
-        </div>
-        <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/20 text-primary font-medium uppercase">
-          {mode === "advanced" ? "Challenging" : "Everyday"}
-        </span>
-      </div>
-
-      <div className="room-workspace">
-      <section className="room-presence" aria-label="AI speaking studio" onPointerMove={event => {
-        if (event.pointerType !== 'mouse' || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        const rect = event.currentTarget.getBoundingClientRect();
-        event.currentTarget.style.setProperty('--room-x', `${((event.clientX - rect.left) / rect.width - 0.5) * 8}px`);
-        event.currentTarget.style.setProperty('--room-y', `${((event.clientY - rect.top) / rect.height - 0.5) * 6}px`);
-      }} onPointerLeave={event => { event.currentTarget.style.setProperty('--room-x', '0px'); event.currentTarget.style.setProperty('--room-y', '0px'); }}>
-        <div className="room-task"><p>{focus || (isGoalOriented ? scenarioData?.goal : scenarioData?.topic || scenario.title)}</p></div>
-        <Suspense fallback={<div className="voice-orb"><div className="orb-fallback" /></div>}><VoiceOrb state={orbState} energyRef={energyRef} /></Suspense>
-        <div className="room-status" data-state={orbState} role="status"><span className="room-status-dot" /><strong>{{ idle: 'Ready when you are', requesting_permission: 'Allow microphone access', starting: 'Connecting voice input', listening: 'Listening to you', stopping: 'Stopping your microphone', finalizing: 'Confirming your words', submitting: 'Sending your reply', processing: 'Your coach is thinking', speaking: 'Your coach is speaking', completed: 'Practice complete', error: 'Ready to recover' }[state.status]}</strong></div>
-        <p className="room-status-detail">{isSpeaking ? 'Browser voice playback' : inputState === 'listening' ? (hasInputEnergy ? 'Your voice, reflected in real time' : 'Listening · voice visualization unavailable in this browser') : ''}</p>
-        <button type="button" className="voice-scene-toggle" aria-pressed={cameraEnabled} onClick={() => setCameraEnabled(value => !value)}>{cameraEnabled ? 'Turn camera off' : 'Enable camera analysis (optional)'}</button>
-        {cameraEnabled && <CameraPreview onSample={collectVisual} startedAt={startTime} />}
-        <div className="room-session-meta"><span>{String(Math.floor(elapsed / 60)).padStart(2, '0')}:{String(elapsed % 60).padStart(2, '0')}</span><span>{wordCount} words</span></div>
-      </section>
-      {/* Chat Area */}
-      <div className="room-conversation space-y-4" aria-label="Conversation and coaching">
-        <button type="button" className="voice-scene-toggle" aria-expanded={sceneOpen} aria-controls="conversation-scene" onClick={() => setSceneOpen(open => !open)}><span>{sceneOpen ? 'Return to the conversation' : `Step into ${scenario.title} · explore your surroundings`}</span><span aria-hidden="true">{sceneOpen ? '−' : '↗'}</span></button>
-        {sceneOpen && <div id="conversation-scene" className="voice-scene-panel"><Suspense fallback={<div className="scenario-stage scenario-stage-loading">Preparing your scene…</div>}><ScenarioStage scenario={scenario}
-          onUseCue={scenarioId === 'cafe' ? useSceneCue : null}
-          cueDisabledReason={cafeCueDisabledReason}
-          conversation={scenarioId === 'cafe' ? { status: state.status, reply: latestPartnerMessage?.content || '', isLocal: latestPartnerMessage?.source === 'fallback', canReply: canUseSceneDraft, onReply: focusReply } : null}
-          cueOverrides={scenarioId === 'cafe' && !isGoalOriented ? {
-            menu: { detail: 'Browse the café menu and ask about the barista’s favourites.', phrase: 'What coffee would you recommend today?' },
-            coffee: { detail: 'Talk about how you like your coffee, or ask about milk options.', phrase: 'I usually have a latte. How does it taste with oat milk?' },
-            pastry: { detail: 'Ask about pastries and the café’s morning routine.', phrase: 'Which pastry do you enjoy with your morning coffee?' },
-          } : null}
-        /></Suspense></div>}
-        {fallbackNotice && (
-          <div className="voice-coach-status glass rounded-2xl border border-amber-400/30 bg-amber-500/10 px-4 py-3">
-            <p className="text-xs font-medium text-amber-200">Speaking needs your attention</p>
-            <p className="mt-1 text-xs text-amber-100/90 break-words">{fallbackNotice}</p>
-          </div>
-        )}
-        {messages.length>2&&<button className="voice-scene-toggle" onClick={()=>setHistoryOpen(open=>!open)}>{historyOpen?"Show latest exchange":`Earlier conversation (${exchanges} turns)`}</button>}
-        {(historyOpen ? messages : messages.slice(-2)).map((msg, i) => (
-          <ChatMessage
-            key={msg.id || i}
-            message={msg}
-            compact
-            voiceGender={scenario.aiVoice}
-            isLatest={i === messages.length - 1}
-            isActive={isSpeaking && activePlaybackId === (msg.playbackId || msg.id)}
-            onPlay={() => interaction.playMessage(msg.id)}
-            playbackDisabled={["requesting_permission", "starting", "listening", "stopping", "finalizing", "submitting", "processing", "completed"].includes(state.status)}
-            feedbackInitiallyOpen={false}
-            registerRef={(node) => {
-              if (!msg.id && !msg.playbackId) return;
-              messageRefs.current[msg.playbackId || msg.id] = node;
-            }}
-          />
-        ))}
-
-        {isAiThinking && (
-          <div className="flex gap-3 items-center">
-              <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-white">
-              Coach
-            </div>
-            <div className="glass rounded-2xl rounded-tl-md px-4 py-3">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "0ms" }} />
-                <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "150ms" }} />
-                <div className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "300ms" }} />
-              </div>
-            </div>
-          </div>
-        )}
-        <div ref={chatEndRef} />
-      </div>
-
-      </div>
-      <div className="room-controls glass space-y-3">
-        {saveError&&<p role="alert" className="learning-alert">{saveError}</p>}
-        <RecordingControls interaction={interaction} state={state} replyInputRef={replyInputRef} compact />
-        <button
-          disabled={["stopping", "finalizing"].includes(state.status)}
-          onClick={handleEnd}
-          className="w-full h-12 rounded-2xl bg-accent/15 text-accent hover:bg-accent/20 transition-colors text-[16px] font-medium flex items-center justify-center gap-2"
-        >
-          <Volume2 className="w-4 h-4" />
-          Finish & review
-        </button>
-      </div>
+  return <div className={`speaking-room daily-immersive${guidance ? ' is-guidance' : ' is-conversation'}`} data-interaction-state={state.status} data-session-state={endLock.current ? 'CONVERSATION_ENDING' : cameraMoving ? 'CAMERA_TRANSITION' : guidance ? 'CONVERSATION_READY' : 'CONVERSATION_ACTIVE'}>
+    <div className="daily-world" aria-label="Continuous 3D conversation scene">
+      <Suspense fallback={<div className="scenario-stage scenario-stage-loading">Preparing your scene…</div>}><ScenarioStage scenario={scenario} selectedCueId={activeCue} onSelectCue={guidance ? selectCue : null} minimal onCameraTransition={onCameraTransition} subtitleMode="hidden" conversation={guidance ? null : { role: `${task.npcName} · ${task.role}`, status: state.status, energyRef: audioManager['outputEnergyRef'], onAudioFrame: frame => audioManager['setSpatialFrame']?.(frame), reply: state.streamingText || latestPartnerMessage?.content || '', isLocal: latestPartnerMessage?.source === 'fallback' }} /></Suspense>
     </div>
-  );
+    <header className="daily-overlay-header"><button type="button" aria-label="Exit conversation" onClick={handleExit}><ArrowLeft size={16} /><span>Exit</span></button><div><h1>{task.title}</h1><span>{scenario.title} · {guidance ? task.npcName : `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`}</span></div></header>
+    {guidance ? <section className="daily-guidance-overlay" aria-label="Choose a conversation">
+      <div className="daily-task-selector"><label htmlFor="conversation-choice">Conversation</label><select id="conversation-choice" value={activeCue} onChange={event => selectCue(event.target.value)}>{tasks.map(choice => <option key={choice.id} value={choice.id}>{choice.title}</option>)}</select><p>{task.summary}</p></div>
+      <p className="guidance-voice-note">{task.npcName} starts the conversation. Listen, then reply.</p>
+      <button type="button" className="guidance-camera" onClick={() => setCameraSettingsOpen(true)}><Camera size={16} />Camera settings</button>
+      <button type="button" className="primary" disabled={cameraMoving||starting} aria-busy={starting} onClick={startConversation}>{starting ? 'Starting…' : cameraMoving ? 'Moving to conversation…' : 'Start Conversation'}</button>
+      {saveError&&<div className="daily-start-error" role="alert"><p>{saveError}</p><p>You can retry Start Conversation when the connection is ready.</p></div>}
+    </section> : <>
+      <aside className="daily-conversation-panel" aria-label="Conversation panel">
+        <header className="conversation-panel-header"><div><h2>{task.npcName} <span>· {task.role}</span></h2><p role="status">{statusText}</p>{focus&&<p className="daily-practice-focus">Focus: {focus}</p>}</div><div className="conversation-toolbar"><button type="button" aria-label={voiceEnabled ? 'Turn voice off' : 'Turn voice on'} aria-pressed={voiceEnabled} onClick={toggleVoice} title={voiceEnabled ? 'Voice on' : 'Voice off'}>{voiceEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}</button><button type="button" aria-label="Camera settings" onClick={() => setCameraSettingsOpen(true)} title="Camera settings"><Camera size={18} /></button><button type="button" aria-label="Practice details" onClick={() => setDetailsOpen(true)} title="Practice details"><Info size={18} /></button></div></header>
+        <ConversationTranscript messages={messages} streamingText={state.streamingText} finalText={state.finalText} interimText={state.interimText} partnerName={task.npcName} onReplay={id => void interaction.playMessage(id)} activePlaybackId={state.activePlaybackId} replayDisabled={busy || recording || cameraMoving} />
+        <div className="daily-immersive-controls">
+          {(saveError || fallbackNotice) && <div className="conversation-error" role="alert"><p>{saveError || fallbackNotice}</p>{state.retryable && <button type="button" onClick={() => interaction.retryRequest()} disabled={busy}>Retry reply</button>}{state.transcriptionRetryable && <button type="button" onClick={() => void interaction.retryTranscription()} disabled={busy}>Retry transcription</button>}</div>}
+          {state.notice && <p className="conversation-notice" role="status">{state.notice}</p>}
+          {allowance && !allowance.shadow && elapsed >= allowance.amount-60 && <p className="conversation-notice" role="status">You are approaching your Daily allowance. This conversation can continue; your next session may require a reset or membership allowance.</p>}
+          {state.status === 'processing' && <button type="button" className="conversation-cancel" onClick={() => interaction.cancelRequest()}>Cancel request · keep my reply</button>}
+          <div className="daily-reply-row"><button type="button" className="composer-mic" aria-label={recording ? 'Stop recording and send' : isSpeaking ? 'Interrupt and speak' : 'Record one reply'} title={recording ? 'Send recording' : isSpeaking ? 'Interrupt and speak' : 'Record one reply'} disabled={busy || cameraMoving} onClick={() => recording ? void interaction.stopRecording() : void interaction.startRecording()}>{recording ? <Square size={16} /> : <Mic size={18} />}</button><input ref={replyInputRef} aria-label="Your reply" placeholder={recording ? 'Listening…' : 'Type a reply'} value={replyText} onChange={event => interaction.setTypedText(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && !busy && !recording && !cameraMoving && replyText.trim()) { event.preventDefault(); void interaction.send({ text: replyText }); } }} disabled={busy || recording || cameraMoving} /><button type="button" className="composer-send" aria-label="Send reply" disabled={busy || recording || cameraMoving || !replyText.trim()} onClick={() => void interaction.send({ text: replyText })}><Send size={17} /></button></div>
+          <div className="daily-main-controls"><button type="button" className="daily-primary-action" aria-label={state.continuous ? 'Pause conversation' : exchanges ? 'Resume voice conversation' : 'Start voice conversation'} aria-pressed={state.continuous} onClick={() => { if(state.continuous) { setMediaPaused(true);void cameraControl.current?.stop();void interaction.pauseContinuous(); } else void beginVoice(); }} disabled={cameraMoving || (!state.continuous && Boolean(replyText.trim()))}><Mic size={16} />{state.continuous ? 'Pause' : exchanges ? 'Resume' : 'Start talking'}</button><div className="conversation-voice-activity" aria-label="Voice activity"><Suspense fallback={null}><VoiceOrb state={state.status==='processing'?'thinking':state.status} energyRef={isSpeaking ? audioManager['outputEnergyRef'] : interaction.energyRef} /></Suspense></div><button type="button" className="daily-finish-action" aria-label={saveError && interaction.ended ? 'Retry save' : 'Finish & review'} disabled={['stopping', 'finalizing'].includes(state.status)} onClick={handleEnd}>{saveError && interaction.ended ? 'Retry save' : 'Finish & review'}</button></div>
+        </div>
+      </aside>
+      {cameraEnabled && !mediaPaused && <CameraPreview onSample={cameraAnalysisAllowed ? collectVisual : null} onClip={localClipAllowed ? collectClip : null} onCameraStatus={setCameraStatus} startedAt={startTime} captureRef={cameraControl} />}
+    </>}
+    <Dialog open={cameraSettingsOpen} onOpenChange={setCameraSettingsOpen}><DialogContent className="conversation-settings-dialog"><DialogHeader><DialogTitle>Camera</DialogTitle><DialogDescription>Optional. Voice practice works with the camera off.</DialogDescription></DialogHeader>{guidance && previewAllowed && <div className="camera-setup-preview"><CameraPreview onCameraStatus={setCameraStatus}/></div>}<p className="camera-setup-guidance">Keep your face and shoulders in view, with light in front of you. After the conversation, review timed observations beside your answers.</p><div className="camera-setting-rows"><label><span>Camera preview</span><input type="checkbox" checked={guidance ? previewAllowed : cameraEnabled} onChange={event => { const enabled = event.target.checked; setPreviewAllowed(enabled); if(!guidance) setCameraEnabled(enabled); if(!enabled){cameraActiveRef.current=false;setAnalysisAllowed(false);setClipAllowed(false);} }} /></label><label><span>Review visible movement<small>Analyzed on this device</small></span><input type="checkbox" checked={analysisAllowed} disabled={!(guidance ? previewAllowed : cameraEnabled)} onChange={event=>{setAnalysisAllowed(event.target.checked);if(!event.target.checked)setClipAllowed(false);}} /></label><label><span>Save a video moment<small>Kept on this device</small></span><input type="checkbox" checked={clipAllowed} disabled={!analysisAllowed} onChange={event=>setClipAllowed(event.target.checked)} /></label></div>{cameraEnabled && !guidance && <p role="status">{mediaPaused ? 'Camera paused · resume the conversation to restart' : cameraStatus === 'active' ? 'Camera is on' : cameraStatus === 'unavailable' ? 'Camera unavailable. Check permission and try again.' : 'Starting camera…'}</p>}</DialogContent></Dialog>
+    <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}><DialogContent className="conversation-settings-dialog"><DialogHeader><DialogTitle>Practice details</DialogTitle><DialogDescription>Observations from this conversation. Full feedback is available after you finish.</DialogDescription></DialogHeader>{recordingQuality && <p className="recording-check-note">{recordingQuality.issues.length ? recordingQuality.issues.map(issue=>issue.message).join(' ') : 'The latest recording passed level checks.'} · {recordingQuality.durationSeconds.toFixed(1)} s</p>}<LivePerformance metrics={metricView} /></DialogContent></Dialog>
+  </div>;
+}
+
+function LivePerformance({ metrics }) {
+  /** @type {[string, [string, string][]][]} */
+  const groups = [
+    ['Speech', [['pace', 'Pace'], ['pauses', 'Pauses'], ['fluency', 'Speech continuity'], ['volume', 'Volume'], ['fillers', 'Filler words'], ['pronunciation', 'Pronunciation'], ['intonation', 'Intonation'], ['clarity', 'Speech clarity']]],
+    ['Camera', [['headOrientation', 'Head orientation'], ['handMovement', 'Hand movement'], ['posture', 'Visible posture'], ['cameraEngagement', 'Camera direction'], ['framing', 'Framing'], ['gestureTypes', 'Gesture types'], ['gestureTiming', 'Gesture timing'], ['facialExpression', 'Facial expression']]],
+    ['Communication', [['relevance', 'Relevance'], ['grammar', 'Grammar'], ['vocabulary', 'Vocabulary'], ['coherence', 'Coherence'], ['interaction', 'Interaction']]],
+  ];
+  return <div className="daily-live-groups">{!Object.keys(metrics).length && <p className="daily-metric-empty">No measurements yet.</p>}{groups.map(([title, entries]) => {
+    const available = entries.filter(([key]) => metrics[key]);
+    return available.length > 0 && <section key={title}><h2>{title}</h2>{available.map(([key, label]) => <div className="daily-live-row" key={key} title={`${metrics[key].source} · ${metrics[key].samples} samples · ${metrics[key].reliability}`}><span>{label}</span><strong>{metrics[key].value}</strong></div>)}</section>;
+  })}</div>;
 }

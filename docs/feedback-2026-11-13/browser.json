@@ -1,0 +1,15 @@
+{
+  "scope": "Mock integration in real Chromium: controlled recognition, TTS and model; real MediaRecorder with fake device; isolated local database. Not real voice/model acceptance.",
+  "passed": [
+    "single answer at question 1/7 is reviewed without creating a saved attempt; metrics stay collapsed",
+    "retry keeps question position, replaces transcript and clears obsolete coaching",
+    "failed feedback retains input; edited answer cannot receive a stale delayed result",
+    "discard removes unfinished draft and unshared takes, preserving an earlier saved recording",
+    "discard during recording stops tracks and cannot resurrect a draft after callbacks settle",
+    "seven-question review has its own group heading and separate per-sentence word reviews",
+    "exam mode has discard but does not reveal coaching, reference or retries mid-exam",
+    "full mock in practice mode pauses after an answer so it can be reviewed or retried"
+  ],
+  "errors": [],
+  "status": "PASS"
+}

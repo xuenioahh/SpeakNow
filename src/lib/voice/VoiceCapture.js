@@ -11,12 +11,15 @@ const permissionMessage = error => ({
 }[error?.name] || 'Microphone could not start. Check your input device or type your reply.');
 
 export class VoiceCapture {
-  /** @param {{ onEvent?: (event: any) => void, environment?: any, now?: () => number, maxRecordingMs?: number, finishTimeoutMs?: number, startTimeoutMs?: number, createMeter?: (stream: MediaStream) => any, retainStream?: boolean, allowRecordingOnly?: boolean }} options */
-  constructor({ onEvent, environment = globalThis, now = () => performance.now(), maxRecordingMs = 120000, finishTimeoutMs = 3000, startTimeoutMs = 10000, createMeter = createAudioEnergy, retainStream = false, allowRecordingOnly = false } = {}) {
-    this.onEvent = onEvent;
+  /** @param {{ onEvent?: (event: any) => void, environment?: any, now?: () => number, maxRecordingMs?: number, finishTimeoutMs?: number, startTimeoutMs?: number, createMeter?: (stream: MediaStream) => any, retainStream?: boolean, allowRecordingOnly?: boolean, onUsage?: (usage: any) => void }} options */
+  constructor({ onEvent, environment = globalThis, now = () => performance.now(), maxRecordingMs = 120000, finishTimeoutMs = 3000, startTimeoutMs = 10000, createMeter = createAudioEnergy, retainStream = false, allowRecordingOnly = false, onUsage = () => {} } = {}) {
+    this.onEvent = onEvent; this.onUsage = onUsage;
     this.createMeter = createMeter;
     this.retainStream = retainStream;
     this.allowRecordingOnly = allowRecordingOnly;
+    this.recordingOnly = false;
+    this.transcribe = null;
+    this.transcriptionController = null;
     this.env = environment;
     this.now = now;
     this.config = { maxRecordingMs, finishTimeoutMs, startTimeoutMs };
@@ -48,12 +51,22 @@ export class VoiceCapture {
     this.stream = null;
     this.emit({ type: 'energy', meter: null });
   }
+  startMeter() {
+    if (!this.meter || this.meterTimer) return;
+    this.meterTimer = this.env.setInterval(() => {
+      if (!this.active || this.stopping) return;
+      const at = this.now();
+      const ended = this.detector.update(this.meter.readRms(), at);
+      if (this.detector.active) this.lastSpeechAt = at;
+      if (this.autoEnd && ended) void this.stop({ submit: true });
+    }, 50);
+  }
   async start({ autoEnd = false, silenceMs = 2500 } = {}) {
-    if (this.disposed || this.starting || this.recognition || this.stopping) return false;
+    if (this.disposed || this.starting || this.active || this.recognition || this.stopping) return false;
     if (this.permissionPending) { this.emit({ type: 'notice', message: 'A browser microphone prompt is still pending. Finish or close it before recording again; you can type meanwhile.' }); return false; }
     const win = this.env.window || this.env;
     const nav = this.env.navigator;
-    const Recognition = win.SpeechRecognition || win.webkitSpeechRecognition;
+    const Recognition = this.recordingOnly ? null : win.SpeechRecognition || win.webkitSpeechRecognition;
     if ((!Recognition && !this.allowRecordingOnly) || !nav?.mediaDevices?.getUserMedia) {
       this.emit({ type: 'error', message: 'Live voice input is unavailable here. Use a supported browser or type your reply.' });
       return false;
@@ -62,12 +75,16 @@ export class VoiceCapture {
     this.permissionPending = true;
     const generation = ++this.generation;
     this.final = this.interim = '';
-    this.autoEnd = autoEnd;
+    this.autoEnd = autoEnd; this.silenceMs = silenceMs; this.usageEmitted = false; this.hasRecognition = Boolean(Recognition);
     this.startedAt = this.t1 = this.t2 = null;
+    this.lastSpeechAt = null;
     this.restartCount = 0;
     this.emit({ type: 'phase', phase: 'requesting_permission' });
     try {
-      const stream = await nav.mediaDevices.getUserMedia({ audio: true });
+      const stream = await nav.mediaDevices.getUserMedia({ audio: {
+        channelCount: { ideal: 1 }, echoCancellation: { ideal: true },
+        noiseSuppression: { ideal: true }, autoGainControl: { ideal: true }
+      } });
       if (this.disposed || generation !== this.generation) {
         stream.getTracks().forEach(track => track.stop());
         return false;
@@ -87,7 +104,13 @@ export class VoiceCapture {
       } else stream.getTracks().forEach(track => track.stop());
       this.detector = new EndpointDetector({ silenceMs });
       if (Recognition) this.recognize(Recognition, generation);
-      else { this.startedAt=this.now();this.active=true;this.emit({type:'phase',phase:'listening'});this.emit({type:'notice',message:'Live transcription is unavailable. Record your answer, then add its transcript for text feedback.'});this.limitTimer=this.timer(()=>this.stop(),this.config.maxRecordingMs); }
+      else {
+        this.startedAt=this.now();this.active=true;
+        this.emit({type:'phase',phase:'listening'});
+        this.emit({type:'notice',message:this.transcribe ? 'Speak, then pause. Your words will appear after transcription.' : 'Live transcription is unavailable. Record your answer, then add its transcript for text feedback.'});
+        this.startMeter();
+        this.limitTimer=this.timer(()=>this.stop({ submit: Boolean(this.transcribe) }),this.config.maxRecordingMs);
+      }
       return true;
     } catch (error) {
       if (generation === this.generation && !this.disposed) this.fail(permissionMessage(error));
@@ -115,11 +138,7 @@ export class VoiceCapture {
         this.limitTimer = this.timer(() => this.stop({ submit: false, reason: 'Recording time limit reached. Review and send your words, or record again.' }), this.config.maxRecordingMs);
       }
       this.emit({ type: 'phase', phase: 'listening' });
-      if (this.meter && !this.meterTimer) this.meterTimer = this.env.setInterval(() => {
-        if (!this.active || this.stopping) return;
-        const ended = this.detector.update(this.meter.readRms(), this.now());
-        if (this.autoEnd && ended) void this.stop({ submit: true, reason: 'Detected a completed speaking pause.' });
-      }, 50);
+      this.startMeter();
     };
     // Native capture is confirmed by audiostart; shared input is already a live
     // owner track, so onstart may confirm that path as well.
@@ -131,6 +150,13 @@ export class VoiceCapture {
       for (let i = 0; i < event.results.length; i++) (event.results[i].isFinal ? finals : interims).push(event.results[i][0].transcript);
       this.final = join(prefix, ...finals);
       this.interim = join(...interims);
+      // Allow a little more thinking time after unfinished clauses. This uses
+      // actual ASR text, while the end decision still requires microphone silence.
+      if (this.detector) {
+        const unfinished = /\b(?:and|but|because|if|when|so|that|to|or|although|while|the|a|an)\s*$/i.test(join(this.final,this.interim));
+        this.detector.silenceMs = Math.max(this.silenceMs || 2000, unfinished ? 2800 : 0);
+      }
+      if (finals.length || interims.length) this.restartCount = 0;
       this.emit({ type: 'transcript', final: this.final, interim: this.interim });
     };
     recognition.onaudioend = () => {
@@ -146,6 +172,11 @@ export class VoiceCapture {
       if (!owns()) return;
       if (event.error === 'no-speech' && !this.stopping) {
         this.emit({ type: 'notice', message: 'No speech recognized yet. Take your time, or stop and type your reply.' });
+        return;
+      }
+      if (event.error === 'network' && !this.stopping && !this.interim && this.restartCount < 3) {
+        this.transientRestart = true;
+        this.emit({ type: 'notice', message: 'Reconnecting voice recognition. Your confirmed words are kept.' });
         return;
       }
       if (event.error === 'aborted' && this.stopping) return;
@@ -170,7 +201,8 @@ export class VoiceCapture {
       this.timer(() => {
         if (generation !== this.generation || this.disposed || this.stopping) return;
         try { this.recognize(Recognition, generation); } catch { this.fail('Voice input could not restart. Your transcript is kept.'); }
-      }, 80);
+      }, this.transientRestart ? Math.min(2000,300*this.restartCount) : 80);
+      this.transientRestart = false;
     };
     this.startTimer = this.timer(() => this.fail('Microphone did not start. Check permissions and your input device, then try again.'), this.config.startTimeoutMs);
     this.emit({ type: 'phase', phase: 'starting' });
@@ -211,13 +243,55 @@ export class VoiceCapture {
     try { this.recognition.stop(); } catch { this.fail('Voice input could not finish. Your transcript is kept; review and send it.'); }
     return pending;
   }
+  reportUsage() {
+    if (!this.usageEmitted && this.hasRecognition && Number.isFinite(this.startedAt)) { this.usageEmitted = true; this.onUsage?.({ usageType: 'browser_asr_seconds', seconds: Math.max(0, (this.now() - this.startedAt) / 1000), source: 'browser-observed' }); }
+  }
   finish() {
+    if (this.recordingOnly && this.transcribe) return this.finishTranscription();
+    return this.finishResult();
+  }
+  finishTranscription() {
+    if (this.transcriptionController) return this.stopPromise;
+    const generation = this.generation;
+    const controller = new AbortController();
+    this.transcriptionController = controller;
+    this.stopping = true; this.active = false;
+    this.t1 ??= this.now();
+    this.releaseAudio();
+    this.emit({ type: 'phase', phase: 'finalizing' });
+    this.emit({ type: 'notice', message: 'Transcribing your recording…' });
+    this.stopPromise ||= new Promise(resolve => { this.resolveStop = resolve; });
+    const pending = this.stopPromise;
+    this.timer(() => controller.abort(), 95000);
+    Promise.resolve().then(() => this.transcribe({ signal: controller.signal })).then(result => {
+      if (this.disposed || generation !== this.generation || controller.signal.aborted) return;
+      if (!result?.text?.trim()) throw new Error('No clear speech was found. Check your microphone input and record again.');
+      this.final = result.text.trim(); this.interim = '';
+      this.emit({ type: 'transcript', final: this.final, interim: '' });
+      this.transcriptionController = null;
+      this.stopReason = '';
+      this.finishResult();
+    }).catch(error => {
+      if (this.disposed || generation !== this.generation) return;
+      this.cancel();
+      this.emit({ type: 'error', message: error.name === 'AbortError' ? 'Transcription stopped. Your recording is saved; retry transcription.' : error.message || 'Transcription failed. Your recording is saved; retry transcription.', transcriptionRetryable: true });
+    });
+    return pending;
+  }
+  retryTranscription() {
+    if (this.disposed || this.stopping || this.active || !this.transcribe) return false;
+    this.submitOnEnd = true;
+    return this.finishTranscription();
+  }
+  finishResult() {
+    this.reportUsage();
     this.t1 ??= this.now();
     this.t2 = this.now();
-    this.clearTimer(this.finishTimer);
+    for (const timer of this.timers) this.env.clearTimeout(timer);
+    this.timers.clear();
     this.releaseAudio();
-    const result = { text: join(this.final, this.interim), final: this.final, interim: this.interim, submit: this.submitOnEnd, reason: this.stopReason, t1: this.t1, t2: this.t2 };
-    this.stopping = false;
+    const result = { text: join(this.final, this.interim), final: this.final, interim: this.interim, submit: this.submitOnEnd, reason: this.stopReason, t1: this.t1, t2: this.t2, speechEndedAt: this.lastSpeechAt };
+    this.stopping = this.active = false;
     const resolve = this.resolveStop;
     this.stopPromise = this.resolveStop = null;
     this.emit({ type: 'stopped', ...result });
@@ -229,7 +303,9 @@ export class VoiceCapture {
     this.emit({ type: 'error', message });
   }
   cancel() {
+    this.reportUsage();
     ++this.generation;
+    this.transcriptionController?.abort(); this.transcriptionController = null;
     this.starting = this.active = this.stopping = false;
     for (const timer of this.timers) this.env.clearTimeout(timer);
     this.timers.clear();
@@ -239,5 +315,5 @@ export class VoiceCapture {
     this.releaseAudio();
     this.resolveStop?.(null); this.stopPromise = this.resolveStop = null;
   }
-  dispose() { this.disposed = true; this.cancel(); this.onEvent = null; }
+  dispose() { this.reportUsage(); this.disposed = true; this.cancel(); this.onEvent = null; }
 }

@@ -84,7 +84,7 @@ export default function DocumentViewer({ currentPage, onTotalPages }) {
   if (status === "pdf") {
     const imgSrc = pageImages[currentPage - 1];
     return (
-      <div className="w-full h-full overflow-auto bg-gray-900/20 flex items-start justify-center p-3">
+      <div className="w-full h-full overflow-auto bg-muted flex items-start justify-center p-3">
         {imgSrc ? (
           <img
             key={currentPage}

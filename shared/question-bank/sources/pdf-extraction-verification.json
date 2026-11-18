@@ -1,0 +1,21 @@
+{
+  "pdfSha256": "ced20193ce8e22c1183d52759c7bdf17741a4e46f28e9c265396cf18b406164c",
+  "method": "PDF pages rendered and visually checked against supplied text companion; PDFKit extraction splits or reorders trailing words. No source text rewritten.",
+  "sets": [
+    {
+      "setTitle": "Grocery Store Orientation",
+      "sourceDate": "2026-03-16",
+      "page": 7
+    },
+    {
+      "setTitle": "Electronics Store",
+      "sourceDate": "2026-03-09",
+      "page": 12
+    },
+    {
+      "setTitle": "Making Coffee / Making a Latte",
+      "sourceDate": "2026-04-18",
+      "page": 12
+    }
+  ]
+}

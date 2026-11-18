@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "scope": "Real browser, local isolated fixture backend, API authorization, IndexedDB UI. No real voice/camera acceptance in this suite.",
+  "checks": [
+    "home: desktop, 390px, 320px",
+    "exams: desktop, 390px, 320px",
+    "ielts: desktop, 390px, 320px",
+    "bank: desktop, 390px, 320px",
+    "daily: desktop, 390px, 320px",
+    "history: desktop, 390px, 320px",
+    "insights: desktop, 390px, 320px",
+    "membership: desktop, 390px, 320px",
+    "auth: desktop, 390px, 320px",
+    "account: desktop, 390px, 320px",
+    "presentation: desktop, 390px, 320px",
+    "expression: desktop, 390px, 320px",
+    "admin-only actual ledger report and configurable monthly/recharge calculator",
+    "anonymous usage report rejected"
+  ],
+  "errors": []
+}

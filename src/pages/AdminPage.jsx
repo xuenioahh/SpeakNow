@@ -1,5 +1,5 @@
 import { apiFetch } from "@/api/http";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Activity, ChevronDown, ChevronUp, Download, Mic, Plus, Presentation, RefreshCw, Search, Shield, Trash2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useAuth } from "@/lib/AuthContext";
 import { localApi } from "@/api/localClient";
 import { toast } from "sonner";
+import AdminMembership from '@/components/AdminMembership';
+import AdminUsage from '@/components/AdminUsage';
 
 function formatDate(value) {
   if (!value) return "-";
@@ -18,7 +20,6 @@ export default function AdminPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [adminKey, setAdminKey] = useState(() => sessionStorage.getItem("adminDashboardKey") || "");
   const [adminSettings, setAdminSettings] = useState({ adminEmails: [], envAdminEmails: [], savedAdminEmails: [] });
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [savingAdmin, setSavingAdmin] = useState(false);
@@ -26,6 +27,7 @@ export default function AdminPage() {
   const [eventQuery, setEventQuery] = useState("");
   const [eventTypeFilter, setEventTypeFilter] = useState("all");
   const [deletingKey, setDeletingKey] = useState("");
+  const deleteLock = useRef(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showEvents, setShowEvents] = useState(false);
   const [showVoiceSessions, setShowVoiceSessions] = useState(false);
@@ -63,11 +65,6 @@ export default function AdminPage() {
     }
   }, [isAdmin]);
 
-  const handleSaveAdminKey = () => {
-    sessionStorage.setItem("adminDashboardKey", adminKey);
-    void loadDashboard();
-  };
-
   const handleAddAdmin = async () => {
     try {
       setSavingAdmin(true);
@@ -94,15 +91,18 @@ export default function AdminPage() {
   };
 
   const handleDeleteRecord = async (collection, id) => {
+    if (deleteLock.current || !window.confirm(`Permanently delete this ${collection} record?`)) return;
+    deleteLock.current = true;
     try {
       setDeletingKey(`${collection}:${id}`);
-      await localApi.admin.deleteRecord(collection, id, adminKey);
+      await localApi.admin.deleteRecord(collection, id);
       toast.success("Record deleted");
       await loadDashboard();
     } catch (deleteError) {
       setError(deleteError?.message || "Failed to delete record.");
       toast.error(deleteError?.message || "Failed to delete record.");
     } finally {
+      deleteLock.current = false;
       setDeletingKey("");
     }
   };
@@ -170,7 +170,7 @@ export default function AdminPage() {
       <div className="px-5 pt-6 pb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-            <Shield className="w-5 h-5 text-white" />
+            <Shield className="w-5 h-5 text-foreground" />
           </div>
           <div>
             <h1 className="text-xl font-bold font-space text-foreground">Admin Dashboard</h1>
@@ -179,13 +179,14 @@ export default function AdminPage() {
             </p>
           </div>
         </div>
-        <Button onClick={() => void loadDashboard()} variant="outline" className="rounded-2xl border-white/10">
+        <Button onClick={() => void loadDashboard()} variant="outline" className="rounded-2xl border-slate-200">
           <RefreshCw className="w-4 h-4 mr-2" />
           Refresh
         </Button>
       </div>
 
       <div className="px-4 space-y-4">
+        <AdminUsage />
         {error && (
           <div className="glass rounded-2xl p-4">
             <p className="text-sm text-accent">{error}</p>
@@ -210,7 +211,7 @@ export default function AdminPage() {
           <p className="text-xs text-muted-foreground mt-2">
             `supabase` means server-side Postgres sync is active. `local-json` means this app is using the local file fallback.
           </p>
-          <Button onClick={handleExportJson} variant="outline" className="rounded-2xl border-white/10 mt-4">
+          <Button onClick={handleExportJson} variant="outline" className="rounded-2xl border-slate-200 mt-4">
             <Download className="w-4 h-4 mr-2" />
             Export JSON
           </Button>
@@ -232,7 +233,7 @@ export default function AdminPage() {
               type="email"
               value={newAdminEmail}
               onChange={(event) => setNewAdminEmail(event.target.value)}
-              className="h-11 rounded-2xl bg-white/5 border-white/10"
+              className="h-11 rounded-2xl bg-white/5 border-slate-200"
               placeholder="new-admin@example.com"
             />
             <Button
@@ -277,25 +278,6 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="glass rounded-2xl p-4 space-y-3">
-          <h2 className="text-sm font-semibold text-foreground">Admin API Key</h2>
-          <p className="text-sm text-muted-foreground">
-            If `ADMIN_DASHBOARD_KEY` is set on the server, enter the same value here to unlock `/api/admin-track`.
-          </p>
-          <div className="flex gap-3">
-            <Input
-              type="password"
-              value={adminKey}
-              onChange={(event) => setAdminKey(event.target.value)}
-              className="h-11 rounded-2xl bg-white/5 border-white/10"
-              placeholder="Optional admin dashboard key"
-            />
-            <Button onClick={handleSaveAdminKey} className="rounded-2xl h-11 bg-gradient-to-r from-violet-500 to-indigo-600">
-              Save
-            </Button>
-          </div>
-        </div>
-
         <div className="glass rounded-2xl p-4">
           <h2 className="text-sm font-semibold text-foreground mb-3">Users</h2>
           <div className="relative mb-3">
@@ -303,7 +285,7 @@ export default function AdminPage() {
             <Input
               value={userQuery}
               onChange={(event) => setUserQuery(event.target.value)}
-              className="h-11 rounded-2xl bg-white/5 border-white/10 pl-10"
+              className="h-11 rounded-2xl bg-white/5 border-slate-200 pl-10"
               placeholder="Search users by name, email, or role"
             />
           </div>
@@ -322,7 +304,7 @@ export default function AdminPage() {
                     <div>
                       <p className="text-sm font-semibold text-foreground">{user.full_name || "Unnamed user"}</p>
                       <p className="text-xs text-muted-foreground mt-1">{user.email || "-"}</p>
-                      <p className="text-[11px] text-emerald-300 mt-1 capitalize">{user.role || "learner"}</p>
+                      <p className="text-[11px] text-emerald-800 mt-1 capitalize">{user.role || "learner"}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs text-muted-foreground">Last seen</p>
@@ -358,14 +340,14 @@ export default function AdminPage() {
               <Input
                 value={eventQuery}
                 onChange={(event) => setEventQuery(event.target.value)}
-                className="h-11 rounded-2xl bg-white/5 border-white/10 pl-10"
+                className="h-11 rounded-2xl bg-white/5 border-slate-200 pl-10"
                 placeholder="Search events, users, or payload text"
               />
             </div>
             <select
               value={eventTypeFilter}
               onChange={(event) => setEventTypeFilter(event.target.value)}
-              className="h-11 rounded-2xl bg-white/5 border border-white/10 px-4 text-sm text-foreground"
+              className="h-11 rounded-2xl bg-white/5 border border-slate-200 px-4 text-sm text-foreground"
             >
               <option value="all">All event types</option>
               {eventTypes.map((type) => (
@@ -516,13 +498,15 @@ export default function AdminPage() {
       </div>
 
       <Dialog open={Boolean(selectedUser)} onOpenChange={(open) => !open && setSelectedUser(null)}>
-        <DialogContent className="admin-user-dialog max-w-3xl bg-[#171717] border-white/10 text-foreground">
+        <DialogContent className="admin-user-dialog max-w-3xl bg-background border-slate-200 text-foreground">
           <DialogHeader>
             <DialogTitle>{selectedUser?.full_name || "User detail"}</DialogTitle>
             <DialogDescription>
               {selectedUser?.email || "-"} · {selectedUser?.role || "learner"}
             </DialogDescription>
           </DialogHeader>
+
+          {selectedUser && <AdminMembership key={selectedUser.id} userId={selectedUser.id} />}
 
           <div className="grid grid-cols-3 gap-3">
             <StatCard icon={Mic} label="Voice Sessions" value={selectedUserVoiceSessions.length} />

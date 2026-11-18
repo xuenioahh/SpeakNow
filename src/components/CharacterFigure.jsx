@@ -53,8 +53,8 @@ export default function CharacterFigure({
       </div>
       {(label || subtitle) && (
         <div className="mt-4 text-center">
-          {label ? <p className="text-lg font-semibold text-white">{label}</p> : null}
-          {subtitle ? <p className="text-xs text-white/68">{subtitle}</p> : null}
+          {label ? <p className="text-lg font-semibold text-foreground">{label}</p> : null}
+          {subtitle ? <p className="text-xs text-foreground/68">{subtitle}</p> : null}
         </div>
       )}
     </div>

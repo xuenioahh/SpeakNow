@@ -1,0 +1,555 @@
+{
+  "scope": "Real DeepSeek text conversation and transcript feedback; no physical audio/video acceptance",
+  "status": "PASS — real text chain; human naturalness review still needed",
+  "traces": [
+    {
+      "turn": 1,
+      "userText": "I prefer mint tea because coffee keeps me awake. My friend Maya lives in Suzhou, and we usually meet on Fridays.",
+      "reply": "Got it — mint tea for you, and I'll keep the coffee away. Fridays with Maya in Suzhou sound like a nice routine; do you two usually meet somewhere specific there?",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 303,
+        "completion_tokens": 37,
+        "total_tokens": 340,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 303
+      },
+      "firstTokenMs": 654,
+      "completionMs": 1042,
+      "wallMs": 1044,
+      "summaryUsed": false
+    },
+    {
+      "turn": 2,
+      "userText": "We are planning a train trip to the coast, and our budget is 800 yuan each. What would you prioritize?",
+      "reply": "With 800 yuan each, I'd put train tickets first since those prices climb fast, then pick a simple place to stay near the coast rather than right on the waterfront. Save a bit for food and one thing you really want to do, so the trip doesn't feel like a stretch.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 374,
+        "completion_tokens": 59,
+        "total_tokens": 433,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 246
+      },
+      "firstTokenMs": 385,
+      "completionMs": 1075,
+      "wallMs": 1080,
+      "summaryUsed": false
+    },
+    {
+      "turn": 3,
+      "userText": "I prefer quiet places to crowded attractions. Do you think that makes a trip less interesting?",
+      "reply": "Not at all — quiet places often make a trip more memorable, since you actually get to look around instead of being pushed along with a crowd. With your budget, a smaller coastal town or an off-season stretch of beach could suit you both better than the busy spots.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 456,
+        "completion_tokens": 54,
+        "total_tokens": 510,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 200
+      },
+      "firstTokenMs": 382,
+      "completionMs": 917,
+      "wallMs": 919,
+      "summaryUsed": false
+    },
+    {
+      "turn": 4,
+      "userText": "Why do some people enjoy a very full travel schedule?",
+      "reply": "Some people find the planning itself exciting, and a packed schedule feels like they're getting their money's worth out of a short trip. Others just like the energy of moving from place to place and don't mind being tired if they see more. It's a different travel style rather than a better one.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 526,
+        "completion_tokens": 61,
+        "total_tokens": 587,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 142
+      },
+      "firstTokenMs": 591,
+      "completionMs": 1552,
+      "wallMs": 1553,
+      "summaryUsed": false
+    },
+    {
+      "turn": 5,
+      "userText": "I would rather leave room for surprises. Do you agree?",
+      "reply": "I do — leaving room for surprises fits well with how you like to travel. If you plan every hour, there's no space for the small things that often end up being the best part: a quiet café, a local recommendation, an unexpected view. With 800 yuan each, a loose plan also protects you if a train is delayed or you find somewhere you'd rather stay longer.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 604,
+        "completion_tokens": 78,
+        "total_tokens": 682,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 220
+      },
+      "firstTokenMs": 598,
+      "completionMs": 1407,
+      "wallMs": 1407,
+      "summaryUsed": false
+    },
+    {
+      "turn": 6,
+      "userText": "Actually, can we talk about sketching? I started drawing old buildings last month.",
+      "reply": "Sure — old buildings are a great subject, and they hold still while you work. What kind of buildings have you been drawing so far?",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 703,
+        "completion_tokens": 28,
+        "total_tokens": 731,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 191
+      },
+      "firstTokenMs": 544,
+      "completionMs": 846,
+      "wallMs": 846,
+      "summaryUsed": false
+    },
+    {
+      "turn": 7,
+      "userText": "Give me a simple exercise I could try at a railway station.",
+      "reply": "Start with one-minute thumbnail sketches: pick a station detail like a window, a roof corner, or a bench, and just capture its basic shape with a few quick lines. Do three or four of them in different spots rather than one careful drawing, since people moving around makes longer sketches hard anyway.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 749,
+        "completion_tokens": 60,
+        "total_tokens": 809,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 237
+      },
+      "firstTokenMs": 1050,
+      "completionMs": 1613,
+      "wallMs": 1614,
+      "summaryUsed": false
+    },
+    {
+      "turn": 8,
+      "userText": "I tend to rush the details. How would you approach it differently?",
+      "reply": "I'd flip the order: block in the big shapes first and loosely, then only add detail in one small area you find interesting. If you rush details everywhere, the drawing loses its focus — so let most of it stay rough and let that one spot be the careful part.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 828,
+        "completion_tokens": 56,
+        "total_tokens": 884,
+        "prompt_tokens_details": {
+          "cached_tokens": 640
+        },
+        "prompt_cache_hit_tokens": 640,
+        "prompt_cache_miss_tokens": 188
+      },
+      "firstTokenMs": 614,
+      "completionMs": 1439,
+      "wallMs": 1441,
+      "summaryUsed": false
+    },
+    {
+      "turn": 9,
+      "userText": "Yes, that sounds manageable.",
+      "reply": "Good — it takes the pressure off, since you're not trying to finish a whole picture at the station. If you try it, the bench or a window corner is a nice small area to make careful while the rest stays loose.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 895,
+        "completion_tokens": 47,
+        "total_tokens": 942,
+        "prompt_tokens_details": {
+          "cached_tokens": 640
+        },
+        "prompt_cache_hit_tokens": 640,
+        "prompt_cache_miss_tokens": 255
+      },
+      "firstTokenMs": 921,
+      "completionMs": 1408,
+      "wallMs": 1412,
+      "summaryUsed": false
+    },
+    {
+      "turn": 10,
+      "userText": "What do you find interesting about old stations compared with airports?",
+      "reply": "Old stations usually sit right in the middle of a town, so you get the town's life around them rather than a big empty approach road. And they tend to have odd, handmade detail — worn steps, ironwork, a clock that's been there a century — which is exactly the sort of thing that rewards a careful bit of sketching. Airports are impressive, but they're designed to move you through fast, so they feel more uniform.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 959,
+        "completion_tokens": 90,
+        "total_tokens": 1049,
+        "prompt_tokens_details": {
+          "cached_tokens": 768
+        },
+        "prompt_cache_hit_tokens": 768,
+        "prompt_cache_miss_tokens": 191
+      },
+      "firstTokenMs": 638,
+      "completionMs": 1542,
+      "wallMs": 1544,
+      "summaryUsed": false
+    },
+    {
+      "turn": 11,
+      "userText": "My friend has changed her plans: Maya now lives in Hangzhou, not Suzhou.",
+      "reply": "Good to know — Hangzhou instead of Suzhou. Does that change your Friday routine with her, or will you still meet around the same kind of timing?",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1072,
+        "completion_tokens": 32,
+        "total_tokens": 1104,
+        "prompt_tokens_details": {
+          "cached_tokens": 896
+        },
+        "prompt_cache_hit_tokens": 896,
+        "prompt_cache_miss_tokens": 176
+      },
+      "firstTokenMs": 736,
+      "completionMs": 1112,
+      "wallMs": 1114,
+      "summaryUsed": false
+    },
+    {
+      "turn": 12,
+      "userText": "I might visit her before the trip. What could we do on a rainy afternoon?",
+      "reply": "Hangzhou in the rain is actually pretty nice — if you're avoiding crowds, a quiet teahouse near West Lake or a small museum would work well, and it gives you both time to talk instead of walking around. Do you two like drawing together, or would that be more of a solo thing for you?",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1126,
+        "completion_tokens": 65,
+        "total_tokens": 1191,
+        "prompt_tokens_details": {
+          "cached_tokens": 896
+        },
+        "prompt_cache_hit_tokens": 896,
+        "prompt_cache_miss_tokens": 230
+      },
+      "firstTokenMs": 446,
+      "completionMs": 1050,
+      "wallMs": 1052,
+      "summaryUsed": false
+    },
+    {
+      "turn": 13,
+      "userText": "I am also trying to cook more at home. Can you suggest a simple meal for two?",
+      "reply": "A simple one that fits a rainy Hangzhou evening: stir-fried noodles with egg and greens — boil the noodles, scramble an egg, toss in whatever vegetables you have, then mix it all together with soy sauce and a little sesame oil. It's quick, cheap, and forgiving, which matters when you're still getting into cooking. For two people, one or two eggs and a good handful of greens per person is plenty.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1214,
+        "completion_tokens": 87,
+        "total_tokens": 1301,
+        "prompt_tokens_details": {
+          "cached_tokens": 1024
+        },
+        "prompt_cache_hit_tokens": 1024,
+        "prompt_cache_miss_tokens": 190
+      },
+      "firstTokenMs": 598,
+      "completionMs": 1495,
+      "wallMs": 1497,
+      "summaryUsed": false
+    },
+    {
+      "turn": 14,
+      "userText": "Would you use fresh or dried herbs, and why?",
+      "reply": "Fresh, if you can get them — they keep a cleaner, brighter flavor that suits a quick noodle dish, since you add them at the end and they still taste like something. Dried herbs are better for slow-cooked things like stews, where they have time to soften and blend in. For your noodles, a little fresh scallion or cilantro at the end would do more than a pinch of dried.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1317,
+        "completion_tokens": 84,
+        "total_tokens": 1401,
+        "prompt_tokens_details": {
+          "cached_tokens": 1152
+        },
+        "prompt_cache_hit_tokens": 1152,
+        "prompt_cache_miss_tokens": 165
+      },
+      "firstTokenMs": 716,
+      "completionMs": 1558,
+      "wallMs": 1560,
+      "summaryUsed": false
+    },
+    {
+      "turn": 15,
+      "userText": "We disagree about spicy food. I like it, but she prefers mild food.",
+      "reply": "That's a common split, and it's easy to handle in one dish — cook the base mild, then let each person add chili oil or fresh chilies to their own bowl at the table. That way nobody's food gets ruined, and you don't have to make two separate meals.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1422,
+        "completion_tokens": 59,
+        "total_tokens": 1481,
+        "prompt_tokens_details": {
+          "cached_tokens": 1280
+        },
+        "prompt_cache_hit_tokens": 1280,
+        "prompt_cache_miss_tokens": 142
+      },
+      "firstTokenMs": 713,
+      "completionMs": 1306,
+      "wallMs": 1307,
+      "summaryUsed": false
+    },
+    {
+      "turn": 16,
+      "userText": "The café order is finished, but I would like to keep chatting about everyday routines.",
+      "reply": "Happy to. What does a typical morning look like for you — is it slow and quiet, or do you get going right away?",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1503,
+        "completion_tokens": 27,
+        "total_tokens": 1530,
+        "prompt_tokens_details": {
+          "cached_tokens": 1280
+        },
+        "prompt_cache_hit_tokens": 1280,
+        "prompt_cache_miss_tokens": 223
+      },
+      "firstTokenMs": 626,
+      "completionMs": 963,
+      "wallMs": 966,
+      "summaryUsed": false
+    },
+    {
+      "turn": 17,
+      "userText": "I have started walking before breakfast. What do you think makes a new habit stick?",
+      "reply": "Starting small helps most, and tying it to something fixed — the walk happens before breakfast, so it's attached to a time rather than a decision. Missing a day without treating it as a failure matters too, since all-or-nothing thinking is usually what kills a new habit.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1552,
+        "completion_tokens": 56,
+        "total_tokens": 1608,
+        "prompt_tokens_details": {
+          "cached_tokens": 1408
+        },
+        "prompt_cache_hit_tokens": 1408,
+        "prompt_cache_miss_tokens": 144
+      },
+      "firstTokenMs": 693,
+      "completionMs": 1342,
+      "wallMs": 1342,
+      "summaryUsed": false
+    },
+    {
+      "turn": 18,
+      "userText": "My schedule changes a lot, so a fixed time is difficult.",
+      "reply": "That makes sense — with a shifting schedule, the anchor needs to be something other than the clock. You could tie the walk to a fixed action instead, like right after you get dressed or before you open your laptop, so it moves with your day rather than against it.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1626,
+        "completion_tokens": 55,
+        "total_tokens": 1681,
+        "prompt_tokens_details": {
+          "cached_tokens": 1408
+        },
+        "prompt_cache_hit_tokens": 1408,
+        "prompt_cache_miss_tokens": 218
+      },
+      "firstTokenMs": 342,
+      "completionMs": 824,
+      "wallMs": 825,
+      "summaryUsed": false
+    },
+    {
+      "turn": 19,
+      "userText": "Could a short routine work better than a strict schedule?",
+      "reply": "Yes — a short routine is usually more durable than a strict schedule, because it survives the days when things go wrong. Ten minutes out the door still counts, and it keeps the habit alive until your schedule settles. Strict schedules tend to break all at once when one morning slips.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1697,
+        "completion_tokens": 56,
+        "total_tokens": 1753,
+        "prompt_tokens_details": {
+          "cached_tokens": 1536
+        },
+        "prompt_cache_hit_tokens": 1536,
+        "prompt_cache_miss_tokens": 161
+      },
+      "firstTokenMs": 755,
+      "completionMs": 1259,
+      "wallMs": 1259,
+      "summaryUsed": false
+    },
+    {
+      "turn": 20,
+      "userText": "Who did I say I usually meet, and on which day?",
+      "reply": "You said Maya, on Fridays — though she's in Hangzhou now rather than Suzhou.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1792,
+        "completion_tokens": 19,
+        "total_tokens": 1811,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 1536
+      },
+      "firstTokenMs": 406,
+      "completionMs": 615,
+      "wallMs": 615,
+      "summaryUsed": true
+    },
+    {
+      "turn": 21,
+      "userText": "Where does Maya live now? Please use the most recent information I gave you.",
+      "reply": "Hangzhou — you corrected that earlier, so she's there now rather than in Suzhou.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1832,
+        "completion_tokens": 20,
+        "total_tokens": 1852,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 1576
+      },
+      "firstTokenMs": 657,
+      "completionMs": 864,
+      "wallMs": 865,
+      "summaryUsed": true
+    },
+    {
+      "turn": 22,
+      "userText": "What drink did I say I prefer, and why do I avoid coffee?",
+      "reply": "You said you prefer mint tea, because coffee keeps you awake.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1835,
+        "completion_tokens": 13,
+        "total_tokens": 1848,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 1579
+      },
+      "firstTokenMs": 523,
+      "completionMs": 671,
+      "wallMs": 672,
+      "summaryUsed": true
+    },
+    {
+      "turn": 23,
+      "userText": "What is our budget per person for the train trip?",
+      "reply": "You said 800 yuan each for the train trip to the coast.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1859,
+        "completion_tokens": 14,
+        "total_tokens": 1873,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 1603
+      },
+      "firstTokenMs": 775,
+      "completionMs": 1074,
+      "wallMs": 1075,
+      "summaryUsed": true
+    },
+    {
+      "turn": 24,
+      "userText": "We still have time to chat. Which of our ideas would you try first, and why?",
+      "reply": "Probably the one-minute sketches at a station, since it's the smallest commitment and you can do it during an ordinary day. The walking habit is the one that would do you the most good, though — it's just harder to start on a schedule that keeps shifting.",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 1900,
+        "completion_tokens": 54,
+        "total_tokens": 1954,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 1516
+      },
+      "firstTokenMs": 697,
+      "completionMs": 1273,
+      "wallMs": 1280,
+      "summaryUsed": true
+    }
+  ],
+  "checks": {
+    "completedTurns": 24,
+    "remembersPersonAndDay": true,
+    "respectsCorrection": true,
+    "remembersDrink": true,
+    "remembersBudget": true,
+    "usesLongHistorySummary": true,
+    "continuesPastOpeningTask": true,
+    "repliesWithoutQuestion": 19,
+    "stockPraiseCount": 0
+  },
+  "physicalMicrophone": "NOT VERIFIED",
+  "physicalCameraMotion": "NOT VERIFIED",
+  "previousFeedbackSummary": "The user engaged in a natural, wide-ranging café conversation that moved from drink preferences and travel planning to sketching, cooking, and daily habits. They asked clear follow-up questions, introduced new topics smoothly, and correctly recalled earlier details when prompted. Responses were relevant and mostly grammatically sound, though a few minor issues with article use and word choice were noted.",
+  "feedback": {
+    "httpStatus": 200,
+    "dimensions": {
+      "coherence": {
+        "observation": "The learner's answers are logically connected and easy to follow, with clear transitions between topics.",
+        "quote": "We are planning a train trip to the coast, and our budget is 800 yuan each.",
+        "answerIndex": 1,
+        "suggestion": "Continue linking new topics to previous ones to maintain coherence."
+      },
+      "lexical": {
+        "observation": "The learner uses a good range of everyday and topic-specific vocabulary.",
+        "quote": "I prefer quiet places to crowded attractions.",
+        "answerIndex": 2,
+        "suggestion": "Try to incorporate more varied adjectives and adverbs to add nuance."
+      },
+      "grammar": {
+        "observation": "The learner consistently uses correct grammar, including complex sentences and appropriate verb tenses.",
+        "quote": "I prefer mint tea because coffee keeps me awake.",
+        "answerIndex": 0,
+        "suggestion": "Continue practicing complex sentence structures to maintain accuracy."
+      }
+    },
+    "parts": [],
+    "deliveryImprovements": [],
+    "summary": "The conversation covered a café order, travel planning, sketching, cooking, and habit formation. The learner gave clear personal information, asked relevant questions, and maintained a natural dialogue across multiple topics.",
+    "strengths": [
+      "You gave clear personal details when asked, such as your drink preference and meeting routine.",
+      "You asked relevant follow-up questions that kept the conversation moving, like about travel priorities and sketching exercises.",
+      "You used a range of vocabulary appropriately, including 'crowded attractions', 'leaving room for surprises', and 'strict schedule'."
+    ],
+    "improvements": [],
+    "basis": "transcript-only",
+    "unassessedDimensions": [
+      "pronunciation",
+      "intonation",
+      "audio pauses",
+      "video behavior"
+    ],
+    "pronunciation": null,
+    "score": null,
+    "source": "ai",
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "createdAt": "2026-11-02T06:02:03.701Z"
+  },
+  "latency": {
+    "firstTokenMs": {
+      "median": 638,
+      "p95": 921
+    },
+    "completionMs": {
+      "median": 1259,
+      "p95": 1558
+    }
+  }
+}

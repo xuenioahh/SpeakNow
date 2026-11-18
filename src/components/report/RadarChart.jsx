@@ -22,8 +22,8 @@ export default function RadarChart({ scores, maxScore = 9, history = [] }) {
           <defs><linearGradient id={gradient} x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#c5a7ff" stopOpacity={0.48} /><stop offset="100%" stopColor="#8061ce" stopOpacity={0.14} /></linearGradient></defs>
           <PolarGrid stroke="rgba(205,190,232,0.14)" />
           <PolarAngleAxis dataKey="subject" tick={({ x, y, textAnchor, payload }) => <Text x={x} y={y} textAnchor={textAnchor} verticalAnchor="middle" width={64} maxLines={3} breakAll fontSize={11} fill="#c7bdd8">{payload.value}</Text>} />
-          <PolarRadiusAxis angle={90} domain={[0, maxScore]} tick={{ fill: '#b0a6c0', fontSize: 9 }} />
-          <Tooltip formatter={value => [`${displayScore(value)} / ${maxScore}`, 'Score']} allowEscapeViewBox={{ x: false, y: false }} contentStyle={{ background: '#25202f', border: '1px solid #aa8bd540', borderRadius: 12, color: '#ede5f8' }} />
+          <PolarRadiusAxis angle={90} domain={[0, maxScore]} tick={{ fill: '#526075', fontSize: 9 }} />
+          <Tooltip formatter={value => [`${displayScore(value)} / ${maxScore}`, 'Score']} allowEscapeViewBox={{ x: false, y: false }} contentStyle={{ background: '#ffffff', border: '1px solid #aa8bd540', borderRadius: 12, color: '#182235' }} />
           {canDraw && <Radar name="Score" dataKey="score" stroke="#bca1ef" fill={`url(#${gradient})`} strokeWidth={2} dot={({ cx, cy, payload }) => <circle key={payload.subject} cx={cx} cy={cy} r={selected === payload.subject ? 5 : 3} fill={selected === payload.subject ? '#f1e4ff' : '#d4bcff'} stroke={selected === payload.subject ? '#aa85ee' : 'transparent'} strokeWidth={2} />} isAnimationActive={!reduced} animationDuration={450} />}
         </RechartsRadar>
       </ResponsiveContainer>

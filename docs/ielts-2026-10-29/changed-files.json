@@ -1,0 +1,13 @@
+[
+  "shared/questionBank.js",
+  "shared/speakingTasks.js",
+  "src/App.jsx",
+  "src/core-flow.css",
+  "src/lib/profileRecords.js",
+  "src/pages/ExamPractice.jsx",
+  "src/pages/ExamPreparation.jsx",
+  "src/pages/ExamSpeaking.jsx",
+  "src/pages/LearningReview.jsx",
+  "src/pages/MainLanding.jsx",
+  "src/pages/QuestionBank.jsx"
+]

@@ -2,11 +2,10 @@ import { hasReportedScore, displayScore, completeScoreVector } from '@/lib/repor
 import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Home, CheckCircle, Loader2, RotateCcw } from "lucide-react";
+import { ArrowLeft, Save, CheckCircle, Loader2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { localApi } from "@/api/localClient";
 import { getScenario } from "@/lib/scenarios";
-import { generateVoiceReport } from "@/lib/localReports";
 import RadarChart from "@/components/report/RadarChart";
 import { toast } from "sonner";
 import LoadingProgressCard from "@/components/LoadingProgressCard";
@@ -74,6 +73,7 @@ export default function VoiceReport() {
   const scenario = getScenario(scenarioId);
   const [report, setReport] = useState(null);
   const suppliedScores = useRef({});
+  const saveLock = useRef(false);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -97,17 +97,6 @@ export default function VoiceReport() {
 
   const generateReport = async () => {
     const messages = safeParseMessages(sessionStorage.getItem("voiceMessages"));
-    const fallbackReport = generateVoiceReport({
-      messages,
-      scoring,
-      duration,
-      words,
-      exchanges,
-      scenarioTitle: scenario?.title || "Practice Session",
-      mode,
-      dialogMode,
-    });
-
     try {
       const result = await localApi.integrations.Core.InvokeLLM({
         input: {
@@ -123,8 +112,9 @@ export default function VoiceReport() {
         },
       });
 
-      suppliedScores.current = (result || fallbackReport).scores || {};
-      setReport(normalizeReport(result || fallbackReport, scoring));
+      if (!result || typeof result !== 'object') throw new Error('Report is unavailable. Try again.');
+      suppliedScores.current = result.scores || {};
+      setReport(normalizeReport(result, scoring));
       setReportError("");
 
       try {
@@ -147,8 +137,8 @@ export default function VoiceReport() {
       }
     } catch (error) {
       console.error("Failed to generate voice report:", error);
-      suppliedScores.current = fallbackReport.scores || {};
-      setReport(fallbackReport);
+      suppliedScores.current = {};
+      setReport(null);
       setReportError(error?.message || "Failed to generate report.");
     } finally {
       setLoading(false);
@@ -156,6 +146,8 @@ export default function VoiceReport() {
   };
 
   const handleSave = async () => {
+    if (saveLock.current || saved || !report) return;
+    saveLock.current = true;
     try {
       setSaving(true);
       await localApi.entities.VoiceSession.create({
@@ -175,6 +167,7 @@ export default function VoiceReport() {
       console.error("Failed to save voice report:", error);
       toast.error(error?.message || "Failed to save report.");
     } finally {
+      saveLock.current = false;
       setSaving(false);
     }
   };
@@ -212,11 +205,13 @@ export default function VoiceReport() {
     );
   }
 
+  if (!report) return <main className="studio-page studio-page-reading feedback-workbench px-6 py-8"><h1>Report unavailable</h1><p role="alert">{reportError || 'Report generation failed.'}</p><div className="feedback-actions"><Button onClick={() => { setLoading(true); void generateReport(); }}>Retry report</Button><Button variant="outline" onClick={() => navigate('/voice')}>Conversations</Button></div></main>;
+
   return (
     <div className="studio-page studio-page-reading feedback-workbench">
-      <p role="note" className="mx-4 mt-4 glass rounded-xl p-3 text-sm text-amber-200">Legacy numeric scores are heuristic, model estimates or simulated values. They are not measured pronunciation, eye contact or verified skill improvement. New Impact feedback uses transcript evidence.</p>
+      <p role="note" className="mx-4 mt-4 glass rounded-xl p-3 text-sm text-amber-800">Legacy numeric scores are heuristic, model estimates or simulated values. They are not measured pronunciation, eye contact or verified skill improvement. New Impact feedback uses transcript evidence.</p>
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
+      <div className="flex items-center gap-3 px-4 py-4 border-b border-slate-200">
         <button onClick={() => navigate("/voice")} className="p-2 rounded-xl hover:bg-white/5">
           <ArrowLeft className="w-5 h-5 text-muted-foreground" />
         </button>
@@ -231,11 +226,11 @@ export default function VoiceReport() {
           <p className="room-eyebrow">SESSION COMPLETE · {scenario.title}</p>
           <h2>Your next conversation starts here.</h2>
           <p>{report?.suggestions?.[0] || report?.scoring_framework?.descriptor || (hasReportedScore(displayedTotal) ? getScoreDescriptor(displayedTotal, scoring) : "") || 'Review your saved conversation and choose one thing to practise again.'}</p>
-          <button type="button" onClick={() => navigate(`/voice/chat?${new URLSearchParams({ scenario: scenarioId, mode, dialogMode, scoring })}`)}>Practise this conversation again →</button>
+
         </section>
         {reportError && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-4 border border-amber-400/30">
-            <p className="text-sm font-medium text-amber-200">Report generation issue</p>
+            <p className="text-sm font-medium text-amber-800">Report generation issue</p>
             <p className="mt-1 text-xs text-amber-100/90 break-words">{reportError}</p>
           </motion.div>
         )}
@@ -266,7 +261,7 @@ export default function VoiceReport() {
         </motion.div>
 
         </>}
-        {report?.source !== 'measured' && <p className="glass rounded-xl p-4">AI Coaching Suggestion or local text heuristic. No pronunciation, acoustic fluency, exam score or verified speaking improvement was measured.</p>}
+        {report?.source !== 'measured' && <details className="glass rounded-xl p-4"><summary>How this review was made</summary><p>{report?.source === 'ai' ? 'AI suggestions based on your transcript.' : 'Local text guidance; this is not a model review.'} Pronunciation and spoken delivery were not measured.</p></details>}
         <details className="glass rounded-2xl p-4">
           <summary className="cursor-pointer text-sm font-semibold">Exam criteria · reference only, no measured score</summary>
           <p className="text-xs text-muted-foreground mt-3">{report?.scoring_framework?.strategy || getExamStandard(scoring).strategy}</p>
@@ -275,7 +270,7 @@ export default function VoiceReport() {
               <div key={criteria.key} className="rounded-xl bg-white/5 px-3 py-2"><p className="text-xs font-medium">{criteria.label}</p><p className="text-[11px] text-muted-foreground mt-1">{criteria.focus}</p></div>
             ))}
           </div>
-          {scoring === "toefl" && <p className="text-[11px] text-amber-200/80 mt-3">TOEFL changed to a 1–6 score scale on January 21, 2026. Older 0–30 comparisons may still appear during the transition.</p>}
+          {scoring === "toefl" && <p className="text-[11px] text-amber-800/80 mt-3">TOEFL changed to a 1–6 score scale on January 21, 2026. Older 0–30 comparisons may still appear during the transition.</p>}
         </details>
 
         {/* Detailed Feedback */}
@@ -365,7 +360,7 @@ export default function VoiceReport() {
 
         {/* Action Buttons */}
         <div className="feedback-actions">
-          <Button variant="outline" onClick={() => navigate(`/voice/chat?${new URLSearchParams({ scenario: scenarioId, mode, dialogMode, scoring })}`)} className="rounded-2xl border-white/10"><RotateCcw className="w-4 h-4 mr-2" />Retry</Button>
+          <Button variant="outline" onClick={() => navigate(`/voice/chat?${new URLSearchParams({ scenario: scenarioId, mode, dialogMode, scoring })}`)} className="rounded-2xl border-slate-200"><RotateCcw className="w-4 h-4 mr-2" />Practise again</Button>
           <Button
             onClick={handleSave}
             disabled={saved || saving}
@@ -374,14 +369,7 @@ export default function VoiceReport() {
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
             {saved ? "Saved" : "Save Summary"}
           </Button>
-          <Button
-            onClick={() => navigate("/voice")}
-            variant="outline"
-            className="flex-1 h-12 rounded-2xl border-white/10 hover:bg-white/5"
-          >
-            <Home className="w-4 h-4 mr-2" />
-            Home
-          </Button>
+
         </div>
       </div>
     </div>

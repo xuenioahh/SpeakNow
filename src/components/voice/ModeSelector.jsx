@@ -52,7 +52,7 @@ export default function ModeSelector({ scenario, onComplete, onBack }) {
       exit={{ opacity: 0 }}
       className="practice-mode-dialog fixed inset-0 h-dvh bg-background z-[60] flex flex-col"
     >
-      <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
+      <div className="flex items-center gap-3 px-4 py-4 border-b border-slate-200">
         <button onClick={goBack} aria-label={step === 0 ? "Close practice setup" : "Previous step"} className="p-3 rounded-xl hover:bg-white/5">
           <ArrowLeft className="w-5 h-5 text-muted-foreground" />
         </button>
@@ -179,7 +179,7 @@ function OptionCard({ icon: Icon, title, desc, selected, onClick, gradient, disa
       }`}
     >
       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0`}>
-        <Icon className="w-6 h-6 text-white" />
+        <Icon className="w-6 h-6 text-foreground" />
       </div>
       <div className="flex-1 min-w-0">
         <h4 className="font-semibold text-foreground">{title}</h4>

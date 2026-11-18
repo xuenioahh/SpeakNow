@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 
-const colors = { idle: '#9678ff', listening: '#79dedb', processing: '#ad91ff', speaking: '#97baff', completed: '#96e2bf', error: '#e5ad86' };
+const colors = { idle: '#9678ff', listening: '#79dedb', processing: '#ad91ff', thinking: '#ad91ff', speaking: '#97baff', completed: '#96e2bf', error: '#e5ad86' };
 const vertexShader = `
   uniform float uTime; uniform float uEnergy; uniform float uFlow;
   varying vec3 vViewPosition; varying vec3 vPosition;
@@ -30,7 +30,7 @@ const fragmentShader = `
     float fill = max(dot(n, normalize(vec3(0.8, -0.2, 0.5))), 0.0);
     float bands = sin(vPosition.y * 7.0 + sin(vPosition.x * 3.5 + uTime * uFlow) + uTime * uFlow) * 0.5 + 0.5;
     float core = exp(-dot(vPosition.xy, vPosition.xy) * 2.7);
-    vec3 color = mix(vec3(0.07, 0.045, 0.13), uColor, key * 0.44 + fill * 0.14 + bands * 0.13);
+    vec3 color = mix(vec3(0.11, 0.07, 0.22), uColor, key * 0.44 + fill * 0.14 + bands * 0.13);
     color += uColor * (core * 0.19 + fresnel * 0.64 + uEnergy * 0.12 + uCompletion * 0.15);
     color += pow(key, 32.0) * vec3(0.84, 0.9, 1.0) * 0.5;
     gl_FragColor = vec4(color, 0.86 + fresnel * 0.1);
@@ -66,11 +66,12 @@ export default function VoiceOrb({ state = 'idle', energyRef }) {
       else completionAge += delta;
       previousState = current.state;
       last = time;
-      const target = current.state === 'listening' ? current.energyRef?.current?.read?.() || 0 : 0;
+      const meter = current.energyRef?.current;
+      const target = ['listening', 'speaking'].includes(current.state) ? meter?.read?.() ?? Math.min(1, (meter?.readRms?.() || 0) * 6) : 0;
       energy = still ? 0 : energy + (target - energy) * (1 - Math.exp(-delta / 0.08));
       material.uniforms.uTime.value = elapsed;
       material.uniforms.uEnergy.value = energy;
-      const flowTarget = current.state === 'processing' ? 0.55 : 0.22;
+      const flowTarget = ['processing','thinking'].includes(current.state) ? 0.55 : 0.22;
       material.uniforms.uFlow.value += (flowTarget - material.uniforms.uFlow.value) * (still ? 1 : 1 - Math.exp(-delta / 0.3));
       material.uniforms.uCompletion.value = current.state === 'completed' && !still ? Math.sin(Math.min(completionAge / 0.85, 1) * Math.PI) : 0;
       material.uniforms.uColor.value.lerp(targetColor.set(colors[current.state] || colors.idle), still ? 1 : 1 - Math.exp(-delta / 0.22));

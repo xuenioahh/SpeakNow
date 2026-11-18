@@ -1,0 +1,55 @@
+{
+  "status": "PASS actual MediaPipe Worker",
+  "samples": 12,
+  "firstSample": {
+    "type": "sample",
+    "time": 1.953,
+    "facePresent": false,
+    "bodyPresent": false,
+    "luminance": 0.40471052108866085,
+    "imageContrast": 0.0882925084566597,
+    "edgeEnergy": 0.008124794028262234,
+    "processingMs": 689.7000000029802,
+    "source": "device-mediapipe"
+  },
+  "lastSample": {
+    "type": "sample",
+    "time": 8.952,
+    "facePresent": false,
+    "bodyPresent": false,
+    "luminance": 0.4415584594567263,
+    "imageContrast": 0.13917841407637677,
+    "edgeEnergy": 0.011124392866400308,
+    "processingMs": 72.19999998807907,
+    "source": "device-mediapipe"
+  },
+  "timeline": {
+    "sessionId": "4860be5e-5a0a-43f8-a906-30e77be6559e",
+    "source": "device-mediapipe",
+    "frames": 12,
+    "validSamples": {
+      "face": 0,
+      "body": 0,
+      "hands": 0
+    },
+    "events": [
+      {
+        "kind": "face-missing",
+        "label": "Face landmarks were unavailable",
+        "source": "face detector availability; may include occlusion",
+        "sessionId": "4860be5e-5a0a-43f8-a906-30e77be6559e",
+        "turnId": null,
+        "speaker": "none",
+        "start": 1.95,
+        "end": 8.95,
+        "samples": 12,
+        "availability": "observed",
+        "confidence": "landmark proxy"
+      }
+    ]
+  },
+  "postRequests": [
+    "http://127.0.0.1:5236/api/local-data"
+  ],
+  "scope": "Real local Face/Pose Landmarker models and WASM; Chrome synthetic video pattern. Human motion accuracy and physical webcam remain unverified."
+}

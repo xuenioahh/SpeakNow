@@ -1,0 +1,31 @@
+{
+  "at": "2026-11-05T15:40:01.917Z",
+  "passed": true,
+  "checks": [
+    "page /",
+    "page /exam",
+    "page /progress",
+    "page /voice",
+    "Daily Start: real local membership HTTP 200",
+    "2 real DeepSeek conversation replies",
+    "real AI feedback and IndexedDB persistence after reload"
+  ],
+  "errors": [],
+  "apiFailures": [],
+  "replies": [
+    {
+      "text": "Sure thing — one small oat milk cappuccino. Would you like it to stay or to go?",
+      "model": "deepseek-flash"
+    },
+    {
+      "text": "Got it — a small iced oat milk cappuccino, no sugar, to go. I'll have that ready for you in just a moment.",
+      "model": "deepseek-flash"
+    }
+  ],
+  "feedback": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "summary": "The learner ordered a small cappuccino with oat milk and then requested it iced, without sugar, and to go."
+  },
+  "scope": "Real local HTTP, membership storage, DeepSeek conversation and feedback, IndexedDB, 320/390/1280 layouts. Controlled speech playback; physical microphone, ASR and camera not verified."
+}

@@ -1,6 +1,7 @@
 import { protectedApi } from './_apiGuard.js';
 import { getOwned, updateImpact } from './_appStore.js';
 import { countModelRequest, countModelUsage } from './_requestContext.js';
+import { FEEDBACK_STYLE } from '../shared/feedbackStyle.js';
 import { analysisSchema, comparisonSchema, validateContext, validateAnalysis, validateComparison, hasQuote, CATEGORIES } from '../src/impact/contracts.js'
 
 export const COACHING_PROMPT = `You are SpeakNow Impact Studio, a professional communication coach for fluent English speakers.
@@ -81,7 +82,7 @@ export async function handleImpact(req, res, env = globalThis.process?.env || {}
       method: 'POST', headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
       signal: AbortSignal.timeout(45000),
       body: JSON.stringify({ model, store: false, max_output_tokens: input.mode === 'compare' ? 1800 : 6500,
-        instructions: COACHING_PROMPT, input: JSON.stringify(input),
+        instructions: `${COACHING_PROMPT}\n${FEEDBACK_STYLE}`, input: JSON.stringify(input),
         text: { format: { type: 'json_schema', name: input.mode === 'compare' ? 'retry_comparison' : 'message_impact', strict: true, schema: input.mode === 'compare' ? comparisonSchema : analysisSchema } },
       }),
     })

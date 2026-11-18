@@ -1,0 +1,232 @@
+{
+  "passed": [
+    "major routes use the light system and fit desktop and mobile widths",
+    "complete IELTS mock runs Part 1 → preparation and long turn → related Part 3 → final feedback and save",
+    "retrying a selected Part retains its source questions, parent and transcript comparison",
+    "IELTS quick practice for each Part keeps preparation, real clips and evidence feedback",
+    "both TOEFL task types still record, submit and produce feedback",
+    "My Progress reads saved attempts once, filters three modes and preserves old routes",
+    "account history and Profile use the same identity, and membership offers no payment flow",
+    "Daily keeps the 3D scene, Orb, continuous media, camera and saved feedback"
+  ],
+  "pageErrors": [],
+  "contrast": [
+    {
+      "route": "/",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/ielts",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/repeat",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part1",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part2",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part3",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/voice",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/progress",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/membership",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/auth",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/ielts",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/repeat",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part1",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part2",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part3",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/voice",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/progress",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/membership",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/auth",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/ielts",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/repeat",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part1",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part2",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part3",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/voice",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/progress",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/membership",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/auth",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/practice/review",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/profile",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/voice/chat",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    }
+  ],
+  "environment": "Real Chrome MediaRecorder/camera/WebGL with synthetic mic and controlled ASR/TTS, isolated model fixture; real model probe is separate."
+}

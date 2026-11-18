@@ -1,0 +1,263 @@
+{
+  "category": "Real API integration + real browser, synthetic typed learner input",
+  "devices": "Microphone and camera off; TTS disabled using the product control, not mocked",
+  "production": "No deployment; isolated local server data only",
+  "turns": [
+    {
+      "turn": 1,
+      "userText": "I prefer tea because coffee makes me nervous. What would you recommend?",
+      "reply": "No problem — we've got a few good teas that won't leave you jittery. If you like something light and a little floral, the jasmine green tea is a nice pick; if you want something caffeine-free, the chamomile is really soothing.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 4056
+    },
+    {
+      "turn": 2,
+      "userText": "Something without caffeine, please. I do not want any sugar either.",
+      "reply": "The chamomile is a great fit then — it's caffeine-free and we serve it plain, no sugar added. It comes as a simple hot cup with the tea bag on the side, so nothing extra gets in there.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1580
+    },
+    {
+      "turn": 3,
+      "userText": "I usually drink tea with my friend Maya on Sundays.",
+      "reply": "That sounds like a nice Sunday routine. Maya's welcome to come along too — we've got a couple of small tables by the window that are good for sitting and chatting.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1253
+    },
+    {
+      "turn": 4,
+      "userText": "Actually, can we talk about a train trip to the coast instead?",
+      "reply": "Sure, we can switch gears. Are you and Maya thinking of taking the train out to the coast together, or is this a solo trip?",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1228
+    },
+    {
+      "turn": 5,
+      "userText": "I want to sketch buildings there. What should I bring?",
+      "reply": "For sketching buildings, a small sketchbook and a couple of pencils are the essentials, plus an eraser. A fine-liner pen is handy if you like crisp lines, and a light watercolor set can be nice for capturing the sea light. Keep it light since you'll be carrying it around all day.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1734
+    },
+    {
+      "turn": 6,
+      "userText": "What could I do if it rains all day?",
+      "reply": "Rainy days can actually be good for sketching — the wet streets and reflections give you something different to draw. If it's pouring, a café or the station waiting room works as shelter, and you could sketch the buildings from under an awning. Pack a light rain jacket and maybe a plastic bag to keep your sketchbook dry.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1817
+    },
+    {
+      "turn": 7,
+      "userText": "Maya cannot join this time; my brother Leo will come instead.",
+      "reply": "Leo coming along could be a nice change — he might enjoy walking around the town while you sketch. Just check whether he's happy to keep himself busy during the longer drawing stops.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1148
+    },
+    {
+      "turn": 8,
+      "userText": "Who is coming with me now, and who cannot come?",
+      "reply": "Leo is coming with you now, and Maya can't make it this time.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 633
+    },
+    {
+      "turn": 9,
+      "userText": "What drink did I say I preferred, and why?",
+      "reply": "You said you prefer tea because coffee makes you nervous. You ended up choosing the chamomile since it's caffeine-free and served with no sugar.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1519
+    },
+    {
+      "turn": 10,
+      "userText": "The order is sorted, but I would like to keep chatting about travel. What interests you about old train stations?",
+      "reply": "I like how old stations feel like working buildings rather than monuments — high ceilings, worn wooden benches, the big clock, all still doing their job. The mix of stone, iron and glass often makes them worth sketching too, which should suit you.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1603
+    }
+  ],
+  "receipts": [
+    {
+      "reply": "No problem — we've got a few good teas that won't leave you jittery. If you like something light and a little floral, the jasmine green tea is a nice pick; if you want something caffeine-free, the chamomile is really soothing.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 316,
+        "completion_tokens": 54,
+        "total_tokens": 370,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 188
+      },
+      "firstTokenMs": 929,
+      "totalMs": 1534
+    },
+    {
+      "reply": "The chamomile is a great fit then — it's caffeine-free and we serve it plain, no sugar added. It comes as a simple hot cup with the tea bag on the side, so nothing extra gets in there.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 389,
+        "completion_tokens": 46,
+        "total_tokens": 435,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 261
+      },
+      "firstTokenMs": 928,
+      "totalMs": 1493
+    },
+    {
+      "reply": "That sounds like a nice Sunday routine. Maya's welcome to come along too — we've got a couple of small tables by the window that are good for sitting and chatting.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 451,
+        "completion_tokens": 35,
+        "total_tokens": 486,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 195
+      },
+      "firstTokenMs": 703,
+      "totalMs": 1144
+    },
+    {
+      "reply": "Sure, we can switch gears. Are you and Maya thinking of taking the train out to the coast together, or is this a solo trip?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 505,
+        "completion_tokens": 29,
+        "total_tokens": 534,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 249
+      },
+      "firstTokenMs": 833,
+      "totalMs": 1161
+    },
+    {
+      "reply": "For sketching buildings, a small sketchbook and a couple of pencils are the essentials, plus an eraser. A fine-liner pen is handy if you like crisp lines, and a light watercolor set can be nice for capturing the sea light. Keep it light since you'll be carrying it around all day.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 551,
+        "completion_tokens": 63,
+        "total_tokens": 614,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 167
+      },
+      "firstTokenMs": 750,
+      "totalMs": 1656
+    },
+    {
+      "reply": "Rainy days can actually be good for sketching — the wet streets and reflections give you something different to draw. If it's pouring, a café or the station waiting room works as shelter, and you could sketch the buildings from under an awning. Pack a light rain jacket and maybe a plastic bag to keep your sketchbook dry.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 629,
+        "completion_tokens": 67,
+        "total_tokens": 696,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 245
+      },
+      "firstTokenMs": 872,
+      "totalMs": 1736
+    },
+    {
+      "reply": "Leo coming along could be a nice change — he might enjoy walking around the town while you sketch. Just check whether he's happy to keep himself busy during the longer drawing stops.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 714,
+        "completion_tokens": 36,
+        "total_tokens": 750,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 202
+      },
+      "firstTokenMs": 598,
+      "totalMs": 1069
+    },
+    {
+      "reply": "Leo is coming with you now, and Maya can't make it this time.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 767,
+        "completion_tokens": 16,
+        "total_tokens": 783,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 255
+      },
+      "firstTokenMs": 340,
+      "totalMs": 555
+    },
+    {
+      "reply": "You said you prefer tea because coffee makes you nervous. You ended up choosing the chamomile since it's caffeine-free and served with no sugar.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 799,
+        "completion_tokens": 30,
+        "total_tokens": 829,
+        "prompt_tokens_details": {
+          "cached_tokens": 640
+        },
+        "prompt_cache_hit_tokens": 640,
+        "prompt_cache_miss_tokens": 159
+      },
+      "firstTokenMs": 665,
+      "totalMs": 1443
+    },
+    {
+      "reply": "I like how old stations feel like working buildings rather than monuments — high ceilings, worn wooden benches, the big clock, all still doing their job. The mix of stone, iron and glass often makes them worth sketching too, which should suit you.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 857,
+        "completion_tokens": 50,
+        "total_tokens": 907,
+        "prompt_tokens_details": {
+          "cached_tokens": 640
+        },
+        "prompt_cache_hit_tokens": 640,
+        "prompt_cache_miss_tokens": 217
+      },
+      "firstTokenMs": 805,
+      "totalMs": 1527
+    }
+  ],
+  "errors": [],
+  "status": "FAIL",
+  "failure": "locator.click: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Get AI feedback', exact: true })\u001b[22m\n",
+  "visibleState": "SpeakNow\nHome\nSpeaking\nExams\nMy Progress\nMembership\nSign in\n← My practice\nSaved locally\n\nDaily Conversation · Review\n\nCafé · At the Counter\n\n10 replies · 11/10/2026\n\n1\nConversation\n2\nCamera review\n3\nNext practice\nWhat you talked about\n\nYour conversation is saved. Get a short review of the language you used.\n\nGet feedback\n\nBeyond the words\n\nYour camera moments\n\nYou can include a camera review in your next conversation.\n\nOpen camera review →\nConversation & recordings\nResponse timings\nSign in to keep a copy in your account\nDelete practice"
+}

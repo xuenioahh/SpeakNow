@@ -1,0 +1,205 @@
+{
+  "credentials": {
+    "DEEPSEEK_API_KEY": "present",
+    "SUPABASE_URL": "missing",
+    "SUPABASE_SERVICE_ROLE_KEY": "missing",
+    "AZURE_SPEECH_KEY": "missing",
+    "AZURE_SPEECH_REGION": "missing",
+    "ELEVENLABS_API_KEY": "missing",
+    "ELEVENLABS_VOICE_ID": "missing"
+  },
+  "apis": [
+    {
+      "file": "api/admin-track.js",
+      "imports": [
+        "./_adminStore.js",
+        "./_apiGuard.js",
+        "./_auth.js",
+        "./_appStore.js"
+      ]
+    },
+    {
+      "file": "api/dynamic-tts.js",
+      "imports": [
+        "node:perf_hooks",
+        "./_requestContext.js",
+        "./_trialGuard.js"
+      ]
+    },
+    {
+      "file": "api/exam-examiner.js",
+      "imports": [
+        "./_trialGuard.js",
+        "./_llm.js",
+        "../shared/speakingTasks.js"
+      ]
+    },
+    {
+      "file": "api/expression-review.js",
+      "imports": [
+        "./_apiGuard.js",
+        "../src/lib/expressionContext.js",
+        "./_llm.js"
+      ]
+    },
+    {
+      "file": "api/expression-service.js",
+      "imports": [
+        "./_apiGuard.js",
+        "./_llm.js"
+      ]
+    },
+    {
+      "file": "api/learning-dashboard.js",
+      "imports": [
+        "./_apiGuard.js",
+        "./_appStore.js",
+        "./_membership.js",
+        "../src/lib/learningDashboard.js"
+      ]
+    },
+    {
+      "file": "api/local-data.js",
+      "imports": [
+        "./_appStore.js",
+        "./_appStore.js",
+        "node:crypto",
+        "./_auth.js",
+        "./_apiGuard.js",
+        "./_securityStore.js",
+        "./_profilePatch.js"
+      ]
+    },
+    {
+      "file": "api/local-transcription.js",
+      "imports": [
+        "./_auth.js",
+        "./_localTranscription.js"
+      ]
+    },
+    {
+      "file": "api/membership.js",
+      "imports": [
+        "./_securityStore.js",
+        "./_membership.js",
+        "./_auth.js",
+        "./_membership.js",
+        "./_membershipActions.js",
+        "./_usageReport.js"
+      ]
+    },
+    {
+      "file": "api/presentation-analysis.js",
+      "imports": [
+        "./_apiGuard.js",
+        "./_llm.js"
+      ]
+    },
+    {
+      "file": "api/presentation-impact.js",
+      "imports": [
+        "./_apiGuard.js",
+        "./_appStore.js",
+        "./_requestContext.js",
+        "../src/impact/contracts.js"
+      ]
+    },
+    {
+      "file": "api/presentation-media.js",
+      "imports": [
+        "node:crypto",
+        "./_apiGuard.js",
+        "./_appStore.js",
+        "./_mediaStore.js"
+      ]
+    },
+    {
+      "file": "api/presentation-pause-feedback.js",
+      "imports": [
+        "../src/lib/feedbackEvidence.js",
+        "./_apiGuard.js",
+        "../src/lib/localReports.js",
+        "./_llm.js"
+      ]
+    },
+    {
+      "file": "api/presentation-practice.js",
+      "imports": [
+        "./_apiGuard.js",
+        "./_appStore.js",
+        "../src/impact/contracts.js"
+      ]
+    },
+    {
+      "file": "api/presentation-report.js",
+      "imports": [
+        "../src/lib/feedbackEvidence.js",
+        "./_apiGuard.js",
+        "./_llm.js"
+      ]
+    },
+    {
+      "file": "api/question-bank.js",
+      "imports": [
+        "./_auth.js",
+        "../shared/questionBank.js",
+        "../shared/speakingTasks.js",
+        "./_membership.js",
+        "./_bankAccess.js",
+        "./_membershipStore.js"
+      ]
+    },
+    {
+      "file": "api/speaking-audio.js",
+      "imports": [
+        "node:crypto",
+        "./_auth.js",
+        "./_securityStore.js",
+        "./_appStore.js",
+        "../shared/speakingTasks.js",
+        "./_speechAssessment.js"
+      ]
+    },
+    {
+      "file": "api/speaking-feedback.js",
+      "imports": [
+        "./_trialGuard.js",
+        "./_llm.js",
+        "../shared/speakingTasks.js",
+        "./voice-chat.js",
+        "./_appStore.js",
+        "node:perf_hooks",
+        "../shared/conversationMemory.js"
+      ]
+    },
+    {
+      "file": "api/speaking-practice.js",
+      "imports": [
+        "./_membership.js",
+        "node:crypto",
+        "./_apiGuard.js",
+        "./_appStore.js",
+        "./_mediaStore.js",
+        "../shared/speakingTasks.js"
+      ]
+    },
+    {
+      "file": "api/voice-capabilities.js",
+      "imports": [
+        "./_localTranscription.js"
+      ]
+    },
+    {
+      "file": "api/voice-chat.js",
+      "imports": [
+        "./_apiGuard.js",
+        "./_llm.js",
+        "../src/lib/scenarios.js",
+        "../src/lib/dailyTasks.js",
+        "../shared/conversationMemory.js"
+      ]
+    }
+  ],
+  "lockfileVersion": 3,
+  "storageMode": "unconfigured"
+}

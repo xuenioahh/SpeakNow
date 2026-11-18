@@ -1,0 +1,11 @@
+{
+  "stage": "/private/tmp/speaknow-release-clean-th73lj3b",
+  "sourceFiles": 363,
+  "forbiddenEntries": [],
+  "models": [
+    "public/expression-vision/face_landmarker.task",
+    "public/expression-vision/hand_landmarker.task",
+    "public/expression-vision/pose_landmarker_lite.task"
+  ],
+  "sourceArchive": false
+}

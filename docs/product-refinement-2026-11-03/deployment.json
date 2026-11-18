@@ -1,0 +1,32 @@
+{
+  "productionDeploymentId": "dpl_2ogn8CoEFU7LwXEDGVF4nuFKTMrH",
+  "deploymentUrl": "https://omniverse-ent208-ohexkfzy6-weifiabscxdgib.vercel.app",
+  "state": "READY",
+  "productionAliases": [
+    "https://omniverse-ent208.vercel.app",
+    "https://omniverse-ent208-weifiabscxdgib.vercel.app"
+  ],
+  "promotion": "CLI success",
+  "normalPreview": "http://localhost:5173",
+  "sourceDirectory": "/Users/zhangzhuoru/Desktop/master/speaknow-audit",
+  "publishDirectory": "/private/tmp/speaknow-release-clean-th73lj3b",
+  "sourceFilesVerifiedByVercelApi": 363,
+  "privateSourceDirectoriesIncluded": [],
+  "sourceArchive": false,
+  "modelSourcesIncluded": [
+    "face_landmarker.task",
+    "pose_landmarker_lite.task",
+    "hand_landmarker.task"
+  ],
+  "directProductionHttp": "NOT VERIFIED: local curl and web reader connections to vercel.app time out; Vercel API accessible.",
+  "supersededArchiveDeployments": [
+    "dpl_5g5Xw9HJpp7X5JBfDDz6dYiSK6dt",
+    "dpl_D7JzJXaTnY7s9b69HPKH7UW27zhC"
+  ],
+  "cleanup": "SUCCESS: removed both superseded archive deployments after clean promotion; CLI reported 2 removed.",
+  "apiKeys": "Existing production configuration preserved; no secret values logged or changed.",
+  "productionAliasesVerifiedByApi": {
+    "omniverse-ent208.vercel.app": "dpl_2ogn8CoEFU7LwXEDGVF4nuFKTMrH",
+    "omniverse-ent208-weifiabscxdgib.vercel.app": "dpl_2ogn8CoEFU7LwXEDGVF4nuFKTMrH"
+  }
+}

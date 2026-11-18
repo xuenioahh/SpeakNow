@@ -5,15 +5,13 @@ import { pathToFileURL } from "node:url";
 
 const projectRoot = process.cwd();
 const apiDir = path.join(projectRoot, "api");
-const envFile = path.join(projectRoot, ".env");
+const envFiles = [".env.local", ".env"].map((filename) => path.join(projectRoot, filename));
 
 function loadEnvFile() {
-  if (!fs.existsSync(envFile)) {
-    return;
-  }
-
-  const raw = fs.readFileSync(envFile, "utf8");
-  raw.split(/\r?\n/).forEach((line) => {
+  for (const envFile of envFiles) {
+    if (!fs.existsSync(envFile)) continue;
+    const raw = fs.readFileSync(envFile, "utf8");
+    raw.split(/\r?\n/).forEach((line) => {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith("#")) {
       return;
@@ -29,7 +27,8 @@ function loadEnvFile() {
     if (!(key in process.env)) {
       process.env[key] = value;
     }
-  });
+    });
+  }
 }
 
 loadEnvFile();
@@ -48,6 +47,10 @@ function createResponse(res) {
     get statusCode() { return res.statusCode; },
     set statusCode(code) { res.statusCode = code; },
     end(body) { res.end(body); },
+    write(body) { return res.write(body); },
+    flushHeaders() { res.flushHeaders(); },
+    on(event, listener) { res.on(event, listener); return this; },
+    off(event, listener) { res.off(event, listener); return this; },
     status(code) {
       res.statusCode = code;
       return this;
@@ -70,7 +73,7 @@ async function readJsonBody(req) {
   let bytes = 0;
   for await (const chunk of req) {
     bytes += chunk.length;
-    const limit = req.url?.startsWith('/api/presentation-media') ? 16 * 1024 * 1024 : req.url?.startsWith('/api/speaking-practice') ? 4 * 1024 * 1024 : 512 * 1024;
+    const limit = req.url?.startsWith('/api/presentation-media') ? 16 * 1024 * 1024 : /^\/api\/(speaking-audio|local-transcription)/.test(req.url || '') ? 6 * 1024 * 1024 : req.url?.startsWith('/api/speaking-practice') ? 4 * 1024 * 1024 : 512 * 1024;
     if (bytes > limit) throw Object.assign(new Error('Request body too large'), { status: 413 });
     chunks.push(chunk);
   }
@@ -138,6 +141,7 @@ const server = http.createServer(async (req, res) => {
       body,
       url: req.url,
       socket: req.socket,
+      on(event, listener) { req.on(event, listener); return this; },
     };
 
     await handler(adaptedReq, createResponse(res));

@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "scope": "Real faster-whisper model and local HTTP endpoint with macOS synthesized speech; NOT a physical microphone or production test",
+  "capability": {
+    "dynamicTts": "browser",
+    "model": null,
+    "transcription": "local"
+  },
+  "result": {
+    "text": "I would like a cup of tea without sugar, tomorrow I am taking a train to the coast.",
+    "source": "local-audio",
+    "model": "faster-whisper-base.en",
+    "durationSeconds": 4.667,
+    "processingMs": 2834
+  },
+  "wallMs": 4323
+}

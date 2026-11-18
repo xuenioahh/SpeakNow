@@ -1,0 +1,11 @@
+{
+  "passed": [
+    "Migration applies to PostgreSQL 17",
+    "20 simultaneous CAS attempts have exactly one winner",
+    "Concurrent revision retries retain every committed update",
+    "Anonymous and authenticated DB roles cannot read ledgers, self-upgrade or invoke the service RPC",
+    "Service role can commit through the authorized RPC",
+    "Unused reservations refund atomically and browser roles cannot refund their own budgets"
+  ],
+  "environment": "Disposable local PostgreSQL 17 cluster; exact migration, genuine concurrent connections and database permissions; no production database modified."
+}

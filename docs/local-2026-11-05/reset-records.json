@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-05T03:38:02.445Z",
+  "scope": "localhost:5173 only",
+  "cleared": {
+    "counters": 4,
+    "usage": 2,
+    "practiceSessions": 30,
+    "operations": 73,
+    "measurements": 71,
+    "app-db.json:voiceSessions": 0,
+    "app-db.json:presentationSessions": 0,
+    "app-db.json:activityRecords": 7,
+    "admin-db.json:voiceSessions": 0,
+    "admin-db.json:presentationSessions": 0,
+    "admin-db.json:events": 8
+  },
+  "accountsAndSettingsPreserved": true,
+  "verified": true,
+  "browserCleared": {
+    "attempts": 10,
+    "drafts": 19,
+    "recordings": 73,
+    "localStorageDrafts": 28,
+    "tabs": 2
+  },
+  "browserEmptyVerified": true
+}

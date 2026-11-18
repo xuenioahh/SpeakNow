@@ -1,0 +1,294 @@
+{
+  "scope": "Real DeepSeek API, explicit engineering text inputs, no audio/device inference, no database writes or mock provider.",
+  "results": [
+    {
+      "name": "IELTS single answer",
+      "status": 200,
+      "elapsedMs": 8393,
+      "usage": {
+        "calls": [
+          {
+            "id": 0,
+            "provider": "deepseek",
+            "model": "deepseek-flash",
+            "startedAt": 1794575102627,
+            "requested": true,
+            "inputTokens": 1001,
+            "outputTokens": 610,
+            "cacheHitTokens": 768,
+            "cacheMissTokens": 233,
+            "reported": true
+          },
+          {
+            "id": 1,
+            "provider": "deepseek",
+            "model": "deepseek-flash",
+            "startedAt": 1794575107468,
+            "requested": true,
+            "inputTokens": 1001,
+            "outputTokens": 527,
+            "cacheHitTokens": 768,
+            "cacheMissTokens": 233,
+            "reported": true
+          }
+        ],
+        "requests": 2,
+        "usageReported": true,
+        "usageReports": 2,
+        "inputTokens": 2002,
+        "outputTokens": 1137,
+        "source": "ai"
+      },
+      "feedback": {
+        "dimensions": {
+          "coherence": {
+            "observation": "Your answer moves from your course to your reason to a recent example, which is a clear order for a Part 1 answer.",
+            "quote": "I study computer science. I choose it because I like solve problems.",
+            "answerIndex": 0,
+            "suggestion": "Keep this order; just make the reason sentence grammatically clean so the link between course and reason is smooth."
+          },
+          "lexical": {
+            "observation": "\"I like solve problems\" uses a verb pattern that doesn't fit after \"like\".",
+            "quote": "I like solve problems",
+            "answerIndex": 0,
+            "suggestion": "Say \"I like solving problems\" or \"I like to solve problems\" so the phrase sounds natural."
+          },
+          "grammar": {
+            "observation": "The reason is about a current choice, but \"I choose it\" is in the present simple, which reads as a habit rather than a decision.",
+            "quote": "I choose it because",
+            "answerIndex": 0,
+            "suggestion": "Use \"I chose it because\" for the decision, or \"I'm studying it because\" for the ongoing situation."
+          }
+        },
+        "parts": [],
+        "summary": "You clearly explain that you study computer science and why, and the app for your sister is a concrete detail that makes the answer yours. The priority is fixing the verb forms so the reason and the example read cleanly.",
+        "strengths": [
+          "You give a direct answer plus a reason: \"I study computer science. I choose it because I like solve problems.\"",
+          "The example \"a small app that helps my sister plan her homework\" is specific and easy to picture."
+        ],
+        "improvements": [
+          {
+            "answerIndex": 0,
+            "quote": "I choose it because I like solve problems.",
+            "reason": "\"I choose it\" describes a habit, but you mean the decision you made, and \"like solve\" is missing the correct verb form. Together they make the reason harder to follow.",
+            "suggestion": "Say: \"I chose it because I like solving problems.\"",
+            "exercise": "Say your reason three times, changing only the opening: \"I chose it because…\", \"I decided to study it because…\", \"I'm studying it because…\". Keep \"I like solving problems\" the same each time.",
+            "evidence": {
+              "quote": "I choose it because I like solve problems.",
+              "utteranceId": "answer-0",
+              "startMs": null,
+              "endMs": null
+            }
+          }
+        ],
+        "basis": "transcript-only",
+        "unassessedDimensions": [
+          "pronunciation",
+          "intonation",
+          "audio pauses",
+          "video behavior"
+        ],
+        "pronunciation": null,
+        "score": null,
+        "source": "ai",
+        "provider": "deepseek",
+        "model": "deepseek-flash",
+        "createdAt": "2026-11-13T13:05:11.011Z"
+      }
+    },
+    {
+      "name": "TOEFL seven-sentence group",
+      "status": 200,
+      "elapsedMs": 3927,
+      "usage": {
+        "calls": [
+          {
+            "id": 0,
+            "provider": "deepseek",
+            "model": "deepseek-flash",
+            "startedAt": 1794575111018,
+            "requested": true,
+            "inputTokens": 1919,
+            "outputTokens": 596,
+            "cacheHitTokens": 1280,
+            "cacheMissTokens": 639,
+            "reported": true
+          }
+        ],
+        "requests": 1,
+        "usageReported": true,
+        "usageReports": 1,
+        "inputTokens": 1919,
+        "outputTokens": 596,
+        "source": "ai"
+      },
+      "feedback": {
+        "dimensions": {
+          "coherence": {
+            "observation": "All seven questions received an answer, so the full set was attempted; the differences are confined to the first three sentences.",
+            "quote": "library opens at nine.",
+            "answerIndex": 0,
+            "suggestion": "Keep covering every prompt, and give the opening word of each sentence a moment of attention before you begin."
+          },
+          "lexical": {
+            "observation": "No word choices differ from the reference in any answer; the only gaps are omitted function words.",
+            "quote": "leave your bags beside the door.",
+            "answerIndex": 1,
+            "suggestion": "No vocabulary change is needed; the useful focus is the missing opening word rather than word choice."
+          },
+          "grammar": {
+            "observation": "In questions 1–3 the sentence-initial element is absent, which removes the subject or polite opener the reference supplies.",
+            "quote": "can borrow a laptop at the front desk.",
+            "answerIndex": 2,
+            "suggestion": "Start the sentence with its subject so the clause has one: 'You can borrow a laptop at the front desk.'"
+          }
+        },
+        "parts": [],
+        "summary": "Across questions 1–3, the transcript is missing the opening word of each sentence, while questions 4–7 are reproduced in full. Retry question 1 first, since the missing article sits right at the start where it is easy to drop.",
+        "strengths": [
+          "Questions 4–7 are reproduced completely, including the long conditional and contrast sentences in questions 6 and 7.",
+          "The core content of questions 1–3 is present, with the main nouns and verbs intact."
+        ],
+        "improvements": [
+          {
+            "answerIndex": 0,
+            "quote": "library opens at nine.",
+            "reason": "The leading article 'The' is missing, so the sentence starts without its determiner and reads as a fragment rather than the full statement.",
+            "suggestion": "Say the full sentence as 'The library opens at nine.'",
+            "exercise": "Say question 1 three times, each time deliberately voicing 'The' before 'library', then record it once and check the first word is present.",
+            "evidence": {
+              "quote": "library opens at nine.",
+              "utteranceId": "answer-0",
+              "startMs": null,
+              "endMs": null
+            }
+          },
+          {
+            "answerIndex": 1,
+            "quote": "leave your bags beside the door.",
+            "reason": "The polite opener 'Please' is omitted, which changes the tone from a request to a bare instruction.",
+            "suggestion": "Include the opener: 'Please leave your bags beside the door.'",
+            "exercise": "Practise questions 1 and 2 back to back, making sure each begins with its first word ('The', 'Please').",
+            "evidence": {
+              "quote": "leave your bags beside the door.",
+              "utteranceId": "answer-1",
+              "startMs": null,
+              "endMs": null
+            }
+          },
+          {
+            "answerIndex": 2,
+            "quote": "can borrow a laptop at the front desk.",
+            "reason": "The subject 'You' is missing, leaving the sentence without a subject before the verb.",
+            "suggestion": "Begin with the subject: 'You can borrow a laptop at the front desk.'",
+            "exercise": "Say question 3 twice, pausing after 'You' the first time, then say it smoothly with the subject in place.",
+            "evidence": {
+              "quote": "can borrow a laptop at the front desk.",
+              "utteranceId": "answer-2",
+              "startMs": null,
+              "endMs": null
+            }
+          }
+        ],
+        "basis": "transcript-only",
+        "unassessedDimensions": [
+          "pronunciation",
+          "intonation",
+          "audio pauses",
+          "video behavior"
+        ],
+        "pronunciation": null,
+        "score": null,
+        "source": "ai",
+        "provider": "deepseek",
+        "model": "deepseek-flash",
+        "createdAt": "2026-11-13T13:05:14.939Z"
+      }
+    },
+    {
+      "name": "Daily actual reply in context",
+      "status": 200,
+      "elapsedMs": 5997,
+      "usage": {
+        "calls": [
+          {
+            "id": 0,
+            "provider": "deepseek",
+            "model": "deepseek-v4-pro",
+            "startedAt": 1794575114942,
+            "requested": true,
+            "inputTokens": 1162,
+            "outputTokens": 497,
+            "cacheHitTokens": 1152,
+            "cacheMissTokens": 10,
+            "reported": true
+          }
+        ],
+        "requests": 1,
+        "usageReported": true,
+        "usageReports": 1,
+        "inputTokens": 1162,
+        "outputTokens": 497,
+        "source": "ai"
+      },
+      "feedback": {
+        "dimensions": {
+          "coherence": {
+            "observation": "Your answer moves logically from your usual drink to a specific past event.",
+            "quote": "I usually drink mint tea because coffee keeps me awake. Last Friday I meet my friend Maya here",
+            "answerIndex": 0,
+            "suggestion": "Keep linking your answers to a concrete example like this; it makes your response feel complete."
+          },
+          "lexical": {
+            "observation": "You used a good range of everyday vocabulary for this topic.",
+            "quote": "mint tea",
+            "answerIndex": 0,
+            "suggestion": "You could vary your drink vocabulary in future answers, for example 'herbal tea' or 'green tea'."
+          },
+          "grammar": {
+            "observation": "You mixed present and past tense when describing a past event.",
+            "quote": "Last Friday I meet my friend Maya here",
+            "answerIndex": 0,
+            "suggestion": "Use past tense for finished actions: 'Last Friday I met my friend Maya here.'"
+          }
+        },
+        "parts": [],
+        "deliveryImprovements": [],
+        "summary": "You explained your drink choice clearly and added a nice personal detail about meeting Maya. The main thing to fix is the verb tense in 'I meet' when you're telling a past story.",
+        "strengths": [
+          "You gave a clear reason for your drink choice: 'because coffee keeps me awake'.",
+          "You added a relevant personal detail that keeps the conversation going: 'we talked about our train trip'."
+        ],
+        "improvements": [
+          {
+            "answerIndex": 0,
+            "quote": "Last Friday I meet my friend Maya here",
+            "reason": "The time marker 'Last Friday' shows this is a finished past event, so the verb needs to be in the past tense. Using 'meet' makes the sentence grammatically incorrect and could confuse the listener about when it happened.",
+            "suggestion": "Change 'I meet' to 'I met': 'Last Friday I met my friend Maya here.'",
+            "exercise": "Say three sentences about what you did last weekend using past tense verbs, for example: 'I visited my parents', 'I cooked dinner', 'I watched a movie'.",
+            "evidence": {
+              "quote": "Last Friday I meet my friend Maya here",
+              "utteranceId": "answer-0",
+              "startMs": null,
+              "endMs": null
+            }
+          }
+        ],
+        "basis": "transcript-only",
+        "unassessedDimensions": [
+          "pronunciation",
+          "intonation",
+          "audio pauses",
+          "video behavior"
+        ],
+        "pronunciation": null,
+        "score": null,
+        "source": "ai",
+        "provider": "deepseek",
+        "model": "deepseek-v4-pro",
+        "createdAt": "2026-11-13T13:05:20.937Z"
+      }
+    }
+  ],
+  "status": "PASS: API and exact-quote checks; wording retained for human review"
+}

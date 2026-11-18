@@ -1,0 +1,207 @@
+{
+  "passed": [
+    "major routes use the light system and fit desktop and mobile widths"
+  ],
+  "pageErrors": [],
+  "contrast": [
+    {
+      "route": "/",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/ielts",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/repeat",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part1",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part2",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part3",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/voice",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/progress",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/membership",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/auth",
+      "width": 1365,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/ielts",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/repeat",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part1",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part2",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part3",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/voice",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/progress",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/membership",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/auth",
+      "width": 390,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/ielts",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/repeat",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part1",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part2",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/exam/bank/ielts-part3",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/voice",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/progress",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/membership",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    },
+    {
+      "route": "/auth",
+      "width": 320,
+      "overflow": false,
+      "findings": []
+    }
+  ],
+  "environment": "Real Chrome MediaRecorder/camera/WebGL with synthetic mic and controlled ASR/TTS, isolated model fixture; real model probe is separate."
+}

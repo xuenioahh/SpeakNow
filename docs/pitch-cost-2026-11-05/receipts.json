@@ -1,0 +1,2731 @@
+{
+  "createdAt": "2026-11-05T07:49:09.463Z",
+  "scope": "3 engineering text sessions per module; actual production handlers and actual DeepSeek API. No physical microphone, ASR, TTS, infrastructure or invoice measurement.",
+  "priceSource": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+  "priceVerifiedAt": "2026-11-05",
+  "receipts": [
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:10.544Z",
+      "httpStatus": 200,
+      "responseId": "8eb43c02-41ac-40e9-840d-7048a4a85500",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 154,
+        "completion_tokens": 19,
+        "total_tokens": 173,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 154
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:11.459Z",
+      "httpStatus": 200,
+      "responseId": "52f1d7c2-ec4b-45fa-9502-b09ee1e0ecf7",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 204,
+        "completion_tokens": 9,
+        "total_tokens": 213,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 204
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:12.494Z",
+      "httpStatus": 200,
+      "responseId": "91375293-583f-4af0-8cdd-230c74153c26",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 252,
+        "completion_tokens": 11,
+        "total_tokens": 263,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 252
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:13.554Z",
+      "httpStatus": 200,
+      "responseId": "b9fe8a05-beb8-4ec3-8eca-aa04b0efd156",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 301,
+        "completion_tokens": 5,
+        "total_tokens": 306,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 173
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:14.145Z",
+      "httpStatus": 200,
+      "responseId": "7ae7ef04-86f5-4deb-a20a-92c3220473e6",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 351,
+        "completion_tokens": 5,
+        "total_tokens": 356,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 223
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:15.148Z",
+      "httpStatus": 200,
+      "responseId": "508ac786-c581-4f5b-853d-4130266975ff",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 402,
+        "completion_tokens": 5,
+        "total_tokens": 407,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 146
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:16.187Z",
+      "httpStatus": 200,
+      "responseId": "77c5b514-1d15-47d2-aa41-619f675d6df1",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 446,
+        "completion_tokens": 37,
+        "total_tokens": 483,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 318
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:17.164Z",
+      "httpStatus": 200,
+      "responseId": "0006d677-8bde-4a87-a87e-c5fce88ab8c7",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 574,
+        "completion_tokens": 20,
+        "total_tokens": 594,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 446
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:18.546Z",
+      "httpStatus": 200,
+      "responseId": "ae543317-c03c-4727-8c7f-93dd64518689",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 621,
+        "completion_tokens": 21,
+        "total_tokens": 642,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 493
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:19.556Z",
+      "httpStatus": 200,
+      "responseId": "eb1e9ee7-05dd-4eeb-8ca0-2dd379c594a6",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 633,
+        "completion_tokens": 18,
+        "total_tokens": 651,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 505
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:20.378Z",
+      "httpStatus": 200,
+      "responseId": "44f1bd84-a168-4705-9394-b1556cd54658",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 638,
+        "completion_tokens": 13,
+        "total_tokens": 651,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 510
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:21.291Z",
+      "httpStatus": 200,
+      "responseId": "224d79ad-ba94-420a-aeb1-cbc3e80e004f",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 635,
+        "completion_tokens": 5,
+        "total_tokens": 640,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 507
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "speaking-feedback",
+      "at": "2026-11-05T07:49:27.290Z",
+      "httpStatus": 200,
+      "responseId": "e25643cc-7dfd-48bb-a42e-7a377f35a10f",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 4071,
+        "completion_tokens": 874,
+        "total_tokens": 4945,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 3815
+      }
+    },
+    {
+      "module": "TOEFL",
+      "sample": 1,
+      "stage": "speaking-feedback",
+      "at": "2026-11-05T07:49:30.813Z",
+      "httpStatus": 200,
+      "responseId": "f56fff41-8cb4-4266-a0eb-4b8fb06e1608",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 2241,
+        "completion_tokens": 493,
+        "total_tokens": 2734,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 2241
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:49:31.755Z",
+      "httpStatus": 200,
+      "responseId": "965c04bb-8060-468f-8fee-fb5592d70cc3",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 293,
+        "completion_tokens": 24,
+        "total_tokens": 317,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 165
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:49:32.579Z",
+      "httpStatus": 200,
+      "responseId": "2385e760-da1e-4cd6-b77c-4fed683b477a",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 341,
+        "completion_tokens": 37,
+        "total_tokens": 378,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 213
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:49:33.728Z",
+      "httpStatus": 200,
+      "responseId": "b30bebb8-80ad-4827-b519-e6e2322083a8",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 400,
+        "completion_tokens": 47,
+        "total_tokens": 447,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 144
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:49:34.672Z",
+      "httpStatus": 200,
+      "responseId": "f15a097a-b96c-4a3d-b33e-d8c592a96ce1",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 468,
+        "completion_tokens": 37,
+        "total_tokens": 505,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 212
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:49:35.678Z",
+      "httpStatus": 200,
+      "responseId": "837d0fb3-f57f-46ae-af5f-9be49c6bc2da",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 526,
+        "completion_tokens": 62,
+        "total_tokens": 588,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 142
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:49:36.675Z",
+      "httpStatus": 200,
+      "responseId": "15650df6-44ea-42e9-990b-29d1ac6c8c5e",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 606,
+        "completion_tokens": 37,
+        "total_tokens": 643,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 222
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "speaking-feedback",
+      "at": "2026-11-05T07:49:45.564Z",
+      "httpStatus": 200,
+      "responseId": "b8f7ee78-ea48-4647-bc84-9831c1cd2a3f",
+      "model": "deepseek-v4-pro",
+      "usage": {
+        "prompt_tokens": 2161,
+        "completion_tokens": 583,
+        "total_tokens": 2744,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 1649
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:46.369Z",
+      "httpStatus": 200,
+      "responseId": "5bbfecbd-5ef6-4fe5-976b-780741275c2b",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 154,
+        "completion_tokens": 18,
+        "total_tokens": 172,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 154
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:47.127Z",
+      "httpStatus": 200,
+      "responseId": "e497540b-254a-4805-af7a-59e2d1bcd522",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 204,
+        "completion_tokens": 9,
+        "total_tokens": 213,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 204
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:48.121Z",
+      "httpStatus": 200,
+      "responseId": "c4550d9e-4577-428a-ba59-d1de428e8847",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 252,
+        "completion_tokens": 13,
+        "total_tokens": 265,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 252
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:48.942Z",
+      "httpStatus": 200,
+      "responseId": "dcaabd3d-a544-4859-a464-c58908f273e4",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 301,
+        "completion_tokens": 13,
+        "total_tokens": 314,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 173
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:49.864Z",
+      "httpStatus": 200,
+      "responseId": "24adbde9-a6ac-4f02-8e71-6909b78319ff",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 351,
+        "completion_tokens": 5,
+        "total_tokens": 356,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 223
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:50.681Z",
+      "httpStatus": 200,
+      "responseId": "47342c24-8d32-4407-9c21-05aea5d0c5e4",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 402,
+        "completion_tokens": 5,
+        "total_tokens": 407,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 146
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:52.084Z",
+      "httpStatus": 200,
+      "responseId": "de6917c9-ab68-4a6b-aa9e-9a7d6cf68b50",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 446,
+        "completion_tokens": 37,
+        "total_tokens": 483,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 190
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:53.111Z",
+      "httpStatus": 200,
+      "responseId": "01341ea4-7343-4d7a-aca1-519d88ef3ee8",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 574,
+        "completion_tokens": 25,
+        "total_tokens": 599,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 190
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:54.470Z",
+      "httpStatus": 200,
+      "responseId": "e005b095-f9db-4b4b-a22c-e732da02659a",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 621,
+        "completion_tokens": 25,
+        "total_tokens": 646,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 237
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:55.394Z",
+      "httpStatus": 200,
+      "responseId": "40dde63a-5a6e-47e1-8606-1bdb03fdbb7b",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 633,
+        "completion_tokens": 13,
+        "total_tokens": 646,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 249
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:56.186Z",
+      "httpStatus": 200,
+      "responseId": "dac9d14f-b7e5-49c7-8da7-b119f77aca4b",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 638,
+        "completion_tokens": 13,
+        "total_tokens": 651,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 254
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:49:57.315Z",
+      "httpStatus": 200,
+      "responseId": "3b2da0ff-2c61-4085-908c-fb6e38a38e25",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 635,
+        "completion_tokens": 13,
+        "total_tokens": 648,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 251
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "speaking-feedback",
+      "at": "2026-11-05T07:50:02.539Z",
+      "httpStatus": 200,
+      "responseId": "e565d441-84d6-41d5-8781-a532de1e4bec",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 4072,
+        "completion_tokens": 820,
+        "total_tokens": 4892,
+        "prompt_tokens_details": {
+          "cached_tokens": 2560
+        },
+        "prompt_cache_hit_tokens": 2560,
+        "prompt_cache_miss_tokens": 1512
+      }
+    },
+    {
+      "module": "TOEFL",
+      "sample": 2,
+      "stage": "speaking-feedback",
+      "at": "2026-11-05T07:50:06.427Z",
+      "httpStatus": 200,
+      "responseId": "874841d9-d4a9-4aca-bca8-0078be17b191",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 2245,
+        "completion_tokens": 526,
+        "total_tokens": 2771,
+        "prompt_tokens_details": {
+          "cached_tokens": 768
+        },
+        "prompt_cache_hit_tokens": 768,
+        "prompt_cache_miss_tokens": 1477
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:07.169Z",
+      "httpStatus": 200,
+      "responseId": "c7ba225d-9ae2-4943-9193-1e6c168cb368",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 293,
+        "completion_tokens": 24,
+        "total_tokens": 317,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 165
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:08.126Z",
+      "httpStatus": 200,
+      "responseId": "1930bb58-fc15-4b3b-a67a-18af43710c4b",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 341,
+        "completion_tokens": 37,
+        "total_tokens": 378,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 213
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:09.444Z",
+      "httpStatus": 200,
+      "responseId": "dfe0a62e-76a4-4938-b865-62f9e2b09c9f",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 400,
+        "completion_tokens": 52,
+        "total_tokens": 452,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 144
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:10.499Z",
+      "httpStatus": 200,
+      "responseId": "7a06ce3e-3105-42b5-bb6e-cf165fa37536",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 473,
+        "completion_tokens": 44,
+        "total_tokens": 517,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 217
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:11.414Z",
+      "httpStatus": 200,
+      "responseId": "fcb62b90-d211-4a1e-a603-97f6b58acee5",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 538,
+        "completion_tokens": 46,
+        "total_tokens": 584,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 154
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:12.478Z",
+      "httpStatus": 200,
+      "responseId": "1b3a587f-8700-4d2c-927e-c167312f774a",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 602,
+        "completion_tokens": 56,
+        "total_tokens": 658,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 218
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "speaking-feedback",
+      "at": "2026-11-05T07:50:18.922Z",
+      "httpStatus": 200,
+      "responseId": "15ff47f1-0107-4c84-8475-5e6418de4b9e",
+      "model": "deepseek-v4-pro",
+      "usage": {
+        "prompt_tokens": 2224,
+        "completion_tokens": 417,
+        "total_tokens": 2641,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 1712
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:19.870Z",
+      "httpStatus": 200,
+      "responseId": "85660198-a78d-4d3c-971c-4531755ed52e",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 154,
+        "completion_tokens": 22,
+        "total_tokens": 176,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 154
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:20.645Z",
+      "httpStatus": 200,
+      "responseId": "30d0c9c7-5cdf-4cfa-94dd-00af98dd2250",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 204,
+        "completion_tokens": 9,
+        "total_tokens": 213,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 204
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:21.533Z",
+      "httpStatus": 200,
+      "responseId": "0f77b50d-bd3d-459c-bed1-6ee29e8384eb",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 252,
+        "completion_tokens": 11,
+        "total_tokens": 263,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "prompt_cache_hit_tokens": 0,
+        "prompt_cache_miss_tokens": 252
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:22.451Z",
+      "httpStatus": 200,
+      "responseId": "216ad88f-18e3-44c8-9c42-10719f3deb80",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 301,
+        "completion_tokens": 13,
+        "total_tokens": 314,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 173
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:22.913Z",
+      "httpStatus": 200,
+      "responseId": "e899d213-94cd-4b79-800c-42973b153ee0",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 351,
+        "completion_tokens": 5,
+        "total_tokens": 356,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 223
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:23.591Z",
+      "httpStatus": 200,
+      "responseId": "1222baed-8443-42ba-85a1-f53f9480c059",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 402,
+        "completion_tokens": 5,
+        "total_tokens": 407,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 146
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:24.683Z",
+      "httpStatus": 200,
+      "responseId": "555742d9-ddb8-45d0-9e5c-1b6c91f2647a",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 446,
+        "completion_tokens": 36,
+        "total_tokens": 482,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 190
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:25.555Z",
+      "httpStatus": 200,
+      "responseId": "4a9078b9-ab7e-4e25-aab6-4fe3cfe1cf51",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 574,
+        "completion_tokens": 20,
+        "total_tokens": 594,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 190
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:26.462Z",
+      "httpStatus": 200,
+      "responseId": "ea9722b0-efc7-4adf-87e4-8b91bdde6a56",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 621,
+        "completion_tokens": 21,
+        "total_tokens": 642,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 237
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:27.544Z",
+      "httpStatus": 200,
+      "responseId": "f6b0a5ce-1b06-4922-abe3-a37aca81267c",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 633,
+        "completion_tokens": 18,
+        "total_tokens": 651,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 249
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:29.097Z",
+      "httpStatus": 200,
+      "responseId": "dd659bb3-516e-4864-8c29-a1d8f7439cf6",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 638,
+        "completion_tokens": 16,
+        "total_tokens": 654,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 254
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "at": "2026-11-05T07:50:29.938Z",
+      "httpStatus": 200,
+      "responseId": "8e408389-52d0-41da-a627-96b6de3df9b8",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 635,
+        "completion_tokens": 13,
+        "total_tokens": 648,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 251
+      }
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "speaking-feedback",
+      "at": "2026-11-05T07:50:34.138Z",
+      "httpStatus": 200,
+      "responseId": "b678cd93-825f-4aea-a4b0-d51ed2ccfe19",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 4071,
+        "completion_tokens": 636,
+        "total_tokens": 4707,
+        "prompt_tokens_details": {
+          "cached_tokens": 2560
+        },
+        "prompt_cache_hit_tokens": 2560,
+        "prompt_cache_miss_tokens": 1511
+      }
+    },
+    {
+      "module": "TOEFL",
+      "sample": 3,
+      "stage": "speaking-feedback",
+      "at": "2026-11-05T07:50:37.798Z",
+      "httpStatus": 200,
+      "responseId": "63a866bd-9b81-4f75-8a03-6a217e6111d4",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 2245,
+        "completion_tokens": 565,
+        "total_tokens": 2810,
+        "prompt_tokens_details": {
+          "cached_tokens": 768
+        },
+        "prompt_cache_hit_tokens": 768,
+        "prompt_cache_miss_tokens": 1477
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:38.809Z",
+      "httpStatus": 200,
+      "responseId": "979ce42a-56de-42a6-9b79-0a7c8eb5821e",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 293,
+        "completion_tokens": 27,
+        "total_tokens": 320,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 165
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:39.873Z",
+      "httpStatus": 200,
+      "responseId": "935ba3e6-bbbf-4799-b1d7-03d1692db0d3",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 344,
+        "completion_tokens": 32,
+        "total_tokens": 376,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 216
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:41.220Z",
+      "httpStatus": 200,
+      "responseId": "906eb453-defe-4c46-8542-b01f51cb3bf1",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 398,
+        "completion_tokens": 54,
+        "total_tokens": 452,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 142
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:42.223Z",
+      "httpStatus": 200,
+      "responseId": "85148ef1-4d09-4739-a8b3-9045f8977300",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 473,
+        "completion_tokens": 42,
+        "total_tokens": 515,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 217
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:43.295Z",
+      "httpStatus": 200,
+      "responseId": "d906a54e-e6b2-4806-8674-ab8f13b42392",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 536,
+        "completion_tokens": 34,
+        "total_tokens": 570,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 152
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "at": "2026-11-05T07:50:44.346Z",
+      "httpStatus": 200,
+      "responseId": "4f4893da-b5b6-44ac-89c5-958f76e4e1a1",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 588,
+        "completion_tokens": 50,
+        "total_tokens": 638,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 204
+      }
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "speaking-feedback",
+      "at": "2026-11-05T07:50:51.408Z",
+      "httpStatus": 200,
+      "responseId": "c4b7d4bc-68a7-4d9b-8767-ad6d4a09da50",
+      "model": "deepseek-v4-pro",
+      "usage": {
+        "prompt_tokens": 2190,
+        "completion_tokens": 455,
+        "total_tokens": 2645,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 1678
+      }
+    }
+  ],
+  "operations": [
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864949471,
+          "requested": true,
+          "inputTokens": 154,
+          "outputTokens": 19,
+          "cacheHitTokens": 0,
+          "cacheMissTokens": 154,
+          "reported": true
+        }
+      ],
+      "receiptStart": 0,
+      "receiptEnd": 1,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864950551,
+          "requested": true,
+          "inputTokens": 204,
+          "outputTokens": 9,
+          "cacheHitTokens": 0,
+          "cacheMissTokens": 204,
+          "reported": true
+        }
+      ],
+      "receiptStart": 1,
+      "receiptEnd": 2,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864951462,
+          "requested": true,
+          "inputTokens": 252,
+          "outputTokens": 11,
+          "cacheHitTokens": 0,
+          "cacheMissTokens": 252,
+          "reported": true
+        }
+      ],
+      "receiptStart": 2,
+      "receiptEnd": 3,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864952497,
+          "requested": true,
+          "inputTokens": 301,
+          "outputTokens": 5,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 173,
+          "reported": true
+        }
+      ],
+      "receiptStart": 3,
+      "receiptEnd": 4,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864953557,
+          "requested": true,
+          "inputTokens": 351,
+          "outputTokens": 5,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 223,
+          "reported": true
+        }
+      ],
+      "receiptStart": 4,
+      "receiptEnd": 5,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864954148,
+          "requested": true,
+          "inputTokens": 402,
+          "outputTokens": 5,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 146,
+          "reported": true
+        }
+      ],
+      "receiptStart": 5,
+      "receiptEnd": 6,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864955150,
+          "requested": true,
+          "inputTokens": 446,
+          "outputTokens": 37,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 318,
+          "reported": true
+        }
+      ],
+      "receiptStart": 6,
+      "receiptEnd": 7,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864956190,
+          "requested": true,
+          "inputTokens": 574,
+          "outputTokens": 20,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 446,
+          "reported": true
+        }
+      ],
+      "receiptStart": 7,
+      "receiptEnd": 8,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864957168,
+          "requested": true,
+          "inputTokens": 621,
+          "outputTokens": 21,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 493,
+          "reported": true
+        }
+      ],
+      "receiptStart": 8,
+      "receiptEnd": 9,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864958550,
+          "requested": true,
+          "inputTokens": 633,
+          "outputTokens": 18,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 505,
+          "reported": true
+        }
+      ],
+      "receiptStart": 9,
+      "receiptEnd": 10,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864959558,
+          "requested": true,
+          "inputTokens": 638,
+          "outputTokens": 13,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 510,
+          "reported": true
+        }
+      ],
+      "receiptStart": 10,
+      "receiptEnd": 11,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864960380,
+          "requested": true,
+          "inputTokens": 635,
+          "outputTokens": 5,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 507,
+          "reported": true
+        }
+      ],
+      "receiptStart": 11,
+      "receiptEnd": 12,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "stage": "speaking-feedback",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864961298,
+          "requested": true,
+          "inputTokens": 4071,
+          "outputTokens": 874,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 3815,
+          "reported": true
+        }
+      ],
+      "receiptStart": 12,
+      "receiptEnd": 13,
+      "error": null
+    },
+    {
+      "module": "TOEFL",
+      "sample": 1,
+      "stage": "speaking-feedback",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864967294,
+          "requested": true,
+          "inputTokens": 2241,
+          "outputTokens": 493,
+          "cacheHitTokens": 0,
+          "cacheMissTokens": 2241,
+          "reported": true
+        }
+      ],
+      "receiptStart": 13,
+      "receiptEnd": 14,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864970820,
+          "requested": true,
+          "inputTokens": 293,
+          "outputTokens": 24,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 165,
+          "reported": true
+        }
+      ],
+      "receiptStart": 14,
+      "receiptEnd": 15,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864971762,
+          "requested": true,
+          "inputTokens": 341,
+          "outputTokens": 37,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 213,
+          "reported": true
+        }
+      ],
+      "receiptStart": 15,
+      "receiptEnd": 16,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864972583,
+          "requested": true,
+          "inputTokens": 400,
+          "outputTokens": 47,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 144,
+          "reported": true
+        }
+      ],
+      "receiptStart": 16,
+      "receiptEnd": 17,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864973732,
+          "requested": true,
+          "inputTokens": 468,
+          "outputTokens": 37,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 212,
+          "reported": true
+        }
+      ],
+      "receiptStart": 17,
+      "receiptEnd": 18,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864974676,
+          "requested": true,
+          "inputTokens": 526,
+          "outputTokens": 62,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 142,
+          "reported": true
+        }
+      ],
+      "receiptStart": 18,
+      "receiptEnd": 19,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864975682,
+          "requested": true,
+          "inputTokens": 606,
+          "outputTokens": 37,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 222,
+          "reported": true
+        }
+      ],
+      "receiptStart": 19,
+      "receiptEnd": 20,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "stage": "speaking-feedback",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "startedAt": 1793864976680,
+          "requested": true,
+          "inputTokens": 2161,
+          "outputTokens": 583,
+          "cacheHitTokens": 512,
+          "cacheMissTokens": 1649,
+          "reported": true
+        }
+      ],
+      "receiptStart": 20,
+      "receiptEnd": 21,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864985568,
+          "requested": true,
+          "inputTokens": 154,
+          "outputTokens": 18,
+          "cacheHitTokens": 0,
+          "cacheMissTokens": 154,
+          "reported": true
+        }
+      ],
+      "receiptStart": 21,
+      "receiptEnd": 22,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864986372,
+          "requested": true,
+          "inputTokens": 204,
+          "outputTokens": 9,
+          "cacheHitTokens": 0,
+          "cacheMissTokens": 204,
+          "reported": true
+        }
+      ],
+      "receiptStart": 22,
+      "receiptEnd": 23,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864987130,
+          "requested": true,
+          "inputTokens": 252,
+          "outputTokens": 13,
+          "cacheHitTokens": 0,
+          "cacheMissTokens": 252,
+          "reported": true
+        }
+      ],
+      "receiptStart": 23,
+      "receiptEnd": 24,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864988124,
+          "requested": true,
+          "inputTokens": 301,
+          "outputTokens": 13,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 173,
+          "reported": true
+        }
+      ],
+      "receiptStart": 24,
+      "receiptEnd": 25,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864988945,
+          "requested": true,
+          "inputTokens": 351,
+          "outputTokens": 5,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 223,
+          "reported": true
+        }
+      ],
+      "receiptStart": 25,
+      "receiptEnd": 26,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864989867,
+          "requested": true,
+          "inputTokens": 402,
+          "outputTokens": 5,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 146,
+          "reported": true
+        }
+      ],
+      "receiptStart": 26,
+      "receiptEnd": 27,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864990684,
+          "requested": true,
+          "inputTokens": 446,
+          "outputTokens": 37,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 190,
+          "reported": true
+        }
+      ],
+      "receiptStart": 27,
+      "receiptEnd": 28,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864992087,
+          "requested": true,
+          "inputTokens": 574,
+          "outputTokens": 25,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 190,
+          "reported": true
+        }
+      ],
+      "receiptStart": 28,
+      "receiptEnd": 29,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864993115,
+          "requested": true,
+          "inputTokens": 621,
+          "outputTokens": 25,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 237,
+          "reported": true
+        }
+      ],
+      "receiptStart": 29,
+      "receiptEnd": 30,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864994473,
+          "requested": true,
+          "inputTokens": 633,
+          "outputTokens": 13,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 249,
+          "reported": true
+        }
+      ],
+      "receiptStart": 30,
+      "receiptEnd": 31,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864995396,
+          "requested": true,
+          "inputTokens": 638,
+          "outputTokens": 13,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 254,
+          "reported": true
+        }
+      ],
+      "receiptStart": 31,
+      "receiptEnd": 32,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864996189,
+          "requested": true,
+          "inputTokens": 635,
+          "outputTokens": 13,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 251,
+          "reported": true
+        }
+      ],
+      "receiptStart": 32,
+      "receiptEnd": 33,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "stage": "speaking-feedback",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793864997320,
+          "requested": true,
+          "inputTokens": 4072,
+          "outputTokens": 820,
+          "cacheHitTokens": 2560,
+          "cacheMissTokens": 1512,
+          "reported": true
+        }
+      ],
+      "receiptStart": 33,
+      "receiptEnd": 34,
+      "error": null
+    },
+    {
+      "module": "TOEFL",
+      "sample": 2,
+      "stage": "speaking-feedback",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865002545,
+          "requested": true,
+          "inputTokens": 2245,
+          "outputTokens": 526,
+          "cacheHitTokens": 768,
+          "cacheMissTokens": 1477,
+          "reported": true
+        }
+      ],
+      "receiptStart": 34,
+      "receiptEnd": 35,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865006432,
+          "requested": true,
+          "inputTokens": 293,
+          "outputTokens": 24,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 165,
+          "reported": true
+        }
+      ],
+      "receiptStart": 35,
+      "receiptEnd": 36,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865007174,
+          "requested": true,
+          "inputTokens": 341,
+          "outputTokens": 37,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 213,
+          "reported": true
+        }
+      ],
+      "receiptStart": 36,
+      "receiptEnd": 37,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865008130,
+          "requested": true,
+          "inputTokens": 400,
+          "outputTokens": 52,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 144,
+          "reported": true
+        }
+      ],
+      "receiptStart": 37,
+      "receiptEnd": 38,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865009449,
+          "requested": true,
+          "inputTokens": 473,
+          "outputTokens": 44,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 217,
+          "reported": true
+        }
+      ],
+      "receiptStart": 38,
+      "receiptEnd": 39,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865010503,
+          "requested": true,
+          "inputTokens": 538,
+          "outputTokens": 46,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 154,
+          "reported": true
+        }
+      ],
+      "receiptStart": 39,
+      "receiptEnd": 40,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865011418,
+          "requested": true,
+          "inputTokens": 602,
+          "outputTokens": 56,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 218,
+          "reported": true
+        }
+      ],
+      "receiptStart": 40,
+      "receiptEnd": 41,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "stage": "speaking-feedback",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "startedAt": 1793865012483,
+          "requested": true,
+          "inputTokens": 2224,
+          "outputTokens": 417,
+          "cacheHitTokens": 512,
+          "cacheMissTokens": 1712,
+          "reported": true
+        }
+      ],
+      "receiptStart": 41,
+      "receiptEnd": 42,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865018928,
+          "requested": true,
+          "inputTokens": 154,
+          "outputTokens": 22,
+          "cacheHitTokens": 0,
+          "cacheMissTokens": 154,
+          "reported": true
+        }
+      ],
+      "receiptStart": 42,
+      "receiptEnd": 43,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865019874,
+          "requested": true,
+          "inputTokens": 204,
+          "outputTokens": 9,
+          "cacheHitTokens": 0,
+          "cacheMissTokens": 204,
+          "reported": true
+        }
+      ],
+      "receiptStart": 43,
+      "receiptEnd": 44,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865020649,
+          "requested": true,
+          "inputTokens": 252,
+          "outputTokens": 11,
+          "cacheHitTokens": 0,
+          "cacheMissTokens": 252,
+          "reported": true
+        }
+      ],
+      "receiptStart": 44,
+      "receiptEnd": 45,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865021536,
+          "requested": true,
+          "inputTokens": 301,
+          "outputTokens": 13,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 173,
+          "reported": true
+        }
+      ],
+      "receiptStart": 45,
+      "receiptEnd": 46,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865022454,
+          "requested": true,
+          "inputTokens": 351,
+          "outputTokens": 5,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 223,
+          "reported": true
+        }
+      ],
+      "receiptStart": 46,
+      "receiptEnd": 47,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865022917,
+          "requested": true,
+          "inputTokens": 402,
+          "outputTokens": 5,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 146,
+          "reported": true
+        }
+      ],
+      "receiptStart": 47,
+      "receiptEnd": 48,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865023595,
+          "requested": true,
+          "inputTokens": 446,
+          "outputTokens": 36,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 190,
+          "reported": true
+        }
+      ],
+      "receiptStart": 48,
+      "receiptEnd": 49,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865024686,
+          "requested": true,
+          "inputTokens": 574,
+          "outputTokens": 20,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 190,
+          "reported": true
+        }
+      ],
+      "receiptStart": 49,
+      "receiptEnd": 50,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865025558,
+          "requested": true,
+          "inputTokens": 621,
+          "outputTokens": 21,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 237,
+          "reported": true
+        }
+      ],
+      "receiptStart": 50,
+      "receiptEnd": 51,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865026466,
+          "requested": true,
+          "inputTokens": 633,
+          "outputTokens": 18,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 249,
+          "reported": true
+        }
+      ],
+      "receiptStart": 51,
+      "receiptEnd": 52,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865027548,
+          "requested": true,
+          "inputTokens": 638,
+          "outputTokens": 16,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 254,
+          "reported": true
+        }
+      ],
+      "receiptStart": 52,
+      "receiptEnd": 53,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "exam-examiner",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865029100,
+          "requested": true,
+          "inputTokens": 635,
+          "outputTokens": 13,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 251,
+          "reported": true
+        }
+      ],
+      "receiptStart": 53,
+      "receiptEnd": 54,
+      "error": null
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "stage": "speaking-feedback",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865029943,
+          "requested": true,
+          "inputTokens": 4071,
+          "outputTokens": 636,
+          "cacheHitTokens": 2560,
+          "cacheMissTokens": 1511,
+          "reported": true
+        }
+      ],
+      "receiptStart": 54,
+      "receiptEnd": 55,
+      "error": null
+    },
+    {
+      "module": "TOEFL",
+      "sample": 3,
+      "stage": "speaking-feedback",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865034145,
+          "requested": true,
+          "inputTokens": 2245,
+          "outputTokens": 565,
+          "cacheHitTokens": 768,
+          "cacheMissTokens": 1477,
+          "reported": true
+        }
+      ],
+      "receiptStart": 55,
+      "receiptEnd": 56,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865037804,
+          "requested": true,
+          "inputTokens": 293,
+          "outputTokens": 27,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 165,
+          "reported": true
+        }
+      ],
+      "receiptStart": 56,
+      "receiptEnd": 57,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865038815,
+          "requested": true,
+          "inputTokens": 344,
+          "outputTokens": 32,
+          "cacheHitTokens": 128,
+          "cacheMissTokens": 216,
+          "reported": true
+        }
+      ],
+      "receiptStart": 57,
+      "receiptEnd": 58,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865039879,
+          "requested": true,
+          "inputTokens": 398,
+          "outputTokens": 54,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 142,
+          "reported": true
+        }
+      ],
+      "receiptStart": 58,
+      "receiptEnd": 59,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865041225,
+          "requested": true,
+          "inputTokens": 473,
+          "outputTokens": 42,
+          "cacheHitTokens": 256,
+          "cacheMissTokens": 217,
+          "reported": true
+        }
+      ],
+      "receiptStart": 59,
+      "receiptEnd": 60,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865042229,
+          "requested": true,
+          "inputTokens": 536,
+          "outputTokens": 34,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 152,
+          "reported": true
+        }
+      ],
+      "receiptStart": 60,
+      "receiptEnd": 61,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "conversation_stream",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-flash",
+          "startedAt": 1793865043300,
+          "requested": true,
+          "inputTokens": 588,
+          "outputTokens": 50,
+          "cacheHitTokens": 384,
+          "cacheMissTokens": 204,
+          "reported": true
+        }
+      ],
+      "receiptStart": 61,
+      "receiptEnd": 62,
+      "error": null
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "stage": "speaking-feedback",
+      "status": 200,
+      "calls": [
+        {
+          "id": 0,
+          "provider": "deepseek",
+          "model": "deepseek-v4-pro",
+          "startedAt": 1793865044352,
+          "requested": true,
+          "inputTokens": 2190,
+          "outputTokens": 455,
+          "cacheHitTokens": 512,
+          "cacheMissTokens": 1678,
+          "reported": true
+        }
+      ],
+      "receiptStart": 62,
+      "receiptEnd": 63,
+      "error": null
+    }
+  ],
+  "sessions": [
+    {
+      "module": "IELTS",
+      "sample": 1,
+      "sessionId": "08cc2603-ab7a-4c6a-9f3a-cb714eca6abe",
+      "answers": 12,
+      "receiptStart": 0,
+      "receiptEnd": 13
+    },
+    {
+      "module": "TOEFL",
+      "sample": 1,
+      "sessionId": "649240ee-39ae-47bf-bf22-9c364383f16a",
+      "answers": 11,
+      "receiptStart": 13,
+      "receiptEnd": 14
+    },
+    {
+      "module": "Daily",
+      "sample": 1,
+      "sessionId": "200943d4-b555-4e37-b572-ad6484c72ad6",
+      "answers": 6,
+      "receiptStart": 14,
+      "receiptEnd": 21
+    },
+    {
+      "module": "IELTS",
+      "sample": 2,
+      "sessionId": "898c5b20-2170-4482-9f3f-b7e060e6b286",
+      "answers": 12,
+      "receiptStart": 21,
+      "receiptEnd": 34
+    },
+    {
+      "module": "TOEFL",
+      "sample": 2,
+      "sessionId": "bc9bc4f2-7c83-44e7-b385-17e0eb23bbe5",
+      "answers": 11,
+      "receiptStart": 34,
+      "receiptEnd": 35
+    },
+    {
+      "module": "Daily",
+      "sample": 2,
+      "sessionId": "43d7af59-aef5-4bff-892f-55fbd53f823f",
+      "answers": 6,
+      "receiptStart": 35,
+      "receiptEnd": 42
+    },
+    {
+      "module": "IELTS",
+      "sample": 3,
+      "sessionId": "b7d50545-16cb-4d14-9296-78cc226cf1b1",
+      "answers": 12,
+      "receiptStart": 42,
+      "receiptEnd": 55
+    },
+    {
+      "module": "TOEFL",
+      "sample": 3,
+      "sessionId": "bc7c48d8-83f7-4695-b7b8-e4d6636134ae",
+      "answers": 11,
+      "receiptStart": 55,
+      "receiptEnd": 56
+    },
+    {
+      "module": "Daily",
+      "sample": 3,
+      "sessionId": "6807ee9d-d9af-4e18-98a8-f2bd337e968d",
+      "answers": 6,
+      "receiptStart": 56,
+      "receiptEnd": 63
+    }
+  ],
+  "status": "complete"
+}

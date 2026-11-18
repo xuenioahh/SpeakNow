@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+const {chromium}=await import('/Users/zhangzhuoru/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs');
+const origin=process.env.SPEAKNOW_TEST_ORIGIN||'http://127.0.0.1:5228';
+// A real decoded waveform tests the output graph, never provider voice quality.
+const rate=24000,count=rate*2,wav=Buffer.alloc(44+count*2);
+wav.write('RIFF',0);wav.writeUInt32LE(wav.length-8,4);wav.write('WAVEfmt ',8);wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(rate,24);wav.writeUInt32LE(rate*2,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write('data',36);wav.writeUInt32LE(count*2,40);
+for(let i=0;i<count;i++)wav.writeInt16LE(Math.round(Math.sin(i/rate*2*Math.PI*220)*10000*(i<rate*1.6?1:0)),44+i*2);
+const browser=await chromium.launch({channel:'chrome',headless:true,args:['--autoplay-policy=no-user-gesture-required']});
+const page=await browser.newPage({viewport:{width:1440,height:900}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.route(/fonts\.(googleapis|gstatic)\.com/,r=>r.abort());
+await page.route('**/api/voice-capabilities',r=>r.fulfill({json:{dynamicTts:'elevenlabs'}}));
+await page.route('**/api/dynamic-tts',r=>r.fulfill({contentType:'audio/wav',body:wav}));
+await page.addInitScript(()=>{window.MediaSource=undefined;});
+try {
+ await page.goto(`${origin}/voice/prepare?scenario=cafe&cue=coffee`,{waitUntil:'domcontentloaded'});
+ await page.getByRole('button',{name:'Start Conversation',exact:true}).click();
+ await page.getByLabel('Your reply',{exact:true}).fill('Could you check my oat milk drink?');await page.getByRole('button',{name:'Send reply',exact:true}).click();
+ await page.waitForFunction(()=>document.querySelector('.scenario-canvas').__scene.snapshot().npc.find(n=>n.id==='coffee').mouthEnergy>.02);
+ const speaking=await page.locator('.scenario-canvas').evaluate(n=>n.__scene.snapshot());
+ assert.ok(speaking.npc.find(n=>n.id==='coffee').mouthEnergy>.02);
+ assert.ok(speaking.npc.filter(n=>n.id!=='coffee').every(n=>n.mouthEnergy===0));
+ await page.screenshot({path:'docs/daily-world-2026-10-25/audio-energy-mouth.png'});
+ await page.waitForFunction(()=>document.querySelector('.daily-immersive').dataset.interactionState==='idle');
+ await page.waitForTimeout(200);
+ assert.equal(await page.locator('.scenario-canvas').evaluate(n=>n.__scene.snapshot().npc.find(a=>a.id==='coffee').mouthEnergy),0);
+ assert.equal(await page.evaluate(async()=>{const{audioManager}=await import('/src/lib/audioManager.js');return audioManager.outputEnergyRef.current;}),null);
+ assert.deepEqual(errors,[]);
+ await fs.writeFile('docs/daily-world-2026-10-25/audio-results.json',JSON.stringify({fixture:'Decoded PCM tone through actual HTMLAudioElement, AudioContext analyser and PannerNode; blob fallback. External voice generation not verified.',speaking,cleanup:true,errors},null,2));
+ console.log('PASS actual decoded output energy drives only the speaking NPC mouth; silence/end clears energy and graph');
+}catch(error){console.log(await page.locator('body').innerText());console.log(await page.evaluate(async()=>{const {audioManager}=await import('/src/lib/audioManager.js');return {scene:document.querySelector('.scenario-canvas').__scene.snapshot(),mode:audioManager._dynamicTtsMode,playing:audioManager.isPlaying,energy:audioManager.outputEnergyRef.current?.readRms?.()};}));throw error;}finally{await Promise.race([browser.close(),new Promise(r=>setTimeout(r,4000))]);}process.exit(0);

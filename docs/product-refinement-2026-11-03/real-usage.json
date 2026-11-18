@@ -1,0 +1,172 @@
+{
+  "status": "PASS",
+  "scope": "24 previously recorded real text calls + one new real transcript-feedback request. No mock, no voice provider or human microphone measurement. No production-ledger claim.",
+  "feedbackHttp": 200,
+  "feedbackModel": "deepseek-v4-pro",
+  "feedbackCalls": [
+    {
+      "id": 0,
+      "provider": "deepseek",
+      "model": "deepseek-v4-pro",
+      "startedAt": 1793684768498,
+      "requested": true,
+      "inputTokens": 6841,
+      "outputTokens": 566,
+      "cacheHitTokens": 0,
+      "cacheMissTokens": 6841,
+      "reported": true
+    }
+  ],
+  "feedbackWallMs": 8286,
+  "conversationTurns": 24,
+  "report": {
+    "total": {
+      "operations": 2,
+      "providerRequests": 25,
+      "reportedCalls": 25,
+      "missingUsageCalls": 0,
+      "inputTokens": 34985,
+      "outputTokens": 1777,
+      "cacheHitTokens": 16512,
+      "cacheMissTokens": 18473,
+      "unknownCacheInputTokens": 0,
+      "unpricedCalls": 0,
+      "estimatedCnyLow": 0.05523174,
+      "estimatedCnyHigh": 0.11046348,
+      "ttsCharacters": 0,
+      "unknownTtsRuns": 0,
+      "failedRuns": 0,
+      "runs": 25
+    },
+    "models": {
+      "deepseek / deepseek-flash": {
+        "operations": 0,
+        "providerRequests": 24,
+        "reportedCalls": 24,
+        "missingUsageCalls": 0,
+        "inputTokens": 28144,
+        "outputTokens": 1211,
+        "cacheHitTokens": 16512,
+        "cacheMissTokens": 11632,
+        "unknownCacheInputTokens": 0,
+        "unpricedCalls": 0,
+        "estimatedCnyLow": 0.016806239999999997,
+        "estimatedCnyHigh": 0.03361247999999999,
+        "ttsCharacters": 0,
+        "unknownTtsRuns": 0,
+        "failedRuns": 0,
+        "runs": 0
+      },
+      "deepseek / deepseek-v4-pro": {
+        "operations": 0,
+        "providerRequests": 1,
+        "reportedCalls": 1,
+        "missingUsageCalls": 0,
+        "inputTokens": 6841,
+        "outputTokens": 566,
+        "cacheHitTokens": 0,
+        "cacheMissTokens": 6841,
+        "unknownCacheInputTokens": 0,
+        "unpricedCalls": 0,
+        "estimatedCnyLow": 0.0384255,
+        "estimatedCnyHigh": 0.076851,
+        "ttsCharacters": 0,
+        "unknownTtsRuns": 0,
+        "failedRuns": 0,
+        "runs": 0
+      }
+    },
+    "days": {
+      "2026-11-03": {
+        "operations": 2,
+        "providerRequests": 25,
+        "reportedCalls": 25,
+        "missingUsageCalls": 0,
+        "inputTokens": 34985,
+        "outputTokens": 1777,
+        "cacheHitTokens": 16512,
+        "cacheMissTokens": 18473,
+        "unknownCacheInputTokens": 0,
+        "unpricedCalls": 0,
+        "estimatedCnyLow": 0.05523174,
+        "estimatedCnyHigh": 0.11046348,
+        "ttsCharacters": 0,
+        "unknownTtsRuns": 0,
+        "failedRuns": 0,
+        "runs": 25
+      }
+    },
+    "modules": {
+      "Conversation": {
+        "operations": 1,
+        "providerRequests": 24,
+        "reportedCalls": 24,
+        "missingUsageCalls": 0,
+        "inputTokens": 28144,
+        "outputTokens": 1211,
+        "cacheHitTokens": 16512,
+        "cacheMissTokens": 11632,
+        "unknownCacheInputTokens": 0,
+        "unpricedCalls": 0,
+        "estimatedCnyLow": 0.016806239999999997,
+        "estimatedCnyHigh": 0.03361247999999999,
+        "ttsCharacters": 0,
+        "unknownTtsRuns": 0,
+        "failedRuns": 0,
+        "runs": 24
+      },
+      "Feedback": {
+        "operations": 1,
+        "providerRequests": 1,
+        "reportedCalls": 1,
+        "missingUsageCalls": 0,
+        "inputTokens": 6841,
+        "outputTokens": 566,
+        "cacheHitTokens": 0,
+        "cacheMissTokens": 6841,
+        "unknownCacheInputTokens": 0,
+        "unpricedCalls": 0,
+        "estimatedCnyLow": 0.0384255,
+        "estimatedCnyHigh": 0.076851,
+        "ttsCharacters": 0,
+        "unknownTtsRuns": 0,
+        "failedRuns": 0,
+        "runs": 1
+      }
+    },
+    "users": [
+      {
+        "account": "c400bac64850",
+        "type": "account",
+        "operations": 2,
+        "providerRequests": 25,
+        "reportedCalls": 25,
+        "missingUsageCalls": 0,
+        "inputTokens": 34985,
+        "outputTokens": 1777,
+        "cacheHitTokens": 16512,
+        "cacheMissTokens": 18473,
+        "unknownCacheInputTokens": 0,
+        "unpricedCalls": 0,
+        "estimatedCnyLow": 0.05523174,
+        "estimatedCnyHigh": 0.11046348,
+        "ttsCharacters": 0,
+        "unknownTtsRuns": 0,
+        "failedRuns": 0,
+        "runs": 25
+      }
+    ],
+    "completedSessions": 0,
+    "daily": {
+      "sessions": 0,
+      "seconds": 0,
+      "estimatedCnyHigh": 0,
+      "ttsCharacters": 0,
+      "missingUsageCalls": 0,
+      "unpricedCalls": 0
+    },
+    "fixturesExcluded": 0,
+    "undatedOperations": 0,
+    "browserAsrSeconds": 0
+  }
+}

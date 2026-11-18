@@ -1,0 +1,22 @@
+{
+  "fixture": "Controlled ASR/TTS and model; real Chromium fake-device recording; isolated local API/database",
+  "passed": [
+    "public landing has two core routes and preserves secondary features",
+    "anonymous IELTS Part 2: preparation, recording, persistent transcript and feedback recovery",
+    "same-task retry retains first recording and compares two attempts",
+    "sign in returns to attempt and cloud sync preserves linked attempts and private audio",
+    "toefl-repeat-campus-v1: distinct task flow, AI feedback and saved history",
+    "toefl-interview-campus-v1: distinct task flow, AI feedback and saved history",
+    "ielts-part1-study-v1: distinct task flow, AI feedback and saved history",
+    "ielts-part3-learning-v1: distinct task flow, AI feedback and saved history",
+    "daily conversation: Orb retained, two turns, refresh recovery, recording and review",
+    "denied microphone preserves typed draft and history offers continuation",
+    "answer time limit stops all microphone tracks and retains transcript",
+    "daily request failure retries the same turn without duplicate user messages",
+    "quick practice is one answer and TOEFL mock automatically records all eleven questions",
+    "optional camera uses real video tracks, stops on disable and leaves voice usable",
+    "camera permission denial and late permission grant both preserve cleanup",
+    "mobile pages retain readable layouts without horizontal overflow"
+  ],
+  "pageErrors": []
+}

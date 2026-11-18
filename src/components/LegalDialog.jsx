@@ -27,7 +27,7 @@ export default function LegalDialog({ type = "disclaimer", children }) {
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-w-lg rounded-3xl border-white/10 bg-[#111111]/95 text-foreground">
+      <DialogContent className="max-w-lg rounded-3xl border-slate-200 bg-background/95 text-foreground">
         <DialogHeader>
           <DialogTitle>{content.title}</DialogTitle>
         </DialogHeader>

@@ -1,0 +1,26 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { randomBytes, randomUUID } from 'node:crypto';
+if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NODE_ENV === 'production') throw new Error('Local testing accounts cannot be provisioned in production.');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+process.env.FORCE_LOCAL_DATA = 'true';
+process.env.SPEAKNOW_DATA_DIR = path.join(root, 'data');
+const { hashPassword } = await import('../api/_auth.js');
+const { getUserByEmail, saveUser } = await import('../api/_appStore.js');
+const { mutateLedger } = await import('../api/_membershipStore.js');
+const email = 'speaknow-test@local.example';
+const credentialFile = path.join(root, 'data', 'testing-account.local');
+if (await getUserByEmail(email)) throw new Error(`Test account already exists; no password or data changed. Credentials: ${credentialFile}`);
+const password = randomBytes(24).toString('base64url');
+const createdAt = new Date().toISOString();
+const user = { id: `user_${randomUUID()}`, email, full_name: 'SpeakNow Local Tester', role: 'learner', avatar_url: '', password: await hashPassword(password), created_date: createdAt, profile_preferences: { weekly_goal: 3, practice_focus: 'voice' } };
+await fs.mkdir(path.dirname(credentialFile), { recursive: true, mode: 0o700 });
+await fs.writeFile(credentialFile, JSON.stringify({ url: 'http://localhost:5173/auth?returnTo=%2Fmembership', email, password, userId: user.id, scope: 'Local learner account only; unlimited practice/personal daily quota, safety rate limits and global spend caps retained; never production/admin.', createdAt }, null, 2), { mode: 0o600, flag: 'wx' });
+await saveUser(user, { insert: true });
+await mutateLedger(user.id, ledger => {
+  ledger.entitlement = { planType: 'vip', subscriptionStatus: 'active', currentPeriodStart: createdAt, currentPeriodEnd: '2099-01-01T00:00:00.000Z', expiresAt: '2099-01-01T00:00:00.000Z', origin: 'local-testing', unlimitedTesting: true };
+  ledger.membershipHistory ||= [];
+  ledger.membershipHistory.push({ id: randomUUID(), type: 'local-testing-provisioned', actor: 'local-owner-script', at: createdAt });
+});
+console.log(JSON.stringify({ email, credentials: credentialFile, passwordPrinted: false, productionModified: false }));

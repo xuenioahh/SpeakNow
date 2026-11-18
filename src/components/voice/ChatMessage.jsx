@@ -38,8 +38,8 @@ export default function ChatMessage({ message, voiceGender, isActive = false, is
       {/* Avatar */}
       <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold ${
           isUser
-            ? "bg-slate-700 text-white"
-            : "bg-slate-600 text-white"
+            ? "bg-slate-700 text-foreground"
+            : "bg-slate-600 text-foreground"
       }`}>
         {isUser ? "You" : "AI"}
       </div>
@@ -51,13 +51,8 @@ export default function ChatMessage({ message, voiceGender, isActive = false, is
             {isUser ? "You" : message.aiRole || "Coach"}
           </span>
           {!isUser && message.source === "fallback" && (
-            <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-200">
-              Local
-            </span>
-          )}
-          {!compact && !isUser && message.model && (
-            <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] text-muted-foreground">
-              {message.model}
+            <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-800">
+              Practice guide
             </span>
           )}
           <span className="text-[10px] text-muted-foreground/60">{message.time}</span>
@@ -69,16 +64,11 @@ export default function ChatMessage({ message, voiceGender, isActive = false, is
             ? "bg-primary text-primary-foreground rounded-tr-md border-primary/20" 
             : isActive
               ? "glass rounded-tl-md border-cyan-400/50 shadow-[0_0_0_1px_rgba(34,211,238,0.2)]"
-              : "glass rounded-tl-md border-white/5"
+              : "glass rounded-tl-md border-slate-200"
         }`}>
           <p className="text-sm leading-relaxed">{message.content}</p>
-          {!isUser && message.fallbackReason && (
-            <p className="mt-2 text-[10px] text-amber-200/90 break-words">
-              Reason: {message.fallbackReason}
-            </p>
-          )}
           {!isUser && message.visual && (!compact || visualOpen) && (
-            <div className="mt-3 max-w-[220px] rounded-2xl overflow-hidden border border-white/8 bg-black/20">
+            <div className="mt-3 max-w-[220px] rounded-2xl overflow-hidden border border-slate-200 bg-black/20">
               <div className="aspect-[4/3] overflow-hidden">
                 <img
                   src={message.visual.src}
@@ -107,7 +97,7 @@ export default function ChatMessage({ message, voiceGender, isActive = false, is
               {(onPlay ? isActive : isPlaying) ? "Stop audio" : "Play audio"}
             </button>
             {audioFailed && (
-              <p className="text-[10px] text-accent mt-1">Audio playback is unavailable in this browser right now.</p>
+              <p className="text-[10px] text-accent mt-1">Audio could not play. Try again.</p>
             )}
           </div>
         )}
@@ -130,13 +120,13 @@ export default function ChatMessage({ message, voiceGender, isActive = false, is
               <div className="glass rounded-xl px-3 py-2.5 space-y-1.5">
                 {message.feedback.grammar && (
                   <p className="text-[11px] text-muted-foreground">
-                    <span className="text-amber-400 font-medium">Grammar:</span>{" "}
+                    <span className="text-amber-800 font-medium">Grammar:</span>{" "}
                     {message.feedback.grammar}
                   </p>
                 )}
                 {message.feedback.vocabulary && (
                   <p className="text-[11px] text-muted-foreground">
-                    <span className="text-emerald-400 font-medium">Vocabulary:</span>{" "}
+                    <span className="text-emerald-800 font-medium">Vocabulary:</span>{" "}
                     {message.feedback.vocabulary}
                   </p>
                 )}
@@ -148,7 +138,7 @@ export default function ChatMessage({ message, voiceGender, isActive = false, is
                 )}
                 {message.feedback.task && (
                   <p className="text-[11px] text-muted-foreground">
-                    <span className="text-violet-400 font-medium">Task:</span>{" "}
+                    <span className="text-primary font-medium">Task:</span>{" "}
                     {message.feedback.task}
                   </p>
                 )}

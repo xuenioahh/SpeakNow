@@ -1,0 +1,3333 @@
+{
+  "checks": [
+    "cafe: 3 fixed actors, distinct cameras, same canvas and room",
+    "airport: 3 fixed actors, distinct cameras, same canvas and room",
+    "bank: 3 fixed actors, distinct cameras, same canvas and room",
+    "hotel: 3 fixed actors, distinct cameras, same canvas and room",
+    "restaurant: 3 fixed actors, distinct cameras, same canvas and room",
+    "shopping: 3 fixed actors, distinct cameras, same canvas and room",
+    "hospital: 3 fixed actors, distinct cameras, same canvas and room",
+    "university: 3 fixed actors, distinct cameras, same canvas and room",
+    "office: 3 fixed actors, distinct cameras, same canvas and room",
+    "phone: 3 fixed actors, distinct cameras, same canvas and room",
+    "car_rental: 3 fixed actors, distinct cameras, same canvas and room",
+    "museum: 3 fixed actors, distinct cameras, same canvas and room",
+    "3 contextual fixture rounds, actual fake-device recording saved and replayable, interruption, camera cleanup, subtitles modes, feedback and linked retry",
+    "390px mobile layout and interaction; reduced-motion renders on demand; exit media cleanup"
+  ],
+  "errors": [],
+  "performance": [
+    {
+      "scene": "cafe",
+      "cue": "menu",
+      "sceneId": "cafe",
+      "roomId": "9af750ca-a0c3-48f5-ab47-3a59d7f881d4",
+      "focusedId": "menu",
+      "transitioning": false,
+      "frames": 59,
+      "cameraPosition": [
+        0.04004920966426261,
+        1.6500434826774732,
+        3.5131939376595933
+      ],
+      "cameraTarget": [
+        0.04999975335906774,
+        1.3499982735134743,
+        -1.619992008833795
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "menu",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "a373614b-ef18-45d2-8bde-0f59df400eff",
+          "position": [
+            0.05,
+            0.055,
+            -1.62
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6466853176497226,
+            1.9570000409148631,
+            0.4487706273327414
+          ]
+        },
+        {
+          "id": "coffee",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "183ab4b1-b6a5-428f-9cf9-5ff291be49c7",
+          "position": [
+            1.65,
+            0.055,
+            -1.62
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6672707479792142,
+            1.9570000409148631,
+            0.47247861355645027
+          ]
+        },
+        {
+          "id": "pastry",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "e38ebdc4-d7ac-4359-811d-fa811aa826b5",
+          "position": [
+            -2.25,
+            0.055,
+            1.15
+          ],
+          "bones": 17,
+          "pose": "seated",
+          "bounds": [
+            0.699378699605743,
+            1.7329744506993499,
+            0.8955922146054794
+          ]
+        }
+      ],
+      "fps": 24.33600469936643,
+      "renderMsP50": 2.7000000029802322,
+      "renderMsP95": 6.200000002980232,
+      "drawCalls": 159,
+      "triangles": 77118,
+      "memory": {
+        "geometries": 192,
+        "textures": 15
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "cafe",
+      "cue": "coffee",
+      "sceneId": "cafe",
+      "roomId": "9af750ca-a0c3-48f5-ab47-3a59d7f881d4",
+      "focusedId": "coffee",
+      "transitioning": false,
+      "frames": 121,
+      "cameraPosition": [
+        1.3196818386699227,
+        1.6500000033889424,
+        3.5075298059618745
+      ],
+      "cameraTarget": [
+        1.6499837756332012,
+        1.3499999999945107,
+        -1.6199999999745924
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "menu",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "a373614b-ef18-45d2-8bde-0f59df400eff",
+          "position": [
+            0.05,
+            0.055,
+            -1.62
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6466853176497226,
+            1.9570000409148631,
+            0.4487706273327414
+          ]
+        },
+        {
+          "id": "coffee",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "183ab4b1-b6a5-428f-9cf9-5ff291be49c7",
+          "position": [
+            1.65,
+            0.055,
+            -1.62
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6672707479792142,
+            1.9570000409148631,
+            0.47247861355645027
+          ]
+        },
+        {
+          "id": "pastry",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "e38ebdc4-d7ac-4359-811d-fa811aa826b5",
+          "position": [
+            -2.25,
+            0.055,
+            1.15
+          ],
+          "bones": 17,
+          "pose": "seated",
+          "bounds": [
+            0.699378699605743,
+            1.7329744506993499,
+            0.8955922146054794
+          ]
+        }
+      ],
+      "fps": 25.993718184772014,
+      "renderMsP50": 3.3999999910593033,
+      "renderMsP95": 10.299999997019768,
+      "drawCalls": 128,
+      "triangles": 74580,
+      "memory": {
+        "geometries": 192,
+        "textures": 15
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "cafe",
+      "cue": "pastry",
+      "sceneId": "cafe",
+      "roomId": "9af750ca-a0c3-48f5-ab47-3a59d7f881d4",
+      "focusedId": "pastry",
+      "transitioning": false,
+      "frames": 184,
+      "cameraPosition": [
+        -1.6991702368168387,
+        1.4300604479599817,
+        3.8122872951062763
+      ],
+      "cameraTarget": [
+        -2.249956311450485,
+        1.0500033606612449,
+        1.149968969894507
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "menu",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "a373614b-ef18-45d2-8bde-0f59df400eff",
+          "position": [
+            0.05,
+            0.055,
+            -1.62
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6466853176497226,
+            1.9570000409148631,
+            0.4487706273327414
+          ]
+        },
+        {
+          "id": "coffee",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "183ab4b1-b6a5-428f-9cf9-5ff291be49c7",
+          "position": [
+            1.65,
+            0.055,
+            -1.62
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6672707479792142,
+            1.9570000409148631,
+            0.47247861355645027
+          ]
+        },
+        {
+          "id": "pastry",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "e38ebdc4-d7ac-4359-811d-fa811aa826b5",
+          "position": [
+            -2.25,
+            0.055,
+            1.15
+          ],
+          "bones": 17,
+          "pose": "seated",
+          "bounds": [
+            0.699378699605743,
+            1.7329744506993499,
+            0.8955922146054794
+          ]
+        }
+      ],
+      "fps": 26.395119066507046,
+      "renderMsP50": 3.7999999970197678,
+      "renderMsP95": 9.700000002980232,
+      "drawCalls": 133,
+      "triangles": 74060,
+      "memory": {
+        "geometries": 192,
+        "textures": 15
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "airport",
+      "cue": "board",
+      "sceneId": "airport",
+      "roomId": "cd9f58da-b992-4552-aaf3-ce5e8a3ffa6c",
+      "focusedId": "board",
+      "transitioning": false,
+      "frames": 61,
+      "cameraPosition": [
+        -0.799963040072261,
+        1.6500291414814865,
+        3.5088476992713566
+      ],
+      "cameraTarget": [
+        -0.999996694094026,
+        1.3499988429329093,
+        -1.299995702322234
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "board",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "73418041-9931-438d-8e5a-6aaef731cad2",
+          "position": [
+            -1,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.659136441901738,
+            1.9570000409148631,
+            0.46351448372369686
+          ]
+        },
+        {
+          "id": "passport",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "ec08ad61-f20c-4002-8719-a212d8c74185",
+          "position": [
+            0.85,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6572400387076021,
+            1.9570000409148631,
+            0.46170010833781494
+          ]
+        },
+        {
+          "id": "luggage",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "99912c9e-fc72-4c8d-8e7c-5a3ca991c830",
+          "position": [
+            2.65,
+            0.055,
+            0.25
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6905305694543715,
+            1.9570000409148631,
+            0.5274479055583099
+          ]
+        }
+      ],
+      "fps": 24.000960038401537,
+      "renderMsP50": 4.4000000059604645,
+      "renderMsP95": 19.900000005960464,
+      "drawCalls": 104,
+      "triangles": 69430,
+      "memory": {
+        "geometries": 132,
+        "textures": 15
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "airport",
+      "cue": "passport",
+      "sceneId": "airport",
+      "roomId": "cd9f58da-b992-4552-aaf3-ce5e8a3ffa6c",
+      "focusedId": "passport",
+      "transitioning": false,
+      "frames": 121,
+      "cameraPosition": [
+        0.6795031225307295,
+        1.6500000036006626,
+        3.511242798426066
+      ],
+      "cameraTarget": [
+        0.8499736545511897,
+        1.3499999999939358,
+        -1.2999999999774758
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "board",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "73418041-9931-438d-8e5a-6aaef731cad2",
+          "position": [
+            -1,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.659136441901738,
+            1.9570000409148631,
+            0.46351448372369686
+          ]
+        },
+        {
+          "id": "passport",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "ec08ad61-f20c-4002-8719-a212d8c74185",
+          "position": [
+            0.85,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6572400387076021,
+            1.9570000409148631,
+            0.46170010833781494
+          ]
+        },
+        {
+          "id": "luggage",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "99912c9e-fc72-4c8d-8e7c-5a3ca991c830",
+          "position": [
+            2.65,
+            0.055,
+            0.25
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6905305694543715,
+            1.9570000409148631,
+            0.5274479055583099
+          ]
+        }
+      ],
+      "fps": 26.47195076217158,
+      "renderMsP50": 4.4000000059604645,
+      "renderMsP95": 12.799999997019768,
+      "drawCalls": 126,
+      "triangles": 74830,
+      "memory": {
+        "geometries": 132,
+        "textures": 15
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "airport",
+      "cue": "luggage",
+      "sceneId": "airport",
+      "roomId": "cd9f58da-b992-4552-aaf3-ce5e8a3ffa6c",
+      "focusedId": "luggage",
+      "transitioning": false,
+      "frames": 184,
+      "cameraPosition": [
+        2.119675961676228,
+        1.6500000000002537,
+        3.5075395675968934
+      ],
+      "cameraTarget": [
+        2.649983477851579,
+        1.3499999999999996,
+        0.2499857726596687
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "board",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "73418041-9931-438d-8e5a-6aaef731cad2",
+          "position": [
+            -1,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.659136441901738,
+            1.9570000409148631,
+            0.46351448372369686
+          ]
+        },
+        {
+          "id": "passport",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "ec08ad61-f20c-4002-8719-a212d8c74185",
+          "position": [
+            0.85,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6572400387076021,
+            1.9570000409148631,
+            0.46170010833781494
+          ]
+        },
+        {
+          "id": "luggage",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "99912c9e-fc72-4c8d-8e7c-5a3ca991c830",
+          "position": [
+            2.65,
+            0.055,
+            0.25
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6905305694543715,
+            1.9570000409148631,
+            0.5274479055583099
+          ]
+        }
+      ],
+      "fps": 27.045800511357758,
+      "renderMsP50": 4,
+      "renderMsP95": 12.200000002980232,
+      "drawCalls": 95,
+      "triangles": 72686,
+      "memory": {
+        "geometries": 132,
+        "textures": 15
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "bank",
+      "cue": "rates",
+      "sceneId": "bank",
+      "roomId": "321f833f-3038-4d0b-822f-3ffa2d48e3c6",
+      "focusedId": "rates",
+      "transitioning": false,
+      "frames": 61,
+      "cameraPosition": [
+        -0.9199660291853345,
+        1.6500263788522969,
+        3.5088423922440612
+      ],
+      "cameraTarget": [
+        -1.1499965586201837,
+        1.3499989526235343,
+        -1.2999961097445556
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "rates",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "7621eaf4-87a8-498a-90f7-97d180f0338a",
+          "position": [
+            -1.15,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6610062084593029,
+            1.9570000409148631,
+            0.4657697668198786
+          ]
+        },
+        {
+          "id": "form",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "376290d2-934f-4434-9550-bafeb67914f4",
+          "position": [
+            0.8,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6566020165691888,
+            1.9570000409148631,
+            0.46091067505726513
+          ]
+        },
+        {
+          "id": "card",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "55bd7742-2ef3-485c-84a6-ebaee97563dd",
+          "position": [
+            2.65,
+            0.055,
+            0.25
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6905305694543715,
+            1.9570000409148631,
+            0.5274479055583099
+          ]
+        }
+      ],
+      "fps": 24.16237113402062,
+      "renderMsP50": 3.9000000059604645,
+      "renderMsP95": 12.699999988079071,
+      "drawCalls": 89,
+      "triangles": 67448,
+      "memory": {
+        "geometries": 109,
+        "textures": 13
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "bank",
+      "cue": "form",
+      "sceneId": "bank",
+      "roomId": "321f833f-3038-4d0b-822f-3ffa2d48e3c6",
+      "focusedId": "form",
+      "transitioning": false,
+      "frames": 122,
+      "cameraPosition": [
+        0.6394765771995639,
+        1.650000002775186,
+        3.511243210826787
+      ],
+      "cameraTarget": [
+        0.7999733246644265,
+        1.3499999999955075,
+        -1.2999999999833138
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "rates",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "7621eaf4-87a8-498a-90f7-97d180f0338a",
+          "position": [
+            -1.15,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6610062084593029,
+            1.9570000409148631,
+            0.4657697668198786
+          ]
+        },
+        {
+          "id": "form",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "376290d2-934f-4434-9550-bafeb67914f4",
+          "position": [
+            0.8,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6566020165691888,
+            1.9570000409148631,
+            0.46091067505726513
+          ]
+        },
+        {
+          "id": "card",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "55bd7742-2ef3-485c-84a6-ebaee97563dd",
+          "position": [
+            2.65,
+            0.055,
+            0.25
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6905305694543715,
+            1.9570000409148631,
+            0.5274479055583099
+          ]
+        }
+      ],
+      "fps": 26.30549154311057,
+      "renderMsP50": 4,
+      "renderMsP95": 10.5,
+      "drawCalls": 103,
+      "triangles": 70578,
+      "memory": {
+        "geometries": 109,
+        "textures": 13
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "bank",
+      "cue": "card",
+      "sceneId": "bank",
+      "roomId": "321f833f-3038-4d0b-822f-3ffa2d48e3c6",
+      "focusedId": "card",
+      "transitioning": false,
+      "frames": 187,
+      "cameraPosition": [
+        2.119259015285994,
+        1.6500000000001074,
+        3.516764542364745
+      ],
+      "cameraTarget": [
+        2.6499582834758804,
+        1.3499999999999996,
+        0.24996504835660485
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "rates",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "7621eaf4-87a8-498a-90f7-97d180f0338a",
+          "position": [
+            -1.15,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6610062084593029,
+            1.9570000409148631,
+            0.4657697668198786
+          ]
+        },
+        {
+          "id": "form",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "376290d2-934f-4434-9550-bafeb67914f4",
+          "position": [
+            0.8,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6566020165691888,
+            1.9570000409148631,
+            0.46091067505726513
+          ]
+        },
+        {
+          "id": "card",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "55bd7742-2ef3-485c-84a6-ebaee97563dd",
+          "position": [
+            2.65,
+            0.055,
+            0.25
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6905305694543715,
+            1.9570000409148631,
+            0.5274479055583099
+          ]
+        }
+      ],
+      "fps": 27.154473918565774,
+      "renderMsP50": 3.7999999970197678,
+      "renderMsP95": 8.699999988079071,
+      "drawCalls": 84,
+      "triangles": 69506,
+      "memory": {
+        "geometries": 109,
+        "textures": 13
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "hotel",
+      "cue": "bell",
+      "sceneId": "hotel",
+      "roomId": "57b37822-93dd-4d0b-988e-0455a270adff",
+      "focusedId": "bell",
+      "transitioning": false,
+      "frames": 59,
+      "cameraPosition": [
+        -0.9199381382681101,
+        1.6500480365721113,
+        3.5161118891483314
+      ],
+      "cameraTarget": [
+        -1.1499937331583705,
+        1.3499980927003739,
+        -1.4499920983301198
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "bell",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "42fbff8b-3cf5-438e-b23f-9864069d9878",
+          "position": [
+            -1.15,
+            0.055,
+            -1.45
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6605742028745105,
+            1.9570000409148631,
+            0.4652475384261703
+          ]
+        },
+        {
+          "id": "key",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "88387b68-dcdd-4017-ac00-f9ea472031c1",
+          "position": [
+            0.85,
+            0.055,
+            -1.45
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6569117272658905,
+            1.9570000409148631,
+            0.4612936941398238
+          ]
+        },
+        {
+          "id": "clock",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "6b644d78-2370-43f7-8d9f-d04440f59443",
+          "position": [
+            2.65,
+            0.055,
+            0.35
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6916340336930267,
+            1.9570000409148631,
+            0.5290243938909813
+          ]
+        }
+      ],
+      "fps": 25.218114954603045,
+      "renderMsP50": 3,
+      "renderMsP95": 7.4000000059604645,
+      "drawCalls": 126,
+      "triangles": 77328,
+      "memory": {
+        "geometries": 149,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "hotel",
+      "cue": "key",
+      "sceneId": "hotel",
+      "roomId": "57b37822-93dd-4d0b-988e-0455a270adff",
+      "focusedId": "key",
+      "transitioning": false,
+      "frames": 120,
+      "cameraPosition": [
+        0.6791984835026087,
+        1.650000005372632,
+        3.5204775564506394
+      ],
+      "cameraTarget": [
+        0.8499591765349875,
+        1.3499999999913082,
+        -1.4499999999639903
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "bell",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "42fbff8b-3cf5-438e-b23f-9864069d9878",
+          "position": [
+            -1.15,
+            0.055,
+            -1.45
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6605742028745105,
+            1.9570000409148631,
+            0.4652475384261703
+          ]
+        },
+        {
+          "id": "key",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "88387b68-dcdd-4017-ac00-f9ea472031c1",
+          "position": [
+            0.85,
+            0.055,
+            -1.45
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6569117272658905,
+            1.9570000409148631,
+            0.4612936941398238
+          ]
+        },
+        {
+          "id": "clock",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "6b644d78-2370-43f7-8d9f-d04440f59443",
+          "position": [
+            2.65,
+            0.055,
+            0.35
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6916340336930267,
+            1.9570000409148631,
+            0.5290243938909813
+          ]
+        }
+      ],
+      "fps": 27.357994764737338,
+      "renderMsP50": 3.5,
+      "renderMsP95": 5.700000002980232,
+      "drawCalls": 137,
+      "triangles": 79846,
+      "memory": {
+        "geometries": 149,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "hotel",
+      "cue": "clock",
+      "sceneId": "hotel",
+      "roomId": "57b37822-93dd-4d0b-988e-0455a270adff",
+      "focusedId": "clock",
+      "transitioning": false,
+      "frames": 175,
+      "cameraPosition": [
+        2.1191193510329613,
+        1.6500000000018027,
+        3.5204736336386504
+      ],
+      "cameraTarget": [
+        2.649953320286509,
+        1.3499999999999996,
+        0.34995332086751935
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "bell",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "42fbff8b-3cf5-438e-b23f-9864069d9878",
+          "position": [
+            -1.15,
+            0.055,
+            -1.45
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6605742028745105,
+            1.9570000409148631,
+            0.4652475384261703
+          ]
+        },
+        {
+          "id": "key",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "88387b68-dcdd-4017-ac00-f9ea472031c1",
+          "position": [
+            0.85,
+            0.055,
+            -1.45
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6569117272658905,
+            1.9570000409148631,
+            0.4612936941398238
+          ]
+        },
+        {
+          "id": "clock",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "6b644d78-2370-43f7-8d9f-d04440f59443",
+          "position": [
+            2.65,
+            0.055,
+            0.35
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6916340336930267,
+            1.9570000409148631,
+            0.5290243938909813
+          ]
+        }
+      ],
+      "fps": 27.84118492083023,
+      "renderMsP50": 3.199999988079071,
+      "renderMsP95": 5.100000008940697,
+      "drawCalls": 109,
+      "triangles": 76132,
+      "memory": {
+        "geometries": 149,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "restaurant",
+      "cue": "menu",
+      "sceneId": "restaurant",
+      "roomId": "7f819be6-7660-4448-b887-06a214e07695",
+      "focusedId": "menu",
+      "transitioning": false,
+      "frames": 57,
+      "cameraPosition": [
+        -1.6999169673765966,
+        1.6500586954751644,
+        3.719069780558335
+      ],
+      "cameraTarget": [
+        -2.249985018130438,
+        1.349997669486957,
+        0.14999900120869586
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "menu",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "c3b16b43-2920-4a24-bf98-44c33552a60f",
+          "position": [
+            -2.25,
+            0.055,
+            0.15
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6887547252251474,
+            1.9570000409148631,
+            0.5012035290357323
+          ]
+        },
+        {
+          "id": "plate",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "d820f4bf-5e24-4db6-80d9-c384b7780b7f",
+          "position": [
+            0.3,
+            0.055,
+            -1.7
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6497529301144147,
+            1.9570000409148631,
+            0.45252756831265484
+          ]
+        },
+        {
+          "id": "wine",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "63dec43c-4ec6-47b1-bec9-b8a603b79d3c",
+          "position": [
+            2.5,
+            0.055,
+            -0.7
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6803624928809238,
+            1.9570000409148631,
+            0.5133985786597863
+          ]
+        }
+      ],
+      "fps": 24.17335750669084,
+      "renderMsP50": 2.7000000029802322,
+      "renderMsP95": 6,
+      "drawCalls": 92,
+      "triangles": 71282,
+      "memory": {
+        "geometries": 132,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "restaurant",
+      "cue": "plate",
+      "sceneId": "restaurant",
+      "roomId": "7f819be6-7660-4448-b887-06a214e07695",
+      "focusedId": "plate",
+      "transitioning": false,
+      "frames": 117,
+      "cameraPosition": [
+        0.23920512128989624,
+        1.650000005053686,
+        3.520479182432094
+      ],
+      "cameraTarget": [
+        0.2999364388342439,
+        1.3499999999877934,
+        -1.699953886945693
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "menu",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "c3b16b43-2920-4a24-bf98-44c33552a60f",
+          "position": [
+            -2.25,
+            0.055,
+            0.15
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6887547252251474,
+            1.9570000409148631,
+            0.5012035290357323
+          ]
+        },
+        {
+          "id": "plate",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "d820f4bf-5e24-4db6-80d9-c384b7780b7f",
+          "position": [
+            0.3,
+            0.055,
+            -1.7
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6497529301144147,
+            1.9570000409148631,
+            0.45252756831265484
+          ]
+        },
+        {
+          "id": "wine",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "63dec43c-4ec6-47b1-bec9-b8a603b79d3c",
+          "position": [
+            2.5,
+            0.055,
+            -0.7
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6803624928809238,
+            1.9570000409148631,
+            0.5133985786597863
+          ]
+        }
+      ],
+      "fps": 26.265142080833236,
+      "renderMsP50": 2.7999999970197678,
+      "renderMsP95": 4.700000002980232,
+      "drawCalls": 129,
+      "triangles": 78792,
+      "memory": {
+        "geometries": 132,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "restaurant",
+      "cue": "wine",
+      "sceneId": "restaurant",
+      "roomId": "7f819be6-7660-4448-b887-06a214e07695",
+      "focusedId": "wine",
+      "transitioning": false,
+      "frames": 173,
+      "cameraPosition": [
+        1.999118634685243,
+        1.6500000000013886,
+        3.520489393260719
+      ],
+      "cameraTarget": [
+        2.499953251424992,
+        1.3499999999999996,
+        -0.700021248477596
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "menu",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "c3b16b43-2920-4a24-bf98-44c33552a60f",
+          "position": [
+            -2.25,
+            0.055,
+            0.15
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6887547252251474,
+            1.9570000409148631,
+            0.5012035290357323
+          ]
+        },
+        {
+          "id": "plate",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "d820f4bf-5e24-4db6-80d9-c384b7780b7f",
+          "position": [
+            0.3,
+            0.055,
+            -1.7
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6497529301144147,
+            1.9570000409148631,
+            0.45252756831265484
+          ]
+        },
+        {
+          "id": "wine",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "63dec43c-4ec6-47b1-bec9-b8a603b79d3c",
+          "position": [
+            2.5,
+            0.055,
+            -0.7
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6803624928809238,
+            1.9570000409148631,
+            0.5133985786597863
+          ]
+        }
+      ],
+      "fps": 27.087893916248007,
+      "renderMsP50": 2.7000000029802322,
+      "renderMsP95": 4.5,
+      "drawCalls": 89,
+      "triangles": 71070,
+      "memory": {
+        "geometries": 132,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "shopping",
+      "cue": "laptop",
+      "sceneId": "shopping",
+      "roomId": "fd7c0c3a-99c4-49ad-a6fa-b2a076c72c28",
+      "focusedId": "laptop",
+      "transitioning": false,
+      "frames": 58,
+      "cameraPosition": [
+        -2.6499079005958803,
+        1.6500586954751644,
+        3.4244107821970435
+      ],
+      "cameraTarget": [
+        -1.049993008460871,
+        1.349997669486957,
+        -1.049993008460871
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "laptop",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "8a3c46b9-e241-4af0-ace8-58f17cb1dcf4",
+          "position": [
+            -1.05,
+            0.055,
+            -1.05
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.7192158330085066,
+            1.9570000409148631,
+            0.5667702205426982
+          ]
+        },
+        {
+          "id": "receipt",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "af96958c-66b6-4135-b84d-e0c0af4f70be",
+          "position": [
+            0.85,
+            0.055,
+            -1.05
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6578333386286545,
+            1.9570000409148631,
+            0.4624355807667204
+          ]
+        },
+        {
+          "id": "exchange",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "be6cb504-9298-44dd-9bf7-d5b7e34952f0",
+          "position": [
+            2.65,
+            0.055,
+            0.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6946224515142552,
+            1.9570000409148631,
+            0.5333555848567544
+          ]
+        }
+      ],
+      "fps": 27.361751152073733,
+      "renderMsP50": 4.5,
+      "renderMsP95": 5.4000000059604645,
+      "drawCalls": 136,
+      "triangles": 80136,
+      "memory": {
+        "geometries": 142,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "shopping",
+      "cue": "receipt",
+      "sceneId": "shopping",
+      "roomId": "fd7c0c3a-99c4-49ad-a6fa-b2a076c72c28",
+      "focusedId": "receipt",
+      "transitioning": false,
+      "frames": 121,
+      "cameraPosition": [
+        0.679084496184614,
+        1.6500000048603862,
+        3.5204956516894166
+      ],
+      "cameraTarget": [
+        0.8499787158357065,
+        1.3499999999921368,
+        -1.0499999999764105
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "laptop",
+          "faceVisible": false,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "8a3c46b9-e241-4af0-ace8-58f17cb1dcf4",
+          "position": [
+            -1.05,
+            0.055,
+            -1.05
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.7192158330085066,
+            1.9570000409148631,
+            0.5667702205426982
+          ]
+        },
+        {
+          "id": "receipt",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "af96958c-66b6-4135-b84d-e0c0af4f70be",
+          "position": [
+            0.85,
+            0.055,
+            -1.05
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6578333386286545,
+            1.9570000409148631,
+            0.4624355807667204
+          ]
+        },
+        {
+          "id": "exchange",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "be6cb504-9298-44dd-9bf7-d5b7e34952f0",
+          "position": [
+            2.65,
+            0.055,
+            0.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6946224515142552,
+            1.9570000409148631,
+            0.5333555848567544
+          ]
+        }
+      ],
+      "fps": 28.6868590279936,
+      "renderMsP50": 4.299999997019768,
+      "renderMsP95": 5,
+      "drawCalls": 137,
+      "triangles": 80118,
+      "memory": {
+        "geometries": 142,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "shopping",
+      "cue": "exchange",
+      "sceneId": "shopping",
+      "roomId": "fd7c0c3a-99c4-49ad-a6fa-b2a076c72c28",
+      "focusedId": "exchange",
+      "transitioning": false,
+      "frames": 177,
+      "cameraPosition": [
+        2.1191193127868275,
+        1.6500000000016308,
+        3.520462096783575
+      ],
+      "cameraTarget": [
+        2.649955159860364,
+        1.3499999999999996,
+        0.5999588968054043
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "laptop",
+          "faceVisible": false,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "8a3c46b9-e241-4af0-ace8-58f17cb1dcf4",
+          "position": [
+            -1.05,
+            0.055,
+            -1.05
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.7192158330085066,
+            1.9570000409148631,
+            0.5667702205426982
+          ]
+        },
+        {
+          "id": "receipt",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "af96958c-66b6-4135-b84d-e0c0af4f70be",
+          "position": [
+            0.85,
+            0.055,
+            -1.05
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6578333386286545,
+            1.9570000409148631,
+            0.4624355807667204
+          ]
+        },
+        {
+          "id": "exchange",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "be6cb504-9298-44dd-9bf7-d5b7e34952f0",
+          "position": [
+            2.65,
+            0.055,
+            0.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6946224515142552,
+            1.9570000409148631,
+            0.5333555848567544
+          ]
+        }
+      ],
+      "fps": 29.091870805646472,
+      "renderMsP50": 3.7999999970197678,
+      "renderMsP95": 5,
+      "drawCalls": 98,
+      "triangles": 74198,
+      "memory": {
+        "geometries": 142,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "hospital",
+      "cue": "notes",
+      "sceneId": "hospital",
+      "roomId": "3ac4487b-50db-4126-a40f-183eb4f5e8ee",
+      "focusedId": "notes",
+      "transitioning": false,
+      "frames": 57,
+      "cameraPosition": [
+        -0.4799128227545707,
+        1.650071676478528,
+        3.524026501634109
+      ],
+      "cameraTarget": [
+        -0.5999951212700287,
+        1.3499971540741835,
+        -1.2999894294183958
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "notes",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "b93593c9-425a-47fc-8304-ad535cceec7d",
+          "position": [
+            -0.6,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.654020678023933,
+            1.9570000409148631,
+            0.4574070815236124
+          ]
+        },
+        {
+          "id": "chart",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "dab32773-137c-41da-9898-05511fd56390",
+          "position": [
+            -2.25,
+            0.055,
+            1
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6972999694854947,
+            1.9570000409148631,
+            0.5132281765426335
+          ]
+        },
+        {
+          "id": "plan",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "bd51e26c-4e90-42b8-a7e0-8becf33f83d5",
+          "position": [
+            2.55,
+            0.055,
+            0.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6897296305561609,
+            1.9570000409148631,
+            0.5263107883158964
+          ]
+        }
+      ],
+      "fps": 27.769513041753445,
+      "renderMsP50": 3.7999999970197678,
+      "renderMsP95": 5.199999988079071,
+      "drawCalls": 84,
+      "triangles": 70910,
+      "memory": {
+        "geometries": 93,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "hospital",
+      "cue": "chart",
+      "sceneId": "hospital",
+      "roomId": "3ac4487b-50db-4126-a40f-183eb4f5e8ee",
+      "focusedId": "chart",
+      "transitioning": false,
+      "frames": 113,
+      "cameraPosition": [
+        -1.6983403270410704,
+        1.6500000196940767,
+        3.822376299439188
+      ],
+      "cameraTarget": [
+        -2.249908486505426,
+        1.3499999999681194,
+        0.9998724359294332
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "notes",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "b93593c9-425a-47fc-8304-ad535cceec7d",
+          "position": [
+            -0.6,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.654020678023933,
+            1.9570000409148631,
+            0.4574070815236124
+          ]
+        },
+        {
+          "id": "chart",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "dab32773-137c-41da-9898-05511fd56390",
+          "position": [
+            -2.25,
+            0.055,
+            1
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6972999694854947,
+            1.9570000409148631,
+            0.5132281765426335
+          ]
+        },
+        {
+          "id": "plan",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "bd51e26c-4e90-42b8-a7e0-8becf33f83d5",
+          "position": [
+            2.55,
+            0.055,
+            0.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6897296305561609,
+            1.9570000409148631,
+            0.5263107883158964
+          ]
+        }
+      ],
+      "fps": 28.596961572832893,
+      "renderMsP50": 2.9000000059604645,
+      "renderMsP95": 4.5,
+      "drawCalls": 73,
+      "triangles": 68800,
+      "memory": {
+        "geometries": 93,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "hospital",
+      "cue": "plan",
+      "sceneId": "hospital",
+      "roomId": "3ac4487b-50db-4126-a40f-183eb4f5e8ee",
+      "focusedId": "plan",
+      "transitioning": false,
+      "frames": 170,
+      "cameraPosition": [
+        2.039159201027486,
+        1.6500000000024304,
+        3.520485179775237
+      ],
+      "cameraTarget": [
+        2.549916527602148,
+        1.3499999999999996,
+        0.30001217196792235
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "notes",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "b93593c9-425a-47fc-8304-ad535cceec7d",
+          "position": [
+            -0.6,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.654020678023933,
+            1.9570000409148631,
+            0.4574070815236124
+          ]
+        },
+        {
+          "id": "chart",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "dab32773-137c-41da-9898-05511fd56390",
+          "position": [
+            -2.25,
+            0.055,
+            1
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6972999694854947,
+            1.9570000409148631,
+            0.5132281765426335
+          ]
+        },
+        {
+          "id": "plan",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "bd51e26c-4e90-42b8-a7e0-8becf33f83d5",
+          "position": [
+            2.55,
+            0.055,
+            0.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6897296305561609,
+            1.9570000409148631,
+            0.5263107883158964
+          ]
+        }
+      ],
+      "fps": 28.726351753327325,
+      "renderMsP50": 2.5999999940395355,
+      "renderMsP95": 4.299999997019768,
+      "drawCalls": 73,
+      "triangles": 68990,
+      "memory": {
+        "geometries": 93,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "university",
+      "cue": "plan",
+      "sceneId": "university",
+      "roomId": "5d9408b5-4c3e-4de8-ade9-7b56d49d798c",
+      "focusedId": "plan",
+      "transitioning": false,
+      "frames": 57,
+      "cameraPosition": [
+        -0.5599118903776142,
+        1.650071676478528,
+        3.524040921860725
+      ],
+      "cameraTarget": [
+        -0.6999943081483669,
+        1.3499971540741835,
+        -1.2999894294183958
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "plan",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "b5a8b4c5-6a1c-4be8-a7b5-52b5f1f11f03",
+          "position": [
+            -0.7,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6553171827901285,
+            1.9570000409148631,
+            0.4589464954546414
+          ]
+        },
+        {
+          "id": "books",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "ffc977fe-b610-4905-b5d2-1807aa36bc64",
+          "position": [
+            -2.35,
+            0.055,
+            -0.8
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6840071777940557,
+            1.9570000409148631,
+            0.4948116251274166
+          ]
+        },
+        {
+          "id": "calendar",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "92be1592-cb5f-4e61-9cce-ef861972370f",
+          "position": [
+            2.5,
+            0.055,
+            0.15
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6874891949136708,
+            1.9570000409148631,
+            0.5231601828285907
+          ]
+        }
+      ],
+      "fps": 27.542789691127286,
+      "renderMsP50": 3.5,
+      "renderMsP95": 4.799999997019768,
+      "drawCalls": 112,
+      "triangles": 76690,
+      "memory": {
+        "geometries": 123,
+        "textures": 11
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "university",
+      "cue": "books",
+      "sceneId": "university",
+      "roomId": "5d9408b5-4c3e-4de8-ade9-7b56d49d798c",
+      "focusedId": "books",
+      "transitioning": false,
+      "frames": 117,
+      "cameraPosition": [
+        -1.799241884723846,
+        1.6500000083354533,
+        3.3212379036366175
+      ],
+      "cameraTarget": [
+        -2.3499588721091005,
+        1.3499999999865067,
+        -0.8000124629389462
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "plan",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "b5a8b4c5-6a1c-4be8-a7b5-52b5f1f11f03",
+          "position": [
+            -0.7,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6553171827901285,
+            1.9570000409148631,
+            0.4589464954546414
+          ]
+        },
+        {
+          "id": "books",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "ffc977fe-b610-4905-b5d2-1807aa36bc64",
+          "position": [
+            -2.35,
+            0.055,
+            -0.8
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6840071777940557,
+            1.9570000409148631,
+            0.4948116251274166
+          ]
+        },
+        {
+          "id": "calendar",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "92be1592-cb5f-4e61-9cce-ef861972370f",
+          "position": [
+            2.5,
+            0.055,
+            0.15
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6874891949136708,
+            1.9570000409148631,
+            0.5231601828285907
+          ]
+        }
+      ],
+      "fps": 28.179963074531145,
+      "renderMsP50": 3.5,
+      "renderMsP95": 4.700000002980232,
+      "drawCalls": 95,
+      "triangles": 74516,
+      "memory": {
+        "geometries": 123,
+        "textures": 11
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "university",
+      "cue": "calendar",
+      "sceneId": "university",
+      "roomId": "5d9408b5-4c3e-4de8-ade9-7b56d49d798c",
+      "focusedId": "calendar",
+      "transitioning": false,
+      "frames": 178,
+      "cameraPosition": [
+        1.999145084875639,
+        1.6500000000010284,
+        3.520485462537281
+      ],
+      "cameraTarget": [
+        2.4999621176762385,
+        1.3499999999999996,
+        0.14999257966311064
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "plan",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "b5a8b4c5-6a1c-4be8-a7b5-52b5f1f11f03",
+          "position": [
+            -0.7,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6553171827901285,
+            1.9570000409148631,
+            0.4589464954546414
+          ]
+        },
+        {
+          "id": "books",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "ffc977fe-b610-4905-b5d2-1807aa36bc64",
+          "position": [
+            -2.35,
+            0.055,
+            -0.8
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6840071777940557,
+            1.9570000409148631,
+            0.4948116251274166
+          ]
+        },
+        {
+          "id": "calendar",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "92be1592-cb5f-4e61-9cce-ef861972370f",
+          "position": [
+            2.5,
+            0.055,
+            0.15
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6874891949136708,
+            1.9570000409148631,
+            0.5231601828285907
+          ]
+        }
+      ],
+      "fps": 28.47307123093752,
+      "renderMsP50": 2.9000000059604645,
+      "renderMsP95": 4.700000002980232,
+      "drawCalls": 79,
+      "triangles": 69350,
+      "memory": {
+        "geometries": 123,
+        "textures": 11
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "office",
+      "cue": "calendar",
+      "sceneId": "office",
+      "roomId": "239f1c9b-950f-4dd7-af38-aadac1a6dcf5",
+      "focusedId": "calendar",
+      "transitioning": false,
+      "frames": 56,
+      "cameraPosition": [
+        0.32009512849394184,
+        1.6500875808739133,
+        3.524055350742073
+      ],
+      "cameraTarget": [
+        0.39999602581448157,
+        1.3499965225876713,
+        -1.2999870838970653
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "calendar",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "60d8d1c6-5898-4307-9a73-e40ff2c4953a",
+          "position": [
+            0.4,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6513928959726106,
+            1.9570000409148631,
+            0.4545202087674043
+          ]
+        },
+        {
+          "id": "laptop",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "b4bdc817-2671-4418-9703-b6eac72b6fd4",
+          "position": [
+            -2.15,
+            0.055,
+            -0.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6728216785834837,
+            1.9570000409148631,
+            0.48035157468802475
+          ]
+        },
+        {
+          "id": "handover",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "6c73a6f2-bece-4a45-9e12-c60bd28ed7a6",
+          "position": [
+            2.5,
+            0.055,
+            0.2
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6879962123340122,
+            1.9570000409148631,
+            0.523869410056021
+          ]
+        }
+      ],
+      "fps": 27.5027502750275,
+      "renderMsP50": 3.5999999940395355,
+      "renderMsP95": 9.099999994039536,
+      "drawCalls": 122,
+      "triangles": 76978,
+      "memory": {
+        "geometries": 126,
+        "textures": 13
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "office",
+      "cue": "laptop",
+      "sceneId": "office",
+      "roomId": "239f1c9b-950f-4dd7-af38-aadac1a6dcf5",
+      "focusedId": "laptop",
+      "transitioning": false,
+      "frames": 117,
+      "cameraPosition": [
+        -1.7992882404429427,
+        1.650000008850889,
+        3.3212459066580897
+      ],
+      "cameraTarget": [
+        -2.1499636859961453,
+        1.3499999999850938,
+        -0.6000099684993873
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "calendar",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "60d8d1c6-5898-4307-9a73-e40ff2c4953a",
+          "position": [
+            0.4,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6513928959726106,
+            1.9570000409148631,
+            0.4545202087674043
+          ]
+        },
+        {
+          "id": "laptop",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "b4bdc817-2671-4418-9703-b6eac72b6fd4",
+          "position": [
+            -2.15,
+            0.055,
+            -0.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6728216785834837,
+            1.9570000409148631,
+            0.48035157468802475
+          ]
+        },
+        {
+          "id": "handover",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "6c73a6f2-bece-4a45-9e12-c60bd28ed7a6",
+          "position": [
+            2.5,
+            0.055,
+            0.2
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6879962123340122,
+            1.9570000409148631,
+            0.523869410056021
+          ]
+        }
+      ],
+      "fps": 28.40978668168793,
+      "renderMsP50": 3.3999999910593033,
+      "renderMsP95": 5.0999999940395355,
+      "drawCalls": 102,
+      "triangles": 72942,
+      "memory": {
+        "geometries": 126,
+        "textures": 13
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "office",
+      "cue": "handover",
+      "sceneId": "office",
+      "roomId": "239f1c9b-950f-4dd7-af38-aadac1a6dcf5",
+      "focusedId": "handover",
+      "transitioning": false,
+      "frames": 178,
+      "cameraPosition": [
+        1.999145592006228,
+        1.6500000000010921,
+        3.520473170639059
+      ],
+      "cameraTarget": [
+        2.499963679820655,
+        1.3499999999999996,
+        0.19999375129748148
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "calendar",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "60d8d1c6-5898-4307-9a73-e40ff2c4953a",
+          "position": [
+            0.4,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6513928959726106,
+            1.9570000409148631,
+            0.4545202087674043
+          ]
+        },
+        {
+          "id": "laptop",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "b4bdc817-2671-4418-9703-b6eac72b6fd4",
+          "position": [
+            -2.15,
+            0.055,
+            -0.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6728216785834837,
+            1.9570000409148631,
+            0.48035157468802475
+          ]
+        },
+        {
+          "id": "handover",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "6c73a6f2-bece-4a45-9e12-c60bd28ed7a6",
+          "position": [
+            2.5,
+            0.055,
+            0.2
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6879962123340122,
+            1.9570000409148631,
+            0.523869410056021
+          ]
+        }
+      ],
+      "fps": 28.703943954333155,
+      "renderMsP50": 3.0999999940395355,
+      "renderMsP95": 4.700000002980232,
+      "drawCalls": 79,
+      "triangles": 70226,
+      "memory": {
+        "geometries": 126,
+        "textures": 13
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "phone",
+      "cue": "phone",
+      "sceneId": "phone",
+      "roomId": "4a5abf4f-7043-49a3-b524-28f5c72ca08a",
+      "focusedId": "phone",
+      "transitioning": false,
+      "frames": 57,
+      "cameraPosition": [
+        -0.6399109045594276,
+        1.6500717194973196,
+        3.524040921860725
+      ],
+      "cameraTarget": [
+        -0.7999934911225498,
+        1.3499971523661156,
+        -1.2999894230741436
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "phone",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "d69780df-0422-4968-8f87-b19d48a04736",
+          "position": [
+            -0.8,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6566020165691888,
+            1.9570000409148631,
+            0.4604775823794125
+          ]
+        },
+        {
+          "id": "bill",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "c5fbd20b-4792-4d37-9456-a1b9d56e024d",
+          "position": [
+            -2.2,
+            0.055,
+            -0.7
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6818189630067115,
+            1.9570000409148631,
+            0.49192175622748563
+          ]
+        },
+        {
+          "id": "notes",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "8ffb37d1-6359-4982-aa27-2ae9759681d8",
+          "position": [
+            2.25,
+            0.055,
+            0.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6855206163155443,
+            1.9570000409148631,
+            0.520426248695026
+          ]
+        }
+      ],
+      "fps": 27.31840577589151,
+      "renderMsP50": 4,
+      "renderMsP95": 6.600000008940697,
+      "drawCalls": 125,
+      "triangles": 78060,
+      "memory": {
+        "geometries": 141,
+        "textures": 13
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "phone",
+      "cue": "bill",
+      "sceneId": "phone",
+      "roomId": "4a5abf4f-7043-49a3-b524-28f5c72ca08a",
+      "focusedId": "bill",
+      "transitioning": false,
+      "frames": 115,
+      "cameraPosition": [
+        -1.6993515371172012,
+        1.6500000132066162,
+        3.3212372106026913
+      ],
+      "cameraTarget": [
+        -2.1999636721670988,
+        1.3499999999777577,
+        -0.7000155689668404
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "phone",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "d69780df-0422-4968-8f87-b19d48a04736",
+          "position": [
+            -0.8,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6566020165691888,
+            1.9570000409148631,
+            0.4604775823794125
+          ]
+        },
+        {
+          "id": "bill",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "c5fbd20b-4792-4d37-9456-a1b9d56e024d",
+          "position": [
+            -2.2,
+            0.055,
+            -0.7
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6818189630067115,
+            1.9570000409148631,
+            0.49192175622748563
+          ]
+        },
+        {
+          "id": "notes",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "8ffb37d1-6359-4982-aa27-2ae9759681d8",
+          "position": [
+            2.25,
+            0.055,
+            0.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6855206163155443,
+            1.9570000409148631,
+            0.520426248695026
+          ]
+        }
+      ],
+      "fps": 28.149538248802408,
+      "renderMsP50": 3.7000000029802322,
+      "renderMsP95": 5.200000002980232,
+      "drawCalls": 87,
+      "triangles": 69836,
+      "memory": {
+        "geometries": 141,
+        "textures": 13
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "phone",
+      "cue": "notes",
+      "sceneId": "phone",
+      "roomId": "4a5abf4f-7043-49a3-b524-28f5c72ca08a",
+      "focusedId": "notes",
+      "transitioning": false,
+      "frames": 176,
+      "cameraPosition": [
+        1.79921304434405,
+        1.6500000000016286,
+        3.520473170547176
+      ],
+      "cameraTarget": [
+        2.2499652419855676,
+        1.3499999999999996,
+        0.2999921891085674
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "phone",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "d69780df-0422-4968-8f87-b19d48a04736",
+          "position": [
+            -0.8,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6566020165691888,
+            1.9570000409148631,
+            0.4604775823794125
+          ]
+        },
+        {
+          "id": "bill",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "c5fbd20b-4792-4d37-9456-a1b9d56e024d",
+          "position": [
+            -2.2,
+            0.055,
+            -0.7
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6818189630067115,
+            1.9570000409148631,
+            0.49192175622748563
+          ]
+        },
+        {
+          "id": "notes",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "8ffb37d1-6359-4982-aa27-2ae9759681d8",
+          "position": [
+            2.25,
+            0.055,
+            0.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6855206163155443,
+            1.9570000409148631,
+            0.520426248695026
+          ]
+        }
+      ],
+      "fps": 28.533228983238768,
+      "renderMsP50": 3.2999999970197678,
+      "renderMsP95": 5,
+      "drawCalls": 113,
+      "triangles": 78676,
+      "memory": {
+        "geometries": 141,
+        "textures": 13
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "car_rental",
+      "cue": "car",
+      "sceneId": "car_rental",
+      "roomId": "8753ceb7-e57e-4e00-abdd-c47c368a9e05",
+      "focusedId": "car",
+      "transitioning": false,
+      "frames": 58,
+      "cameraPosition": [
+        -2.5999083777948653,
+        1.6500586954751646,
+        3.8229313408517682
+      ],
+      "cameraTarget": [
+        -2.64998235468696,
+        1.349997669486957,
+        -1.1499923426000016
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "car",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "572cd6ed-d1fe-4e2b-aa02-db69a57e3fa5",
+          "position": [
+            -2.65,
+            0.055,
+            -1.15
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6492901371182711,
+            1.9570000409148631,
+            0.45183553488508776
+          ]
+        },
+        {
+          "id": "keys",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "a85b842d-6756-4558-866c-37879a463af3",
+          "position": [
+            2,
+            0.055,
+            -1.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6697471390503431,
+            1.9570000409148631,
+            0.4775139337650445
+          ]
+        },
+        {
+          "id": "policy",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "518e2229-fae7-449d-b687-18853d2d54e4",
+          "position": [
+            2.65,
+            0.055,
+            0.85
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.661380995754874,
+            1.9570000409148631,
+            0.488196838607893
+          ]
+        }
+      ],
+      "fps": 27.36043776700427,
+      "renderMsP50": 3.5,
+      "renderMsP95": 5.200000002980232,
+      "drawCalls": 79,
+      "triangles": 68294,
+      "memory": {
+        "geometries": 107,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "car_rental",
+      "cue": "keys",
+      "sceneId": "car_rental",
+      "roomId": "8753ceb7-e57e-4e00-abdd-c47c368a9e05",
+      "focusedId": "keys",
+      "transitioning": false,
+      "frames": 118,
+      "cameraPosition": [
+        1.599054997985152,
+        1.6500000048574708,
+        3.5204854110346857
+      ],
+      "cameraTarget": [
+        1.9999222750446213,
+        1.3499999999856722,
+        -1.5999924781725496
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "car",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "572cd6ed-d1fe-4e2b-aa02-db69a57e3fa5",
+          "position": [
+            -2.65,
+            0.055,
+            -1.15
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6492901371182711,
+            1.9570000409148631,
+            0.45183553488508776
+          ]
+        },
+        {
+          "id": "keys",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "a85b842d-6756-4558-866c-37879a463af3",
+          "position": [
+            2,
+            0.055,
+            -1.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6697471390503431,
+            1.9570000409148631,
+            0.4775139337650445
+          ]
+        },
+        {
+          "id": "policy",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "518e2229-fae7-449d-b687-18853d2d54e4",
+          "position": [
+            2.65,
+            0.055,
+            0.85
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.661380995754874,
+            1.9570000409148631,
+            0.488196838607893
+          ]
+        }
+      ],
+      "fps": 28.653996865203766,
+      "renderMsP50": 3.1000000089406967,
+      "renderMsP95": 4.200000002980232,
+      "drawCalls": 88,
+      "triangles": 71942,
+      "memory": {
+        "geometries": 107,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "car_rental",
+      "cue": "policy",
+      "sceneId": "car_rental",
+      "roomId": "8753ceb7-e57e-4e00-abdd-c47c368a9e05",
+      "focusedId": "policy",
+      "transitioning": false,
+      "frames": 168,
+      "cameraPosition": [
+        2.7980044714901133,
+        1.650000000004431,
+        3.921227178149221
+      ],
+      "cameraTarget": [
+        2.6499541675083216,
+        1.3499999999999996,
+        0.8498272583894092
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "car",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "572cd6ed-d1fe-4e2b-aa02-db69a57e3fa5",
+          "position": [
+            -2.65,
+            0.055,
+            -1.15
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6492901371182711,
+            1.9570000409148631,
+            0.45183553488508776
+          ]
+        },
+        {
+          "id": "keys",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "a85b842d-6756-4558-866c-37879a463af3",
+          "position": [
+            2,
+            0.055,
+            -1.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6697471390503431,
+            1.9570000409148631,
+            0.4775139337650445
+          ]
+        },
+        {
+          "id": "policy",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "518e2229-fae7-449d-b687-18853d2d54e4",
+          "position": [
+            2.65,
+            0.055,
+            0.85
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.661380995754874,
+            1.9570000409148631,
+            0.488196838607893
+          ]
+        }
+      ],
+      "fps": 28.79409634814994,
+      "renderMsP50": 2.8999999910593033,
+      "renderMsP95": 4.100000008940697,
+      "drawCalls": 86,
+      "triangles": 71342,
+      "memory": {
+        "geometries": 107,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "museum",
+      "cue": "painting",
+      "sceneId": "museum",
+      "roomId": "0a696368-e4cb-422a-adf5-c447500f4e0b",
+      "focusedId": "painting",
+      "transitioning": false,
+      "frames": 59,
+      "cameraPosition": [
+        -2.2999273593299776,
+        1.6500480365721113,
+        3.619372475487832
+      ],
+      "cameraTarget": [
+        -2.449986648902616,
+        1.3499980927003739,
+        -1.34999264327287
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "painting",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "571a188c-1ab5-4788-8024-5330d30da5fa",
+          "position": [
+            -2.45,
+            0.055,
+            -1.35
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6556687519210516,
+            1.9570000409148631,
+            0.4593648935398489
+          ]
+        },
+        {
+          "id": "sculpture",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "556ea342-b638-4ae1-a5fb-efb5ac731810",
+          "position": [
+            1.45,
+            0.055,
+            0.25
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6726842600986307,
+            1.9570000409148631,
+            0.4813337306799751
+          ]
+        },
+        {
+          "id": "landscape",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "6053e999-1a51-4a55-8609-06ac0da9e6f0",
+          "position": [
+            2.45,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6827910988669021,
+            1.9570000409148631,
+            0.5150206470189038
+          ]
+        }
+      ],
+      "fps": 27.61904761904762,
+      "renderMsP50": 1.7999999970197678,
+      "renderMsP95": 5.199999988079071,
+      "drawCalls": 84,
+      "triangles": 66588,
+      "memory": {
+        "geometries": 131,
+        "textures": 9
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "museum",
+      "cue": "sculpture",
+      "sceneId": "museum",
+      "roomId": "0a696368-e4cb-422a-adf5-c447500f4e0b",
+      "focusedId": "sculpture",
+      "transitioning": false,
+      "frames": 120,
+      "cameraPosition": [
+        1.1590493257967651,
+        1.6500000048574708,
+        3.520483997582396
+      ],
+      "cameraTarget": [
+        1.449946649366547,
+        1.349999999990398,
+        0.24997811257009622
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "painting",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "571a188c-1ab5-4788-8024-5330d30da5fa",
+          "position": [
+            -2.45,
+            0.055,
+            -1.35
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6556687519210516,
+            1.9570000409148631,
+            0.4593648935398489
+          ]
+        },
+        {
+          "id": "sculpture",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "556ea342-b638-4ae1-a5fb-efb5ac731810",
+          "position": [
+            1.45,
+            0.055,
+            0.25
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6726842600986307,
+            1.9570000409148631,
+            0.4813337306799751
+          ]
+        },
+        {
+          "id": "landscape",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "6053e999-1a51-4a55-8609-06ac0da9e6f0",
+          "position": [
+            2.45,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6827910988669021,
+            1.9570000409148631,
+            0.5150206470189038
+          ]
+        }
+      ],
+      "fps": 28.791251330688088,
+      "renderMsP50": 1.7999999970197678,
+      "renderMsP95": 4.700000002980232,
+      "drawCalls": 113,
+      "triangles": 72158,
+      "memory": {
+        "geometries": 131,
+        "textures": 9
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    {
+      "scene": "museum",
+      "cue": "landscape",
+      "sceneId": "museum",
+      "roomId": "0a696368-e4cb-422a-adf5-c447500f4e0b",
+      "focusedId": "landscape",
+      "transitioning": false,
+      "frames": 176,
+      "cameraPosition": [
+        3.049053507163308,
+        1.6500000000013346,
+        3.374575652319424
+      ],
+      "cameraTarget": [
+        2.449978750362488,
+        1.3499999999999996,
+        -1.2999670642814478
+      ],
+      "subtitleVisible": true,
+      "npc": [
+        {
+          "id": "painting",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "571a188c-1ab5-4788-8024-5330d30da5fa",
+          "position": [
+            -2.45,
+            0.055,
+            -1.35
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6556687519210516,
+            1.9570000409148631,
+            0.4593648935398489
+          ]
+        },
+        {
+          "id": "sculpture",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "556ea342-b638-4ae1-a5fb-efb5ac731810",
+          "position": [
+            1.45,
+            0.055,
+            0.25
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6726842600986307,
+            1.9570000409148631,
+            0.4813337306799751
+          ]
+        },
+        {
+          "id": "landscape",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "6053e999-1a51-4a55-8609-06ac0da9e6f0",
+          "position": [
+            2.45,
+            0.055,
+            -1.3
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6827910988669021,
+            1.9570000409148631,
+            0.5150206470189038
+          ]
+        }
+      ],
+      "fps": 28.768226726504576,
+      "renderMsP50": 1.7999999970197678,
+      "renderMsP95": 4.5,
+      "drawCalls": 102,
+      "triangles": 69638,
+      "memory": {
+        "geometries": 131,
+        "textures": 9
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    }
+  ]
+}

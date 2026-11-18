@@ -1,0 +1,212 @@
+{
+  "sources": [
+    {
+      "sourceId": "source-ced20193ce8e22c1",
+      "name": "repeat真题参考.pdf",
+      "sha256": "ced20193ce8e22c1183d52759c7bdf17741a4e46f28e9c265396cf18b406164c",
+      "bytes": 229470,
+      "rawTextFile": "sources/repeat-pdf-pages.json",
+      "parsedSets": 49,
+      "parsedQuestions": 340
+    },
+    {
+      "sourceId": "source-d59078d4296797ad",
+      "name": "粘贴的文本 (1)(20260821-105335) (1).txt",
+      "sha256": "d59078d4296797ad88bbfdd5d5c4a38dcea7b63d00790692c45a702f87e84471",
+      "bytes": 22889,
+      "rawTextFile": "sources/repeat-text.txt",
+      "parsedSets": 49,
+      "parsedQuestions": 340
+    },
+    {
+      "sourceId": "source-d59078d4296797ad",
+      "name": "粘贴的文本 (1)(20260821-105335).txt",
+      "sha256": "d59078d4296797ad88bbfdd5d5c4a38dcea7b63d00790692c45a702f87e84471",
+      "bytes": 22889,
+      "duplicateFile": true
+    },
+    {
+      "sourceId": "source-6b967a5a2dfa627d",
+      "name": "TOEFL Interview Speaking Practice Bank—精简终审版.docx",
+      "sha256": "6b967a5a2dfa627db715c2b6b243db34118267c49414c6d68623df3583933f28",
+      "bytes": 125018,
+      "rawTextFile": "sources/interview-document.txt",
+      "parsedSets": 77,
+      "parsedQuestions": 288
+    }
+  ],
+  "missingFiles": [
+    "repeat真题参考(1).pdf"
+  ],
+  "duplicateFilesSkipped": 1,
+  "duplicateSetsRemoved": 46,
+  "duplicateQuestionsRemoved": 319,
+  "anomalies": [
+    {
+      "kind": "embedded-number-removed",
+      "setTitle": "Weather and Climate",
+      "sourceDate": "5.16",
+      "original": "4-Some people believe communities should invest more money and resources into preparing for extreme weather events. What measures do you think are the most effective? Why?"
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-repeat-2026-01-27-university-open-house",
+      "actual": 6,
+      "usual": 7
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-repeat-2026-02-01-campus-visitor-center",
+      "actual": 6,
+      "usual": 7
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-repeat-2026-05-16-recycling-procedures",
+      "actual": 6,
+      "usual": 7
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-4-15-dining-out",
+      "actual": 1,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-4-18-friendship",
+      "actual": 3,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-4-26-renewable-energy",
+      "actual": 3,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-4-26-sleep-habits",
+      "actual": 3,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-5-6-time-management",
+      "actual": 3,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-5-6-public-parks-and-recreation",
+      "actual": 3,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-5-9-movies",
+      "actual": 3,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-5-9-music-experiences",
+      "actual": 3,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-5-16-weather-and-climate",
+      "actual": 1,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-5-16-shopping",
+      "actual": 2,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-5-30-remote-work",
+      "actual": 1,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-6-13-weather-and-climate",
+      "actual": 3,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-6-27-movie-preferences",
+      "actual": 3,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-7-4-gift-giving",
+      "actual": 3,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-7-5-public-parks-recreation-and-online-shopping",
+      "actual": 8,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-7-18-social-media",
+      "actual": 2,
+      "usual": 4
+    },
+    {
+      "kind": "source-set-size",
+      "setId": "toefl-interview-7-25-public-transportation",
+      "actual": 3,
+      "usual": 4
+    }
+  ],
+  "extractionConflictsResolved": [
+    {
+      "setTitle": "Grocery Store Orientation",
+      "sourceDate": "2026-03-16",
+      "page": 7,
+      "excludedExtractedQuestions": 7
+    },
+    {
+      "setTitle": "Electronics Store",
+      "sourceDate": "2026-03-09",
+      "page": 12,
+      "excludedExtractedQuestions": 7
+    },
+    {
+      "setTitle": "Making Coffee / Making a Latte",
+      "sourceDate": "2026-04-18",
+      "page": 12,
+      "excludedExtractedQuestions": 7
+    }
+  ],
+  "repeat": {
+    "sets": 49,
+    "questions": 340,
+    "withReferenceAnswer": 0,
+    "withSourceAudio": 0
+  },
+  "interview": {
+    "sets": 77,
+    "questions": 288,
+    "withReferenceAnswer": 288,
+    "withSourceAudio": 0
+  },
+  "totalQuestions": 628,
+  "withoutSourceAudio": 628,
+  "notes": [
+    "Third-party recalled practice, not official ETS test items.",
+    "Interview dates have no stated year; month/day retained without inventing a year.",
+    "Same questions in different source groups are retained; only identical copies of entire source groups are merged.",
+    "References are user-supplied practice models; teaching notes are excluded from displayed answers."
+  ]
+}

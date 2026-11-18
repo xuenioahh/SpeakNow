@@ -1,0 +1,23 @@
+{
+  "scope": "Real browser MediaRecorder → real local ASR → real DeepSeek. Synthesized file microphone; NOT human microphone or audible TTS acceptance.",
+  "errors": [],
+  "transcription": {
+    "text": "I would like a cup of tea without sugar. Tomorrow I am taking a train to the coast. I would like a cup of tea.",
+    "source": "local-audio",
+    "model": "faster-whisper-base.en",
+    "durationSeconds": 5.76,
+    "processingMs": 1280
+  },
+  "reply": "What kind of tea would you like — we have English breakfast, green, and chamomile. And a trip to the coast tomorrow sounds nice; I'll get your tea ready to go.",
+  "usage": {
+    "prompt_tokens": 330,
+    "completion_tokens": 39,
+    "total_tokens": 369,
+    "prompt_tokens_details": {
+      "cached_tokens": 128
+    },
+    "prompt_cache_hit_tokens": 128,
+    "prompt_cache_miss_tokens": 202
+  },
+  "status": "PASS"
+}

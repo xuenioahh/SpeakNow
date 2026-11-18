@@ -34,7 +34,7 @@ export default function GlowCTAButton({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "group relative isolate overflow-hidden rounded-[22px] border border-white/16 bg-white/10 px-5 py-3 text-white shadow-[0_18px_40px_rgba(15,23,42,0.24)] backdrop-blur-md",
+        "group relative isolate overflow-hidden rounded-[22px] border border-slate-200 bg-white/10 px-5 py-3 text-foreground shadow-[0_18px_40px_rgba(15,23,42,0.24)] backdrop-blur-md",
         "before:absolute before:inset-[1px] before:rounded-[20px] before:bg-gradient-to-r before:from-white/14 before:via-transparent before:to-white/10 before:opacity-70 before:content-['']",
         className,
       )}
@@ -59,7 +59,7 @@ export default function GlowCTAButton({
       <span className="relative z-10 inline-flex items-center gap-3">
         <span>{children}</span>
         <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-black/18 ring-1 ring-white/14 transition-transform duration-300 group-hover:translate-x-1">
-          <ArrowRight className={cn("h-4 w-4 text-white", arrowClassName)} />
+          <ArrowRight className={cn("h-4 w-4 text-foreground", arrowClassName)} />
         </span>
       </span>
     </Button>

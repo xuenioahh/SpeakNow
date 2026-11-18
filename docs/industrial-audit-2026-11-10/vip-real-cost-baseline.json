@@ -1,0 +1,23 @@
+{
+  "scope": "Prior final ten real DeepSeek text conversation receipts only; no feedback, TTS, infrastructure, tax or invoice. Never imported into a user billing ledger.",
+  "source": "real-browser.json",
+  "total": {
+    "inputTokens": 6059,
+    "outputTokens": 459,
+    "cacheHitTokens": 3968,
+    "cacheMissTokens": 2091,
+    "reportedCalls": 10,
+    "missingUsageCalls": 0,
+    "unpricedCalls": 0,
+    "estimatedCnyLow": 0.00400636,
+    "estimatedCnyHigh": 0.00801272
+  },
+  "oneMillionTokenProjection": {
+    "observedTokens": 6518,
+    "packageTokens": 1000000,
+    "low": 0.6146609389383246,
+    "high": 1.2293218778766493
+  },
+  "ratesCheckedAt": "2026-11-12",
+  "sourceUrl": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/"
+}

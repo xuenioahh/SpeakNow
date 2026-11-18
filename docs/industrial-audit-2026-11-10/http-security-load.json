@@ -1,0 +1,128 @@
+{
+  "category": "Mock HTTP integration + local concurrency, not real provider load",
+  "knownGap": {
+    "issue": "SN-008",
+    "answers": 80,
+    "payloadBytes": 77530,
+    "status": 413
+  },
+  "results": [
+    {
+      "name": "fixture provider canary",
+      "status": 200
+    },
+    {
+      "name": "anonymous practice access denied",
+      "status": 401
+    },
+    {
+      "name": "cross-origin inference denied",
+      "status": 403
+    },
+    {
+      "name": "malformed JSON rejected",
+      "status": 400
+    },
+    {
+      "name": "private helper is not routable",
+      "status": 404
+    },
+    {
+      "name": "oversized JSON rejected",
+      "status": 413
+    },
+    {
+      "name": "known gap: valid long-session review rejected before model context compaction",
+      "status": 413
+    }
+  ],
+  "requests": [
+    {
+      "index": 0,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 318
+    },
+    {
+      "index": 1,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 130
+    },
+    {
+      "index": 2,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 98
+    },
+    {
+      "index": 3,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 78
+    },
+    {
+      "index": 4,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 288
+    },
+    {
+      "index": 5,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 226
+    },
+    {
+      "index": 6,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 165
+    },
+    {
+      "index": 7,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 197
+    },
+    {
+      "index": 8,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 386
+    },
+    {
+      "index": 9,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 258
+    },
+    {
+      "index": 10,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 48
+    },
+    {
+      "index": 11,
+      "status": 200,
+      "completed": true,
+      "fixture": true,
+      "elapsedMs": 350
+    }
+  ],
+  "elapsedMs": 389,
+  "successCount": 12,
+  "scope": "Twelve concurrent local HTTP/SSE calls, actual authentication/rate/membership JSON storage paths. No cloud DB or external API capacity claim."
+}

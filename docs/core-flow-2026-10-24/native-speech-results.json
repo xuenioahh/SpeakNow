@@ -1,0 +1,37 @@
+{
+  "supported": true,
+  "voiceCount": 157,
+  "playback": [
+    {
+      "sentence": "Welcome to the painting class.",
+      "completed": true
+    },
+    {
+      "sentence": "Welcome to our campus tour.",
+      "completed": true
+    }
+  ],
+  "events": [
+    {
+      "event": "start",
+      "text": "Welcome to the painting class.",
+      "error": null
+    },
+    {
+      "event": "end",
+      "text": "Welcome to the painting class.",
+      "error": null
+    },
+    {
+      "event": "start",
+      "text": "Welcome to our campus tour.",
+      "error": null
+    },
+    {
+      "event": "end",
+      "text": "Welcome to our campus tour.",
+      "error": null
+    }
+  ],
+  "limitation": "Native browser speech events verified; audible output quality was not manually assessed."
+}

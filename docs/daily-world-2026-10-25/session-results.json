@@ -1,0 +1,8 @@
+{
+  "checks": [
+    "3 contextual fixture rounds, actual fake-device recording saved and replayable, interruption, camera cleanup, subtitles modes, feedback and linked retry",
+    "390px mobile layout and interaction; reduced-motion renders on demand; exit media cleanup"
+  ],
+  "errors": [],
+  "performance": []
+}

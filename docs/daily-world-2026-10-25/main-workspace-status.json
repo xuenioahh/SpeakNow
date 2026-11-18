@@ -1,0 +1,36 @@
+{
+  "testedWorkspace": "/Users/zhangzhuoru/Desktop/master/.speaknow-work/daily-world",
+  "mainWorkspace": "/Users/zhangzhuoru/Desktop/master/speaknow-audit",
+  "postVerificationConcurrentChanges": [
+    {
+      "file": "src/lib/voice/VoiceInteraction.js",
+      "testedHash": "653be2d5fbd18ae814fa2bff5c2bc18f2c512ff56f869856d4db62b60bed5cc4",
+      "mainHash": "e80b4bc3febe3fc3c3c37866326d331750657c9926b71a73e3dcbeef2d3c399b"
+    },
+    {
+      "file": "src/pages/VoiceChat.jsx",
+      "testedHash": "2d2cbd62a822c7879fbef2f3e760178acce2f79699e05c39bab2de885fa0134d",
+      "mainHash": "c8e71b7cc9d09440876116cb6d9832aeb256e1253ead82ee923e7e2554e9b29c"
+    },
+    {
+      "file": "src/daily-immersive.css",
+      "testedHash": "c68746e30bc1fd990332b863d1511a383a730a078b3f85559bc95dac453660be",
+      "mainHash": "1f95e750dd7215c93941a6045e2c59017a815677cd2a19dcae8476ba1ab42899"
+    },
+    {
+      "file": "src/api/conversationStream.js",
+      "testedHash": "77d0e65753fb1888337ee419056d14a75d20917d384b558a106bff782826c9b2",
+      "mainHash": "f944e4475e9f51d92c522e14beabd3d51d931850fd0819c8d90fa8cb29919068"
+    },
+    {
+      "file": "api/voice-chat.js",
+      "testedHash": "eed34d6d34ff1b1f10d76e2b41bad3a3ee3558cc47b6c0e0baf8d4f10639b28d",
+      "mainHash": "b0f0dc19ed6dd6adde175881bbb7d167c60bcdd9ee62adc09a0428dcb00512cc"
+    }
+  ],
+  "additionalMainOnlyFixes": [
+    "src/lib/expressionLandmarks.js",
+    "src/lib/expressionVision.worker.js",
+    "tests/learning/conversation-vision-frame.test.mjs"
+  ]
+}

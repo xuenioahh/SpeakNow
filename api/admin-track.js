@@ -1,13 +1,15 @@
 import { appendAdminEvent, deleteAdminRecord, listAdminData } from "./_adminStore.js";
 import { protectedApi } from "./_apiGuard.js";
 import { authenticate } from "./_auth.js";
-import { getOwned } from "./_appStore.js";
+import { getOwned, listAccountSummaries } from "./_appStore.js";
 
 async function handler(req, res) {
   if (req.method === "GET") {
     await authenticate(req, { admin: true });
-    const db = await listAdminData();
-    res.status(200).json(db);
+    const [db, accounts] = await Promise.all([listAdminData(), listAccountSummaries()]);
+    const users = new Map((db.users || []).map(user => [user.id, user]));
+    for (const account of accounts) users.set(account.id, { ...users.get(account.id), ...account });
+    res.status(200).json({ ...db, users: [...users.values()] });
     return;
   }
 

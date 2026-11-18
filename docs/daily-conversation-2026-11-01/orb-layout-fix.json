@@ -1,0 +1,30 @@
+{
+  "results": [
+    {
+      "name": "desktop",
+      "orbWidth": 32,
+      "orbHeight": 32,
+      "insideControls": true,
+      "sceneOverlap": 0,
+      "overflow": false
+    },
+    {
+      "name": "320",
+      "orbWidth": 26,
+      "orbHeight": 26,
+      "insideControls": true,
+      "sceneOverlap": 0,
+      "overflow": false
+    },
+    {
+      "name": "390",
+      "orbWidth": 32,
+      "orbHeight": 32,
+      "insideControls": true,
+      "sceneOverlap": 0,
+      "overflow": false
+    }
+  ],
+  "errors": [],
+  "scope": "Browser layout inspection only; no microphone, camera or model request"
+}

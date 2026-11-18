@@ -1,0 +1,52 @@
+{
+  "sources": [
+    {
+      "sourceId": "ielts-part1-pdf",
+      "name": "2026 9-12 Part 1 新题+老题.pdf",
+      "pages": 9
+    },
+    {
+      "sourceId": "ielts-complete-pdf",
+      "name": "9-12月雅思口语题库更新_20260907174139.pdf",
+      "pages": 69
+    }
+  ],
+  "counts": {
+    "part1": {
+      "sets": 47,
+      "questions": 362
+    },
+    "part2": {
+      "sets": 36,
+      "questions": 39
+    },
+    "part3": {
+      "sets": 28,
+      "questions": 134
+    }
+  },
+  "duplicatesMerged": 131,
+  "referenceAnswers": 231,
+  "notes": [
+    {
+      "sourceId": "ielts-part1-pdf",
+      "page": 3,
+      "topic": "Opportunities · 机会",
+      "issue": "TBC placeholder omitted"
+    },
+    {
+      "sourceId": "ielts-part1-pdf",
+      "page": 4,
+      "topic": "Travelling · 旅行",
+      "issue": "TBC placeholder omitted"
+    },
+    {
+      "page": 44,
+      "issue": "Source has a truncated parenthesis; retained raw text and used complete main clause"
+    },
+    {
+      "page": 12,
+      "issue": "Misplaced shoe answer in Politeness was excluded; no replacement answer invented"
+    }
+  ]
+}

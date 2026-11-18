@@ -128,10 +128,10 @@ export default function PresentationCapture({ context, retry, attemptId, userId,
   return <section className="impact-capture glass rounded-2xl p-5" data-owner={userId}>
     <VoiceOrb state={orbState} energyRef={energy} />
     <h2>{retry?.kind === 'moment' ? 'Practice This Moment' : 'Record your first attempt'}</h2>
-    <p>{retry?.target?.practiceObjective || 'Explain your core message to your intended audience in about five minutes.'}</p>
+
     <p>{context.coreMessage}</p>
-    <p role="status">{loadingDraft ? 'Restoring unsent work' : phase === 'listening' ? 'Listening to you' : phase === 'processing' ? 'Saving your practice' : 'Review your words, then finish'} · recorded duration: {elapsed}s</p>
-    <p className="text-sm text-muted-foreground">Recording duration is browser timing. Recognized words need checking against the recording; they are not a pronunciation assessment.</p>
+    <p role="status">{loadingDraft ? 'Restoring unsent work' : phase === 'listening' ? 'Listening to you' : phase === 'processing' ? 'Saving your practice' : 'Ready'} · recorded duration: {elapsed}s</p>
+
     <label className="impact-field"><span>{source === 'typed' ? 'Typed practice text' : 'Recognized transcript · review for errors'}</span><textarea rows={5} value={text} disabled={loadingDraft} readOnly={['listening', 'starting', 'requesting_permission', 'stopping', 'finalizing', 'processing'].includes(phase) || Boolean(savedPractice)} onChange={event => {
       work.current.text = event.target.value;
       work.current.inputSource = work.current.blob ? 'mixed' : 'typed';
@@ -141,10 +141,10 @@ export default function PresentationCapture({ context, retry, attemptId, userId,
       <Button type="button" disabled={loadingDraft || busy.current || Boolean(savedPractice) || ['processing', 'stopping', 'finalizing'].includes(phase)} onClick={phase === 'listening' ? stop : start}>{phase === 'listening' ? 'Stop Recording' : 'Start Recording'}</Button>
       <Button type="button" variant="outline" disabled={loadingDraft || phase === 'processing' || Boolean(savedPractice)} onClick={() => { cancel(); work.current.inputSource = 'typed'; setSource('typed'); setError(''); }}>Use Text Mode</Button>
       <Button type="button" variant="outline" disabled={loadingDraft || phase === 'processing' || Boolean(savedPractice)} onClick={cancel}>Cancel Recording</Button>
-      <Button type="button" disabled={loadingDraft || !text.trim() || ['requesting_permission', 'starting', 'stopping', 'finalizing', 'processing'].includes(phase)} onClick={finish}>{phase === 'processing' ? 'Saving…' : retry?.kind === 'moment' ? 'Finish & Compare' : 'Finish Presentation'}</Button>
+      <Button type="button" disabled={loadingDraft || !text.trim() || ['listening', 'requesting_permission', 'starting', 'stopping', 'finalizing', 'processing'].includes(phase)} onClick={finish}>{phase === 'processing' ? 'Saving…' : retry?.kind === 'moment' ? 'Finish & Compare' : 'Finish Presentation'}</Button>
       <Button type="button" variant="outline" disabled={loadingDraft || phase === 'processing'} onClick={exit}>Exit · keep draft</Button>
     </div>
-    {source !== 'transcribed' && <p className="text-sm text-muted-foreground">Text-only or edited text supports content coaching; it does not prove what was spoken or whether spoken delivery improved.</p>}
+
     {draftWarning && <p role="status">{draftWarning}</p>}
     {error && <p role="alert">{error}</p>}
   </section>;

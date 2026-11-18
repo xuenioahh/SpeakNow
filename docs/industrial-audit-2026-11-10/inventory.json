@@ -1,0 +1,1020 @@
+{
+  "capturedAt": "2026-11-12T12:49:18.728Z",
+  "projectRoot": "/Users/zhangzhuoru/Desktop/master/speaknow-audit",
+  "gitState": "Untracked project under home repository; no commit or branch created",
+  "lockfileVersion": 3,
+  "files": [
+    ".DS_Store",
+    ".gitignore",
+    ".vercelignore",
+    "ADMIN_BACKEND_SETUP.md",
+    "AGENTS.md",
+    "COMPLETE_TECHNICAL_REPORT.md",
+    "COMPLETE_TECHNICAL_REPORT_BILINGUAL.md",
+    "GEMINI_ARCHITECTURE_PROMPTS.md",
+    "GITHUB_RELEASE.md",
+    "ITERATION_LOG_2026-04-30_COMPLETE.md",
+    "ITERATION_LOG_2026-04-30_LOADING_PRIVACY_REPORTS.md",
+    "ITERATION_LOG_2026-04-30_PROFILE_VOICE_POLISH_AND_DEPLOY.md",
+    "PRESENTATION_SCRIPT.md",
+    "README.md",
+    "RELEASE_NOTES.md",
+    "api/_adminDb.js",
+    "api/_adminStore.js",
+    "api/_apiGuard.js",
+    "api/_appDb.js",
+    "api/_appStore.js",
+    "api/_auth.js",
+    "api/_bankAccess.js",
+    "api/_cafeDialogue.js",
+    "api/_jsonStore.js",
+    "api/_llm.js",
+    "api/_localTranscription.js",
+    "api/_mediaStore.js",
+    "api/_membership.js",
+    "api/_membershipActions.js",
+    "api/_membershipStore.js",
+    "api/_plans.js",
+    "api/_profilePatch.js",
+    "api/_requestContext.js",
+    "api/_securityStore.js",
+    "api/_speechAssessment.js",
+    "api/_storageHealth.js",
+    "api/_trialGuard.js",
+    "api/_usageReport.js",
+    "api/admin-track.js",
+    "api/dynamic-tts.js",
+    "api/exam-examiner.js",
+    "api/expression-review.js",
+    "api/expression-service.js",
+    "api/learning-dashboard.js",
+    "api/local-data.js",
+    "api/local-transcription.js",
+    "api/membership.js",
+    "api/presentation-analysis.js",
+    "api/presentation-impact.js",
+    "api/presentation-media.js",
+    "api/presentation-pause-feedback.js",
+    "api/presentation-practice.js",
+    "api/presentation-report.js",
+    "api/question-bank.js",
+    "api/speaking-audio.js",
+    "api/speaking-feedback.js",
+    "api/speaking-practice.js",
+    "api/voice-capabilities.js",
+    "api/voice-chat.js",
+    "backend/server.js",
+    "components.json",
+    "eslint.config.js",
+    "image.png",
+    "index.html",
+    "jsconfig.json",
+    "package-lock.json",
+    "package.json",
+    "postcss.config.js",
+    "public/expression-vision/face_landmarker.task",
+    "public/expression-vision/hand_landmarker.task",
+    "public/expression-vision/pose_landmarker_lite.task",
+    "public/expression-vision/vision_wasm_internal.js",
+    "public/expression-vision/vision_wasm_internal.wasm",
+    "public/expression-vision/vision_wasm_nosimd_internal.js",
+    "public/expression-vision/vision_wasm_nosimd_internal.wasm",
+    "public/expression-worker.js",
+    "public/fixed-audio/manifest.json",
+    "public/profile-bgm-127.mp3",
+    "public/profile-bgm-135.mp3",
+    "public/profile-bgm-139.mp3",
+    "public/profile-bgm-292.mp3",
+    "public/profile-bgm-640.mp3",
+    "public/profile-hero-illustration-cutout-final.png",
+    "public/profile-hero-illustration-cutout-v2.png",
+    "public/profile-hero-illustration-cutout-v3.png",
+    "public/profile-hero-illustration-cutout-v4.png",
+    "public/profile-hero-illustration-cutout-v5.png",
+    "public/profile-hero-illustration-cutout.png",
+    "public/profile-hero-illustration.png",
+    "public/profile-studio-v2.png",
+    "public/release.json",
+    "public/tuxedo-back-in-town.wav",
+    "scripts/__pycache__/import-question-bank.cpython-314.pyc",
+    "scripts/__pycache__/local-transcription-worker.cpython-314.pyc",
+    "scripts/apply-light-theme.mjs",
+    "scripts/audit-controls.mjs",
+    "scripts/audit-conversation-20261108.mjs",
+    "scripts/build-button-audit.mjs",
+    "scripts/build-expression-worker.mjs",
+    "scripts/check-cafe-browser.cjs",
+    "scripts/check-cafe-dialogue.mjs",
+    "scripts/check-comprehensive-live.mjs",
+    "scripts/check-database.js",
+    "scripts/check-deepseek-health.mjs",
+    "scripts/check-exam-standards.mjs",
+    "scripts/check-expression-api.mjs",
+    "scripts/check-expression-browser.cjs",
+    "scripts/check-expression-context.mjs",
+    "scripts/check-expression-practice.mjs",
+    "scripts/check-expression.mjs",
+    "scripts/check-fixed-audio-manifest.mjs",
+    "scripts/check-immersive-browser.cjs",
+    "scripts/check-llm-routing.mjs",
+    "scripts/check-orb-lifecycle.mjs",
+    "scripts/check-production-storage.mjs",
+    "scripts/check-refinement-browser.cjs",
+    "scripts/check-refinement-lifecycle.mjs",
+    "scripts/check-refinement-performance.mjs",
+    "scripts/check-refinement-scope.mjs",
+    "scripts/check-refinement-ui.mjs",
+    "scripts/check-report-display.mjs",
+    "scripts/check-scenario-browser.cjs",
+    "scripts/check-spatial-audio.mjs",
+    "scripts/check-spatial-browser.cjs",
+    "scripts/check-spatial-render.mjs",
+    "scripts/check-speaking-feedback-health.mjs",
+    "scripts/check-speaking-reliability.mjs",
+    "scripts/check-voice-interaction.mjs",
+    "scripts/check-voice-orb-browser.cjs",
+    "scripts/check-voice-realtime-browser.cjs",
+    "scripts/check-voice-recording.mjs",
+    "scripts/collect-pitch-cost.mjs",
+    "scripts/core-value/evaluate.mjs",
+    "scripts/core-value/export.mjs",
+    "scripts/core-value/lib.mjs",
+    "scripts/create-local-test-account.mjs",
+    "scripts/dev-with-backend.js",
+    "scripts/extract-bank-pdf.swift",
+    "scripts/fixed-audio-catalog.mjs",
+    "scripts/import-ielts-bank.py",
+    "scripts/import-question-bank.py",
+    "scripts/industrial-audit-inventory.mjs",
+    "scripts/inspect-expression-api.mjs",
+    "scripts/load-server-env.mjs",
+    "scripts/local-transcription-worker.py",
+    "scripts/measure-deepseek-stream.mjs",
+    "scripts/measure-refinement-build.mjs",
+    "scripts/measure-voice-latency.mjs",
+    "scripts/migrate-passwords.mjs",
+    "scripts/preview-voice-samples.mjs",
+    "scripts/render-pitch-cost.py",
+    "scripts/reset-local-test-password.mjs",
+    "scripts/run-real-deepseek-server.mjs",
+    "scripts/start-local.mjs",
+    "scripts/verify-daily-multimodal-real.mjs",
+    "scripts/verify-daily-real-model.mjs",
+    "scripts/verify-deepseek-stdin.mjs",
+    "scripts/verify-usage-real.mjs",
+    "server/api.js",
+    "shared/conversationMemory.js",
+    "shared/dailyEvidence.js",
+    "shared/ieltsMock.js",
+    "shared/question-bank/catalogue.json",
+    "shared/question-bank/ielts-catalogue.json",
+    "shared/question-bank/ielts-import-report.json",
+    "shared/question-bank/import-report.json",
+    "shared/question-bank/sources/ielts/complete-layout-pages.json",
+    "shared/question-bank/sources/ielts/complete-ocr-pages.json",
+    "shared/question-bank/sources/ielts/complete-ocr-text.txt",
+    "shared/question-bank/sources/ielts/complete-pages.json",
+    "shared/question-bank/sources/ielts/complete-text.txt",
+    "shared/question-bank/sources/ielts/part1-pages.json",
+    "shared/question-bank/sources/ielts/part1-text.txt",
+    "shared/question-bank/sources/interview-document.txt",
+    "shared/question-bank/sources/pdf-extraction-verification.json",
+    "shared/question-bank/sources/repeat-pdf-pages.json",
+    "shared/question-bank/sources/repeat-pdf.sha256",
+    "shared/question-bank/sources/repeat-text.txt",
+    "shared/questionBank.js",
+    "shared/questionBankData.js",
+    "shared/sampleBanks.js",
+    "shared/speakingTasks.js",
+    "shared/speechAudio.js",
+    "shared/usagePricing.js",
+    "shared/visualEvidence.js",
+    "src/App.jsx",
+    "src/api/conversationStream.js",
+    "src/api/http.js",
+    "src/api/localClient.js",
+    "src/casual-video.css",
+    "src/components/AccountUsage.jsx",
+    "src/components/AdminMembership.jsx",
+    "src/components/AdminRoute.jsx",
+    "src/components/AdminUsage.jsx",
+    "src/components/AppErrorBoundary.jsx",
+    "src/components/BottomNav.jsx",
+    "src/components/CharacterFigure.jsx",
+    "src/components/ConversationTranscript.jsx",
+    "src/components/DailyCameraReview.jsx",
+    "src/components/DailyFeedbackPage.jsx",
+    "src/components/ExpressionBrief.jsx",
+    "src/components/ExpressionConnection.jsx",
+    "src/components/ExpressionMethod.jsx",
+    "src/components/ExpressionPracticeLab.jsx",
+    "src/components/GlowCTAButton.jsx",
+    "src/components/LearningAudio.jsx",
+    "src/components/LegalDialog.jsx",
+    "src/components/LoadingProgressCard.jsx",
+    "src/components/LocalVideoClip.jsx",
+    "src/components/MainNav.jsx",
+    "src/components/PartnershipWindow.jsx",
+    "src/components/ProfileMusic.jsx",
+    "src/components/ProtectedRoute.jsx",
+    "src/components/RecordingQuality.jsx",
+    "src/components/RouteScroll.jsx",
+    "src/components/ScenarioStage.jsx",
+    "src/components/SpeechAudioFeedback.jsx",
+    "src/components/UserNotRegisteredError.jsx",
+    "src/components/presentation/CameraPreview.jsx",
+    "src/components/presentation/DocumentViewer.jsx",
+    "src/components/presentation/LiveScorePanel.jsx",
+    "src/components/report/PracticeTimeline.jsx",
+    "src/components/report/RadarChart.jsx",
+    "src/components/scene/buildRoom.js",
+    "src/components/scene/createHumanoid.js",
+    "src/components/scene/createScene.js",
+    "src/components/scene/roomMaterials.js",
+    "src/components/spatial/VoiceOrb.jsx",
+    "src/components/ui/accordion.jsx",
+    "src/components/ui/alert-dialog.jsx",
+    "src/components/ui/alert.jsx",
+    "src/components/ui/aspect-ratio.jsx",
+    "src/components/ui/avatar.jsx",
+    "src/components/ui/badge.jsx",
+    "src/components/ui/breadcrumb.jsx",
+    "src/components/ui/button.jsx",
+    "src/components/ui/calendar.jsx",
+    "src/components/ui/card.jsx",
+    "src/components/ui/carousel.jsx",
+    "src/components/ui/chart.jsx",
+    "src/components/ui/checkbox.jsx",
+    "src/components/ui/collapsible.jsx",
+    "src/components/ui/command.jsx",
+    "src/components/ui/context-menu.jsx",
+    "src/components/ui/dialog.jsx",
+    "src/components/ui/drawer.jsx",
+    "src/components/ui/dropdown-menu.jsx",
+    "src/components/ui/form.jsx",
+    "src/components/ui/hover-card.jsx",
+    "src/components/ui/input-otp.jsx",
+    "src/components/ui/input.jsx",
+    "src/components/ui/label.jsx",
+    "src/components/ui/menubar.jsx",
+    "src/components/ui/navigation-menu.jsx",
+    "src/components/ui/pagination.jsx",
+    "src/components/ui/popover.jsx",
+    "src/components/ui/progress.jsx",
+    "src/components/ui/radio-group.jsx",
+    "src/components/ui/resizable.jsx",
+    "src/components/ui/scroll-area.jsx",
+    "src/components/ui/select.jsx",
+    "src/components/ui/separator.jsx",
+    "src/components/ui/sheet.jsx",
+    "src/components/ui/sidebar.jsx",
+    "src/components/ui/skeleton.jsx",
+    "src/components/ui/slider.jsx",
+    "src/components/ui/sonner.jsx",
+    "src/components/ui/switch.jsx",
+    "src/components/ui/table.jsx",
+    "src/components/ui/tabs.jsx",
+    "src/components/ui/textarea.jsx",
+    "src/components/ui/toast.jsx",
+    "src/components/ui/toaster.jsx",
+    "src/components/ui/toggle-group.jsx",
+    "src/components/ui/toggle.jsx",
+    "src/components/ui/tooltip.jsx",
+    "src/components/ui/use-toast.jsx",
+    "src/components/voice/ChatMessage.jsx",
+    "src/components/voice/ModeSelector.jsx",
+    "src/components/voice/RecordingControls.jsx",
+    "src/components/voice/ScenarioCard.jsx",
+    "src/core-flow.css",
+    "src/daily-immersive.css",
+    "src/expression-practice.css",
+    "src/hooks/use-mobile.jsx",
+    "src/hooks/useLearningRecords.js",
+    "src/hooks/useSessionHistory.js",
+    "src/impact/ImpactReport.jsx",
+    "src/impact/ImpactSetup.jsx",
+    "src/impact/PresentationCapture.jsx",
+    "src/impact/client.js",
+    "src/impact/contracts.js",
+    "src/impact/drafts.js",
+    "src/impact/impact.css",
+    "src/impact/storage.js",
+    "src/index.css",
+    "src/learning.css",
+    "src/lib/AuthContext.jsx",
+    "src/lib/PageNotFound.jsx",
+    "src/lib/activitySync.js",
+    "src/lib/audioEnergy.js",
+    "src/lib/audioManager.js",
+    "src/lib/bankAccess.js",
+    "src/lib/browserBankData.js",
+    "src/lib/conversationAnchors.js",
+    "src/lib/dailyLiveMetrics.js",
+    "src/lib/dailyTasks.js",
+    "src/lib/dailyTranscription.js",
+    "src/lib/dailyVideoMoment.js",
+    "src/lib/examSelection.js",
+    "src/lib/examStandards.js",
+    "src/lib/expressionContext.js",
+    "src/lib/expressionInsights.js",
+    "src/lib/expressionLandmarks.js",
+    "src/lib/expressionPractice.js",
+    "src/lib/expressionVision.worker.js",
+    "src/lib/expressionVisionSession.js",
+    "src/lib/feedbackEvidence.js",
+    "src/lib/fixedAudioLibrary.js",
+    "src/lib/immersiveScenarios.js",
+    "src/lib/latestResource.js",
+    "src/lib/learningDashboard.js",
+    "src/lib/learningStore.js",
+    "src/lib/localReports.js",
+    "src/lib/localStore.js",
+    "src/lib/pdfText.js",
+    "src/lib/profileAnalytics.js",
+    "src/lib/profileInsights.js",
+    "src/lib/profileRecords.js",
+    "src/lib/query-client.js",
+    "src/lib/reportDisplay.js",
+    "src/lib/scenarios.js",
+    "src/lib/sceneAssets.js",
+    "src/lib/speechAssessment.js",
+    "src/lib/utils.js",
+    "src/lib/visionTimeline.js",
+    "src/lib/voice/AudioTake.js",
+    "src/lib/voice/VoiceCapture.js",
+    "src/lib/voice/VoiceInteraction.js",
+    "src/lib/voice/endpointDetector.js",
+    "src/lib/voice/speechOutput.js",
+    "src/lib/voiceOrbState.js",
+    "src/light-system.css",
+    "src/main.jsx",
+    "src/pages/AdminPage.jsx",
+    "src/pages/AuthPage.jsx",
+    "src/pages/CasualVideo.jsx",
+    "src/pages/DailyImmersiveGuidance.jsx",
+    "src/pages/DailyPreparation.jsx",
+    "src/pages/ExamPractice.jsx",
+    "src/pages/ExamPreparation.jsx",
+    "src/pages/ExamSpeaking.jsx",
+    "src/pages/Home.jsx",
+    "src/pages/LearningDashboard.jsx",
+    "src/pages/LearningReview.jsx",
+    "src/pages/MainLanding.jsx",
+    "src/pages/Membership.jsx",
+    "src/pages/Presentation.jsx",
+    "src/pages/PresentationAnalysis.jsx",
+    "src/pages/PresentationFeedback.jsx",
+    "src/pages/PresentationPractice.jsx",
+    "src/pages/PresentationReport.jsx",
+    "src/pages/Profile.jsx",
+    "src/pages/QuestionBank.jsx",
+    "src/pages/VoiceChat.jsx",
+    "src/pages/VoiceReport.jsx",
+    "src/pages/VoiceSetup.jsx",
+    "src/product-polish.css",
+    "src/product-refinement.css",
+    "src/profile.css",
+    "src/scenario-studio.css",
+    "src/spatial-studio.css",
+    "src/types/env.d.ts",
+    "src/types/globals.d.ts",
+    "src/utils/index.ts",
+    "src/voice-room.css",
+    "supabase/admin_schema.sql",
+    "supabase/app_schema.sql",
+    "supabase/consolidation.sql",
+    "supabase/membership_20261029.sql",
+    "supabase/profile_upgrade.sql",
+    "supabase/repair_2026_10_13.sql",
+    "tailwind.config.js",
+    "technical_dev_log.md",
+    "tests/consolidation/admin-storage.test.js",
+    "tests/consolidation/browser.mjs",
+    "tests/consolidation/security.test.js",
+    "tests/core-loop/browser.mjs",
+    "tests/core-loop/server.mjs",
+    "tests/core-value/evaluation.test.mjs",
+    "tests/impact/fixtures.js",
+    "tests/impact/impact.test.js",
+    "tests/learning/academic-asr-browser.mjs",
+    "tests/learning/accepted-conversation.test.mjs",
+    "tests/learning/bank-browser.mjs",
+    "tests/learning/browser.mjs",
+    "tests/learning/comprehensive-browser.mjs",
+    "tests/learning/conversation-anchors.test.mjs",
+    "tests/learning/conversation-feedback.test.mjs",
+    "tests/learning/conversation-vision-frame.test.mjs",
+    "tests/learning/core-flow-browser.mjs",
+    "tests/learning/daily-continuous-browser.mjs",
+    "tests/learning/daily-continuous.test.mjs",
+    "tests/learning/daily-deepseek-context.test.mjs",
+    "tests/learning/daily-evidence-browser.mjs",
+    "tests/learning/daily-immersive-browser.mjs",
+    "tests/learning/daily-live-metrics.test.mjs",
+    "tests/learning/daily-multimodal.test.mjs",
+    "tests/learning/daily-stream-browser.mjs",
+    "tests/learning/daily-video-browser.mjs",
+    "tests/learning/daily-video.test.mjs",
+    "tests/learning/daily-vision-browser.mjs",
+    "tests/learning/daily-world-audio.mjs",
+    "tests/learning/daily-world-browser.mjs",
+    "tests/learning/daily-world-render.mjs",
+    "tests/learning/daily-world-server.mjs",
+    "tests/learning/dashboard-mock.test.mjs",
+    "tests/learning/deepseek-stream.test.mjs",
+    "tests/learning/deployment-router.test.mjs",
+    "tests/learning/dynamic-tts-browser.mjs",
+    "tests/learning/dynamic-tts.test.mjs",
+    "tests/learning/exam-audit-browser.mjs",
+    "tests/learning/fixed-audio-browser.mjs",
+    "tests/learning/fixed-audio.test.mjs",
+    "tests/learning/full-product-browser.mjs",
+    "tests/learning/ielts-bank.test.mjs",
+    "tests/learning/ielts-browser.mjs",
+    "tests/learning/industrial-cloud-store.test.mjs",
+    "tests/learning/industrial-failure-browser.mjs",
+    "tests/learning/industrial-http.mjs",
+    "tests/learning/industrial-real-browser.mjs",
+    "tests/learning/industrial-reliability.test.mjs",
+    "tests/learning/industrial-storage.test.mjs",
+    "tests/learning/learning.test.mjs",
+    "tests/learning/local-asr-browser.mjs",
+    "tests/learning/local-asr-real.mjs",
+    "tests/learning/local-login-browser.mjs",
+    "tests/learning/local-real-smoke.mjs",
+    "tests/learning/membership-postgres.mjs",
+    "tests/learning/membership.test.mjs",
+    "tests/learning/product-refinement-browser.mjs",
+    "tests/learning/profile-analytics.test.mjs",
+    "tests/learning/profile-browser.mjs",
+    "tests/learning/progress-refresh-browser.mjs",
+    "tests/learning/question-bank.test.mjs",
+    "tests/learning/real-deepseek-browser.mjs",
+    "tests/learning/repeat-differences.test.mjs",
+    "tests/learning/request-rate.test.mjs",
+    "tests/learning/restored-ui-browser.mjs",
+    "tests/learning/review-browser.mjs",
+    "tests/learning/server.mjs",
+    "tests/learning/speech-audio-browser.mjs",
+    "tests/learning/speech-audio.test.mjs",
+    "tests/learning/stability-vip.test.mjs",
+    "tests/learning/storage-health.test.mjs",
+    "tests/learning/usage-costs.test.mjs",
+    "tests/learning/vip-real-browser.mjs",
+    "tests/learning/vip-usage.test.mjs",
+    "tests/learning/vision-browser.mjs",
+    "tests/learning/vision-lifecycle.test.mjs",
+    "tests/learning/voice-interrupt.test.mjs",
+    "vercel.json",
+    "vite.config.js"
+  ],
+  "apiRoutes": [
+    {
+      "file": "api/admin-track.js",
+      "dependencies": [
+        "./_adminStore.js",
+        "./_apiGuard.js",
+        "./_auth.js",
+        "./_appStore.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/dynamic-tts.js",
+      "dependencies": [
+        "node:perf_hooks",
+        "./_requestContext.js",
+        "./_trialGuard.js"
+      ],
+      "boundary": "authenticated or rate-limited anonymous inference"
+    },
+    {
+      "file": "api/exam-examiner.js",
+      "dependencies": [
+        "./_trialGuard.js",
+        "./_llm.js",
+        "../shared/speakingTasks.js"
+      ],
+      "boundary": "authenticated or rate-limited anonymous inference"
+    },
+    {
+      "file": "api/expression-review.js",
+      "dependencies": [
+        "./_apiGuard.js",
+        "../src/lib/expressionContext.js",
+        "./_llm.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/expression-service.js",
+      "dependencies": [
+        "./_apiGuard.js",
+        "./_llm.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/learning-dashboard.js",
+      "dependencies": [
+        "./_apiGuard.js",
+        "./_appStore.js",
+        "./_membership.js",
+        "../src/lib/learningDashboard.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/local-data.js",
+      "dependencies": [
+        "./_appStore.js",
+        "./_appStore.js",
+        "node:crypto",
+        "./_auth.js",
+        "./_apiGuard.js",
+        "./_securityStore.js",
+        "./_profilePatch.js"
+      ],
+      "boundary": "inspect per-action authentication"
+    },
+    {
+      "file": "api/local-transcription.js",
+      "dependencies": [
+        "./_auth.js",
+        "./_localTranscription.js"
+      ],
+      "boundary": "loopback/local-ASR gate plus optional session authentication"
+    },
+    {
+      "file": "api/membership.js",
+      "dependencies": [
+        "./_securityStore.js",
+        "./_membership.js",
+        "./_auth.js",
+        "./_membership.js",
+        "./_membershipActions.js",
+        "./_usageReport.js"
+      ],
+      "boundary": "inspect per-action authentication"
+    },
+    {
+      "file": "api/presentation-analysis.js",
+      "dependencies": [
+        "./_apiGuard.js",
+        "./_llm.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/presentation-impact.js",
+      "dependencies": [
+        "./_apiGuard.js",
+        "./_appStore.js",
+        "./_requestContext.js",
+        "../src/impact/contracts.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/presentation-media.js",
+      "dependencies": [
+        "node:crypto",
+        "./_apiGuard.js",
+        "./_appStore.js",
+        "./_mediaStore.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/presentation-pause-feedback.js",
+      "dependencies": [
+        "../src/lib/feedbackEvidence.js",
+        "./_apiGuard.js",
+        "../src/lib/localReports.js",
+        "./_llm.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/presentation-practice.js",
+      "dependencies": [
+        "./_apiGuard.js",
+        "./_appStore.js",
+        "../src/impact/contracts.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/presentation-report.js",
+      "dependencies": [
+        "../src/lib/feedbackEvidence.js",
+        "./_apiGuard.js",
+        "./_llm.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/question-bank.js",
+      "dependencies": [
+        "./_auth.js",
+        "../shared/questionBank.js",
+        "../shared/speakingTasks.js",
+        "./_membership.js",
+        "./_bankAccess.js",
+        "./_membershipStore.js"
+      ],
+      "boundary": "inspect per-action authentication"
+    },
+    {
+      "file": "api/speaking-audio.js",
+      "dependencies": [
+        "node:crypto",
+        "./_auth.js",
+        "./_securityStore.js",
+        "./_appStore.js",
+        "../shared/speakingTasks.js",
+        "./_speechAssessment.js"
+      ],
+      "boundary": "inspect per-action authentication"
+    },
+    {
+      "file": "api/speaking-feedback.js",
+      "dependencies": [
+        "./_trialGuard.js",
+        "./_llm.js",
+        "../shared/speakingTasks.js",
+        "./voice-chat.js",
+        "./_appStore.js",
+        "node:perf_hooks",
+        "../shared/conversationMemory.js"
+      ],
+      "boundary": "authenticated or rate-limited anonymous inference"
+    },
+    {
+      "file": "api/speaking-practice.js",
+      "dependencies": [
+        "./_membership.js",
+        "node:crypto",
+        "./_apiGuard.js",
+        "./_appStore.js",
+        "./_mediaStore.js",
+        "../shared/speakingTasks.js"
+      ],
+      "boundary": "authenticated API"
+    },
+    {
+      "file": "api/voice-capabilities.js",
+      "dependencies": [
+        "./_localTranscription.js"
+      ],
+      "boundary": "public capability metadata"
+    },
+    {
+      "file": "api/voice-chat.js",
+      "dependencies": [
+        "./_apiGuard.js",
+        "./_llm.js",
+        "../src/lib/scenarios.js",
+        "../src/lib/dailyTasks.js",
+        "../shared/conversationMemory.js"
+      ],
+      "boundary": "authenticated API"
+    }
+  ],
+  "environment": [
+    {
+      "name": "AWS_LAMBDA_FUNCTION_NAME",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "AZURE_SPEECH_KEY",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "AZURE_SPEECH_REGION",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "BACKEND_HOST",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "BACKEND_PORT",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "DEEPSEEK_API_KEY",
+      "configuredInAuditShell": true
+    },
+    {
+      "name": "DEEPSEEK_CONVERSATION_MODEL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "DEEPSEEK_FEEDBACK_MODEL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "DEEPSEEK_MODEL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "ELEVENLABS_API_KEY",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "ELEVENLABS_MODEL_ID",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "ELEVENLABS_VOICE_ID",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "EXPRESSION_LLM_PROVIDER",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "FORCE_LOCAL_DATA",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "HOME",
+      "configuredInAuditShell": true
+    },
+    {
+      "name": "LLM_PROVIDER",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "LONGCAT_API_KEY",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "LONGCAT_MODEL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "NODE_ENV",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "OPENAI_API_KEY",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "OPENAI_BASE_URL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "OPENAI_MODEL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "OPENAI_VOICE_CHAT_MODEL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "OPENROUTER_API_KEY",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "OPENROUTER_VOICE_CHAT_MODEL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "PARTNER_API_KEY",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "PARTNER_BASE_URL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "PARTNER_MODEL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "PATH",
+      "configuredInAuditShell": true
+    },
+    {
+      "name": "PLAYWRIGHT_MODULE",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_AI_DAILY_REQUESTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_AI_DAILY_TOKEN_BUDGET",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_AI_GLOBAL_REQUESTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_AI_GLOBAL_TOKEN_BUDGET",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_AI_MINUTE_REQUESTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_AUDIO_BASELINE",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_BANK_RIGHTS_VERIFIED",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_DATA_DIR",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_DYNAMIC_TTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_ENGINEERING_FIXTURE",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_FREE_AI_REQUESTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_IMPACT_MODEL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_KEY_FILE",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_LOCAL_ASR",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_MEMBERSHIP_TEST_MODE",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_ORIGIN",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_PAYWALL_ENABLED",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_REFINEMENT_BASELINE",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_SPEECH_DAILY_REQUESTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_SPEECH_GLOBAL_REQUESTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_TEST_ARTIFACTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_TEST_ORIGIN",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_TEST_OUTPUT",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_TEST_TTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_TEST_TURNS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_TEST_URL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_TRIAL_DAILY_REQUESTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_TRIAL_MINUTE_REQUESTS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SPEAKNOW_VIP_TRIAL_ENABLED",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "SUPABASE_URL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "VERCEL",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "VERCEL_ENV",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "VITE_ADMIN_EMAILS",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "ZHIPU_API_KEY",
+      "configuredInAuditShell": false
+    },
+    {
+      "name": "ZHIPU_MODEL",
+      "configuredInAuditShell": false
+    }
+  ],
+  "versions": {
+    "react": "18.3.1",
+    "vite": "6.4.6",
+    "three": "0.171.0",
+    "@mediapipe/tasks-vision": "0.10.22-rc.20250304",
+    "microsoft-cognitiveservices-speech-sdk": "1.53.0",
+    "typescript": "5.9.3"
+  },
+  "physicalDevices": "See physical-camera.json; microphone recognition/playback not accepted from mock tests",
+  "localAsrAssets": {
+    "interpreter": true,
+    "model": true
+  },
+  "changedFiles": [
+    "api/_adminStore.js",
+    "api/_apiGuard.js",
+    "api/_appStore.js",
+    "api/_llm.js",
+    "api/_membership.js",
+    "api/_membershipActions.js",
+    "api/_plans.js",
+    "api/_securityStore.js",
+    "api/_usageReport.js",
+    "api/membership.js",
+    "api/speaking-practice.js",
+    "package-lock.json",
+    "public/expression-worker.js",
+    "scripts/__pycache__/local-transcription-worker.cpython-314.pyc",
+    "scripts/create-local-test-account.mjs",
+    "scripts/industrial-audit-inventory.mjs",
+    "scripts/local-transcription-worker.py",
+    "scripts/reset-local-test-password.mjs",
+    "shared/usagePricing.js",
+    "src/api/http.js",
+    "src/components/AccountUsage.jsx",
+    "src/components/AdminMembership.jsx",
+    "src/components/AdminUsage.jsx",
+    "src/components/DailyFeedbackPage.jsx",
+    "src/components/SpeechAudioFeedback.jsx",
+    "src/components/presentation/CameraPreview.jsx",
+    "src/lib/dailyTranscription.js",
+    "src/lib/expressionVision.worker.js",
+    "src/lib/expressionVisionSession.js",
+    "src/lib/learningStore.js",
+    "src/pages/ExamPractice.jsx",
+    "src/pages/LearningReview.jsx",
+    "src/pages/Membership.jsx",
+    "tests/learning/academic-asr-browser.mjs",
+    "tests/learning/browser.mjs",
+    "tests/learning/core-flow-browser.mjs",
+    "tests/learning/daily-vision-browser.mjs",
+    "tests/learning/full-product-browser.mjs",
+    "tests/learning/industrial-cloud-store.test.mjs",
+    "tests/learning/industrial-failure-browser.mjs",
+    "tests/learning/industrial-http.mjs",
+    "tests/learning/industrial-real-browser.mjs",
+    "tests/learning/industrial-reliability.test.mjs",
+    "tests/learning/industrial-storage.test.mjs",
+    "tests/learning/local-asr-browser.mjs",
+    "tests/learning/local-asr-real.mjs",
+    "tests/learning/local-login-browser.mjs",
+    "tests/learning/review-browser.mjs",
+    "tests/learning/usage-costs.test.mjs",
+    "tests/learning/vip-real-browser.mjs",
+    "tests/learning/vip-usage.test.mjs"
+  ],
+  "secretScan": {
+    "scope": "Exact configured secret values in frontend source, public and built text assets; not a complete historical credential scan",
+    "matches": []
+  }
+}

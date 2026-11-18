@@ -1,4 +1,5 @@
 import { mutateAdminDb, readAdminDb } from "./_adminDb.js";
+import { securityRequest } from './_securityStore.js';
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -16,24 +17,7 @@ function hasSupabase() {
 }
 
 async function supabaseRequest(table, { method = "GET", query = "", body, prefer } = {}) {
-  const url = `${SUPABASE_URL}/rest/v1/${table}${query ? `?${query}` : ""}`;
-  const response = await fetch(url, {
-    method,
-    headers: {
-      "Content-Type": "application/json",
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      Prefer: prefer || (method === "GET" ? "count=exact" : "return=representation"),
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Supabase ${method} ${table} failed: ${response.status} ${text}`);
-  }
-
-  return response.status === 204 ? null : response.json();
+  return securityRequest(table, { method, query, body, prefer: prefer || (method === 'GET' ? 'count=exact' : 'return=representation') });
 }
 
 function createId(prefix) {
@@ -235,20 +219,7 @@ export async function deleteAdminRecord({ collection, id }) {
   }
 
   try {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Prefer: "return=representation",
-      },
-    });
-
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(`Supabase DELETE ${table} failed: ${response.status} ${text}`);
-    }
+    await supabaseRequest(table, { method: 'DELETE', query: `id=eq.${encodeURIComponent(id)}` });
 
     const data = await listAdminData();
     return {

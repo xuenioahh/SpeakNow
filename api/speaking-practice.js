@@ -1,12 +1,14 @@
+import { reservePractice } from './_membership.js';
 import { createHash } from 'node:crypto';
 import { protectedApi } from './_apiGuard.js';
-import { getOwned, listOwned, saveOwned, deleteOwned } from './_appStore.js';
+import { getOwned, listOwned, saveOwned, deleteOwned, appStorageMode } from './_appStore.js';
 import { mediaObject } from './_mediaStore.js';
 import { validateAttempt, validAttemptId } from '../shared/speakingTasks.js';
 const problem = (message, status = 400) => Object.assign(new Error(message), {
   status
 });
 const digest = data => createHash('sha256').update(data).digest('hex');
+const withStorage = attempt => ({ ...attempt, storageMode: appStorageMode() });
 export function audioMime(bytes) {
   if(bytes.subarray(0,4).equals(Buffer.from([0x1a,0x45,0xdf,0xa3])))return 'audio/webm';
   if(bytes.toString('ascii',4,8)==='ftyp')return 'audio/mp4';
@@ -19,15 +21,16 @@ export async function handler(req, res) {
     id
   } = req.body || {};
   const owner = req.user.id;
-  if (action === 'list') return res.status(200).json((await listOwned('voiceSessions', owner)).filter(row => row.report?.learning).map(row => row.report.learning));
+  if (action === 'list') return res.status(200).json((await listOwned('voiceSessions', owner)).filter(row => row.report?.learning).map(row => withStorage(row.report.learning)));
   if (action === 'save') {
     let attempt;
     try { attempt = validateAttempt(req.body.attempt); } catch(error) { throw problem(error.message); }
     const existing = await getOwned('voiceSessions', owner, attempt.id);
     if (existing) {
       if (JSON.stringify(validateAttempt(existing.report.learning).answers) !== JSON.stringify(attempt.answers) || existing.report?.learning?.taskId !== attempt.taskId || existing.report?.learning?.parentId !== attempt.parentId) throw problem('Saved attempts are immutable; create a retry instead.', 409);
-      return res.status(200).json(existing.report.learning);
+      return res.status(200).json(withStorage(existing.report.learning));
     }
+    if (attempt.track === 'exam') await reservePractice(req, { id: attempt.id, taskId: attempt.taskId, kind: 'exam' });
     if (attempt.parentId) {
       const parent = await getOwned('voiceSessions', owner, attempt.parentId);
       if (!parent?.report?.learning || parent.report.learning.taskId !== attempt.taskId) throw problem('Save the matching original attempt before its retry.', 409);
@@ -55,13 +58,13 @@ export async function handler(req, res) {
         learning: value
       }
     });
-    return res.status(200).json(value);
+    return res.status(200).json(withStorage(value));
   }
   if (!validAttemptId(id)) throw problem('Invalid practice ID');
   const record = await getOwned('voiceSessions', owner, id);
   const attempt = record?.report?.learning;
   if (!attempt) throw problem('Practice not found', 404);
-  if (action === 'get') return res.status(200).json(attempt);
+  if (action === 'get') return res.status(200).json(withStorage(attempt));
   if (action === 'delete') {
     const children = (await listOwned('voiceSessions', owner)).some(row => row.report?.learning?.parentId === id);
     if (children) throw problem('Delete the linked retries first to preserve their comparison history.', 409);

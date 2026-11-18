@@ -65,7 +65,7 @@ export default function ScenarioCard({ scenario, onClick, selected = false }) {
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
           {/* Icon badge */}
           <div className={`absolute bottom-2 left-2 w-8 h-8 rounded-lg bg-gradient-to-br ${scenario.color} flex items-center justify-center shadow-lg`}>
-            <Icon className="w-3.5 h-3.5 text-white" />
+            <Icon className="w-3.5 h-3.5 text-foreground" />
           </div>
         </div>
       )}

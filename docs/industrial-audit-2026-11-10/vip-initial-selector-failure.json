@@ -1,0 +1,7 @@
+{
+  "category": "Real browser, real local account and one real DeepSeek text call; no microphone/TTS/payment/cloud test",
+  "passed": [],
+  "errors": [],
+  "status": "FAIL",
+  "failure": "locator.click: Timeout 60000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Sign In', exact: true })\u001b[22m\n"
+}

@@ -1,0 +1,44 @@
+{
+  "status": "complete",
+  "summary": [
+    {
+      "module": "IELTS",
+      "sessions": 3,
+      "calls": 39,
+      "reportedCalls": 39,
+      "inputTokens": 27847,
+      "outputTokens": 2876,
+      "cacheHitTokens": 12032,
+      "cacheMissTokens": 15815,
+      "low": 0.027559640000000003,
+      "high": 0.05511928000000001,
+      "unpriced": 0
+    },
+    {
+      "module": "TOEFL",
+      "sessions": 3,
+      "calls": 3,
+      "reportedCalls": 3,
+      "inputTokens": 6731,
+      "outputTokens": 1584,
+      "cacheHitTokens": 1536,
+      "cacheMissTokens": 5195,
+      "low": 0.01156172,
+      "high": 0.02312344,
+      "unpriced": 0
+    },
+    {
+      "module": "Daily",
+      "sessions": 3,
+      "calls": 21,
+      "reportedCalls": 21,
+      "inputTokens": 14488,
+      "outputTokens": 2197,
+      "cacheHitTokens": 6144,
+      "cacheMissTokens": 8344,
+      "low": 0.04891356,
+      "high": 0.09782712,
+      "unpriced": 0
+    }
+  ]
+}

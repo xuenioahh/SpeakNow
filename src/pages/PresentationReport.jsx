@@ -4,7 +4,7 @@ import { hasReportedScore, displayScore, completeScoreVector } from '@/lib/repor
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save, Home, CheckCircle, Loader2, ExternalLink, Volume2 } from "lucide-react";
+import { ArrowLeft, Save, CheckCircle, Loader2, ExternalLink, Volume2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { localApi } from "@/api/localClient";
 import { audioManager } from "@/lib/audioManager";
@@ -84,56 +84,11 @@ function resolveOverallScore(report, fallback = null) {
   return fallback;
 }
 
-function buildFallbackReport({ durationStr, duration, totalPages, fileName }) {
-  return {
-    overall_score: 7.0,
-    scores: {
-      content: 7.0,
-      delivery: 7.0,
-      body_language: 6.8,
-      engagement: 7.1,
-      document_handling: 7.0,
-    },
-    time_analysis: {
-      total_duration: durationStr,
-      avg_per_page: `${Math.floor((totalPages ? duration / totalPages : duration) / 60)}m ${Math.round((totalPages ? duration / totalPages : duration) % 60)}s`,
-      recommendation: "Keep each slide focused on one point, then close with a short takeaway.",
-      page_assessments: [],
-    },
-    feedback: {
-      content: {
-        strengths: "Your session data was captured, so you can still review your overall flow.",
-        improvements: "Make each slide explanation shorter and clearer before moving on.",
-      },
-      delivery: {
-        strengths: "You completed a full practice run.",
-        improvements: "Use steadier pacing and clearer transitions between slides.",
-      },
-    },
-    key_takeaways: [
-      "You finished the practice session successfully.",
-      "The report generator hit a problem, so this fallback summary was shown instead.",
-      "Focus next on clearer slide-by-slide transitions and shorter takeaways.",
-    ],
-    suggestions: [
-      "State the main idea of each slide first.",
-      "Add one example only, then move on.",
-      "End with a short final takeaway.",
-    ],
-    pdf_summary: {
-      fileName,
-      overlap: 0,
-      trackedKeywords: [],
-      transcriptKeywords: [],
-      coverageLabel: "Unavailable",
-    },
-  };
-}
-
 function LegacyPresentationReport() {
   const navigate = useNavigate();
   const [report, setReport] = useState(null);
   const suppliedReport = useRef(null);
+  const saveLock = useRef(false);
   const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -155,11 +110,7 @@ function LegacyPresentationReport() {
     pauseHistory.length > 0;
 
   const durationStr = `${Math.floor(duration / 60)}m ${duration % 60}s`;
-  const fallbackReportForView = useMemo(
-    () => buildFallbackReport({ durationStr, duration, totalPages, fileName }),
-    [durationStr, duration, totalPages, fileName]
-  );
-  const normalizedReport = useMemo(() => normalizeOverallScore(report || fallbackReportForView), [report, fallbackReportForView]);
+  const normalizedReport = useMemo(() => normalizeOverallScore(report), [report]);
   const computedOverallScore = useMemo(() => {
     const resolved = resolveOverallScore(normalizedReport);
     if (!Number.isFinite(Number(resolved))) {
@@ -219,7 +170,8 @@ function LegacyPresentationReport() {
         },
       });
 
-      suppliedReport.current = result || buildFallbackReport({ durationStr, duration, totalPages, fileName });
+      if (!result || typeof result !== 'object') throw new Error('Report is unavailable. Try again.');
+      suppliedReport.current = result;
       const normalizedReport = normalizeOverallScore(suppliedReport.current);
       setReport(normalizedReport);
       setFallbackReason(normalizedReport?.fallback_reason || "");
@@ -229,16 +181,16 @@ function LegacyPresentationReport() {
         duration_seconds: duration,
         total_pages: totalPages,
         report_summary: {
-          overall_score: resolveOverallScore(normalizedReport, 7.0),
+          overall_score: resolveOverallScore(normalizedReport),
           scores: normalizedReport?.scores || null,
         },
       });
       setErrorMessage("");
     } catch (error) {
       console.error("Failed to generate presentation report:", error);
-      suppliedReport.current = buildFallbackReport({ durationStr, duration, totalPages, fileName });
-      setReport(normalizeOverallScore(suppliedReport.current));
-      setErrorMessage("The full summary could not be generated, so a fallback summary is shown instead.");
+      suppliedReport.current = null;
+      setReport(null);
+      setErrorMessage("Report generation failed. Your practice remains available; retry when the service is ready.");
       setFallbackReason(error?.message || "request_failed");
     } finally {
       setLoading(false);
@@ -248,6 +200,8 @@ function LegacyPresentationReport() {
   const totalAvailable = suppliedReport.current && (Object.prototype.hasOwnProperty.call(suppliedReport.current, 'overall_score') ? hasReportedScore(suppliedReport.current.overall_score) : completeScoreVector(suppliedReport.current.scores));
 
   const handleSave = async () => {
+    if (saveLock.current || saved || !report) return;
+    saveLock.current = true;
     try {
       setSaving(true);
       await localApi.entities.PresentationSession.create({
@@ -262,6 +216,7 @@ function LegacyPresentationReport() {
     } catch (error) {
       toast.error(error?.message || "Failed to save report.");
     } finally {
+      saveLock.current = false;
       setSaving(false);
     }
   };
@@ -280,11 +235,11 @@ function LegacyPresentationReport() {
     return (
       <LoadingProgressCard
         title="Generating presentation report"
-        description="Scoring the session, checking pacing, and writing feedback."
+        description="Reviewing your words alongside the slides."
         durationMs={9500}
         steps={[
           "Reading transcript and slide data",
-          "Calculating the detailed scores",
+          "Finding examples in your answers",
           "Writing personalized feedback",
           "Finalizing the report",
         ]}
@@ -292,10 +247,12 @@ function LegacyPresentationReport() {
     );
   }
 
+  if (!report) return <main className="studio-page studio-page-reading feedback-workbench px-6 py-8"><h1>Report unavailable</h1><p role="alert">{errorMessage || 'Report generation failed.'}</p><div className="feedback-actions"><Button onClick={() => { setLoading(true); void generateReport(); }}>Retry report</Button><Button variant="outline" onClick={() => navigate('/presentation')}>Presentation studio</Button></div></main>;
+
   return (
     <div className="studio-page studio-page-reading feedback-workbench">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-4 border-b border-white/5">
+      <div className="flex items-center gap-3 px-4 py-4 border-b border-slate-200">
         <button onClick={() => navigate("/presentation")} className="p-2 rounded-xl hover:bg-white/5">
           <ArrowLeft className="w-5 h-5 text-muted-foreground" />
         </button>
@@ -303,35 +260,36 @@ function LegacyPresentationReport() {
       </div>
 
       <div className="feedback-content">
-        <section className="feedback-summary"><p className="room-eyebrow">REHEARSAL COMPLETE</p><h2>A clearer idea. A stronger delivery.</h2><p>{report?.key_takeaways?.[0] || normalizedReport.suggestions?.[0] || 'Review the feedback from your rehearsal and choose one change to try.'}</p><button type="button" onClick={() => navigate('/presentation')}>Start another rehearsal →</button></section>
+        <section className="feedback-summary"><h2>Your presentation · one focus</h2>{(report?.key_takeaways?.[0] || normalizedReport.suggestions?.[0]) && <p>{report?.key_takeaways?.[0] || normalizedReport.suggestions?.[0]}</p>}</section>
         {errorMessage && (
           <div className="glass rounded-2xl px-4 py-3">
-            <p className="text-[13px] text-amber-200">{errorMessage}</p>
+            <p className="text-[13px] text-amber-800">{errorMessage}</p>
             {fallbackReason && (
               <p className="text-[12px] text-amber-100/80 mt-2 break-words">Reason: {fallbackReason}</p>
             )}
           </div>
         )}
-        <div className="px-1">
+        {report?.source !== 'ai' && <p role="status">AI review is unavailable. The notes below are local practice guidance.</p>}
+        <details className="px-1"><summary>Feedback source</summary>
           <p className="text-[11px] text-muted-foreground">
             Source: {report?.source === "ai" ? "AI-generated" : "Fallback"}
           </p>
           {report?.source === "ai" && (
-            <p className="text-[11px] text-emerald-200/80 mt-1 break-words">
+            <p className="text-[11px] text-emerald-800/80 mt-1 break-words">
               Model: {report?.provider || "unknown"} / {report?.model || "unknown"}
             </p>
           )}
-        </div>
+        </details>
         {audioFailed && (
           <p className="text-[13px] text-accent">Voice playback is unavailable right now in this browser.</p>
         )}
 
         {/* Overall Score */}
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-5 text-center">
+        {totalAvailable && <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-2xl p-5 text-center">
           <h3 className="text-sm font-semibold mb-2">Overall score</h3>
           <div className="text-5xl font-bold font-space text-primary">{totalAvailable ? computedOverallScore : "—"}</div>
           <p className="text-[14px] text-muted-foreground mt-1">out of 10</p>
-        </motion.div>
+        </motion.div>}
 
         {report?.key_takeaways?.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }} className="glass rounded-2xl p-4">
@@ -382,11 +340,11 @@ function LegacyPresentationReport() {
         )}
 
         {/* Detailed Scores */}
-        {report?.scores && (
+        {Object.values(report?.scores || {}).some(hasReportedScore) && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="glass rounded-2xl p-4">
             <h3 className="text-sm font-semibold mb-3">Detailed scores</h3>
             <div className="space-y-2">
-              {Object.entries(report.scores).map(([key, val]) => (
+              {Object.entries(report.scores).filter(([, val]) => hasReportedScore(val)).map(([key, val]) => (
                 <div key={key} className="report-score-row">
                   <span className="text-[14px] text-muted-foreground capitalize report-score-label">{key.replace(/_/g, " ")}</span>
                   <div className="report-score-meter h-2 bg-white/10 rounded-full overflow-hidden">
@@ -427,7 +385,7 @@ function LegacyPresentationReport() {
                     <span className={`text-[14px] px-2 py-0.5 rounded-full ${
                       p.assessment?.toLowerCase().includes("good") ? "bg-success/20 text-success" :
                       p.assessment?.toLowerCase().includes("long") ? "bg-accent/20 text-accent" :
-                      "bg-amber-500/20 text-amber-400"
+                      "bg-amber-500/20 text-amber-800"
                     }`}>
                       {p.assessment}
                     </span>
@@ -456,7 +414,7 @@ function LegacyPresentationReport() {
                 Listen
               </button>
             </div>
-            {Object.entries(report.feedback).slice(0, 2).map(([key, val]) => (
+            {Object.entries(report.feedback).filter(([, val]) => val?.improvements).slice(0, 2).map(([key, val]) => (
               <div key={key} className="glass rounded-xl p-3 space-y-1">
                 <p className="text-[13px] font-medium text-foreground">{key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}</p>
                 {val.improvements && <p className="text-[14px] text-muted-foreground">{val.improvements}</p>}
@@ -517,7 +475,7 @@ function LegacyPresentationReport() {
                 </div>
               ))}
             </div>
-            <div className="border-t border-white/8 pt-4">
+            <div className="border-t border-slate-200 pt-4">
               <div>
                 <h3 className="text-sm font-semibold">Extra TED</h3>
                 <p className="text-[13px] text-muted-foreground mt-1">Outside examples you can watch immediately after this report.</p>
@@ -562,7 +520,6 @@ function LegacyPresentationReport() {
 
         {/* Buttons */}
         <div className="feedback-actions">
-          <Button variant="outline" className="rounded-2xl border-white/10" onClick={() => navigate('/presentation')}>New rehearsal</Button>
           <Button
             onClick={handleSave}
             disabled={saved || saving}
@@ -571,14 +528,7 @@ function LegacyPresentationReport() {
             {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
             {saved ? "Saved" : "Save Summary"}
           </Button>
-          <Button
-            onClick={() => navigate("/presentation")}
-            variant="outline"
-            className="flex-1 h-12 rounded-2xl border-white/10 hover:bg-white/5"
-          >
-            <Home className="w-4 h-4 mr-2" />
-            Home
-          </Button>
+
         </div>
       </div>
     </div>
@@ -597,7 +547,7 @@ export default function PresentationReport() {
   }, [id]);
   if (!id) return <LegacyPresentationReport />;
   return <div className="studio-page impact-studio"><div className="impact-workspace">
-    <header className="impact-header"><h1>SpeakNow Impact Studio · Report</h1><Link className="history-retry" to="/presentation/history">History</Link></header>
+    <header className="impact-header"><h1>SpeakNow Impact Studio · Report</h1><Link className="history-retry" to="/presentation/history">My Progress</Link></header>
     {loadError && <p role="alert">{loadError}</p>}
     {!session && !loadError && <p role="status">Loading your saved practice…</p>}
     {session?.report?.impact && <ImpactReport key={session.id} session={session} />}

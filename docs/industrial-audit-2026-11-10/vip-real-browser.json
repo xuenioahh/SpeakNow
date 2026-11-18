@@ -1,0 +1,83 @@
+{
+  "category": "Real browser, real local account and one real DeepSeek text call; no microphone/TTS/payment/cloud test",
+  "passed": [
+    "Provisioned account signs in and has explicit local unlimited allowance",
+    "Real provider receipts appear in the owning account; learner admin grant rejected",
+    "Recharge enquiry survives refresh and does not create payment or balance"
+  ],
+  "errors": [],
+  "receipt": {
+    "model": "deepseek-flash",
+    "usage": {
+      "prompt_tokens": 321,
+      "completion_tokens": 48,
+      "total_tokens": 369,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "prompt_cache_hit_tokens": 128,
+      "prompt_cache_miss_tokens": 193
+    },
+    "firstTokenMs": 896,
+    "totalMs": 1343
+  },
+  "usage": {
+    "unlimited": true,
+    "payments": false,
+    "total": {
+      "operations": 1,
+      "providerRequests": 1,
+      "reportedCalls": 1,
+      "missingUsageCalls": 0,
+      "inputTokens": 321,
+      "outputTokens": 48,
+      "cacheHitTokens": 128,
+      "cacheMissTokens": 193,
+      "unknownCacheInputTokens": 0,
+      "unpricedCalls": 0,
+      "estimatedCnyLow": 0.00038756,
+      "estimatedCnyHigh": 0.00077512,
+      "ttsCharacters": 0,
+      "unknownTtsRuns": 0,
+      "failedRuns": 0,
+      "runs": 1
+    },
+    "fixtureRuns": 0,
+    "adminDenied": 403,
+    "prices": {
+      "checkedAt": "2026-11-12",
+      "currency": "CNY",
+      "deepseekSource": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+      "ttsSource": "https://elevenlabs.io/pricing/api",
+      "flash": {
+        "cacheHit": [
+          0.02,
+          0.04
+        ],
+        "cacheMiss": [
+          1,
+          2
+        ],
+        "output": [
+          4,
+          8
+        ]
+      },
+      "pro": {
+        "cacheHit": [
+          0.15,
+          0.3
+        ],
+        "cacheMiss": [
+          4.5,
+          9
+        ],
+        "output": [
+          13.5,
+          27
+        ]
+      }
+    }
+  },
+  "status": "PASS"
+}

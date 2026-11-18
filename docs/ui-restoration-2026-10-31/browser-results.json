@@ -1,0 +1,13 @@
+{
+  "passed": [
+    "accepted NPC opening speaks before capture and conversation stays beside the mounted scene",
+    "voice replay, camera consent and practice details remain separate and usable",
+    "long conversation preserves reading position and provides an explicit jump to new replies",
+    "mobile transcript, composer and primary controls remain in view at 390px and 320px",
+    "feedback citations expand the saved answer and targeted retry retains its parent and focus",
+    "primary pages keep one navigation, compact sizing and light colors",
+    "account editing, feedback focus and the previous exam safeguards remain reachable"
+  ],
+  "errors": [],
+  "scope": "Real WebAudio, MediaRecorder, local sessions and persistence. Controlled recognition, TTS events and model replies. Physical speaker output is not asserted."
+}

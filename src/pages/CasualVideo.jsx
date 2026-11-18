@@ -77,14 +77,14 @@ export default function CasualVideo() {
   const beforeUrlRef = useRef('');
   const video = useRef(null);
   /** @type {import('react').MutableRefObject<{
-   * active: boolean, mounted: boolean, worker: { terminate: () => void } | null,
+   * active: boolean, starting: boolean, mounted: boolean, worker: { terminate: () => void } | null,
    * stream: MediaStream | null, recorder: MediaRecorder | null,
    * recognition: SpeechRecognition | null, timer: ReturnType<typeof setInterval> | null,
    * url: string, samples: any[], utterances: any[], id: string,
    * start?: number, brief?: any, blob?: Blob,
    * pendingUtterance?: { start: number, text: string } | null
    * }>} */
-  const run = useRef({ active: false, mounted: true, worker: null, stream: null, recorder: null, recognition: null, timer: null, url: '', samples: [], utterances: [], id: '' });
+  const run = useRef({ active: false, starting: false, mounted: true, worker: null, stream: null, recorder: null, recognition: null, timer: null, url: '', samples: [], utterances: [], id: '' });
 
   useEffect(() => {
     try {
@@ -142,9 +142,10 @@ export default function CasualVideo() {
   }
 
   async function start() {
-    if (['requesting', 'recording', 'finishing'].includes(status)) return;
+    if (run.current.starting || run.current.active || ['requesting', 'recording', 'finishing'].includes(status)) return;
     const nextBrief = normalizeBrief(experiment ? recordedBrief : brief);
     if (!nextBrief) { setNotice('Set your situation and what your listener should understand before recording.'); return; }
+    run.current.starting = true;
     setStatus('requesting');
     setExperimentSaved(false);
     setNotice('');
@@ -235,7 +236,7 @@ export default function CasualVideo() {
       state.stream?.getTracks().forEach(t => t.stop());
       setStatus(state.url ? 'review' : 'idle');
       setNotice(error.name === 'NotAllowedError' ? 'Camera or microphone permission was declined. Allow access in browser settings and try again.' : error.message || 'Recording could not start. Please try again.');
-    }
+    } finally { state.starting = false; }
   }
 
   function updateClip(id, patch) {
@@ -354,14 +355,14 @@ export default function CasualVideo() {
   const patterns = activeBrief ? learnedPatterns(history, activeBrief) : [];
   const verdict = reviewVerdict(ranked, usable, confirmed);
   return <main className="expression-page">
-    <Link to="/voice" className="expression-back"><ArrowLeft size={18} /> Casual Situation</Link>
+    <Link to="/voice" className="expression-back" onClick={event => { if (['requesting','recording','finishing'].includes(status) && !window.confirm('Leave this recording? Unsaved video will be lost.')) event.preventDefault(); }}><ArrowLeft size={18} /> Casual Situation</Link>
     <header><p className="expression-eyebrow">THE EXPRESSION LAB</p><h1>Make your point.</h1></header>
     <ExpressionBrief value={status === 'idle' || preparingScene ? brief : recordedBrief || brief} onChange={setBrief}
       locked={['requesting', 'recording', 'finishing'].includes(status) || (status === 'review' && !preparingScene)} onNewBrief={status === 'review' && !experiment ? () => { setPreparingScene(true); document.querySelector('.expression-brief')?.scrollIntoView({ block: 'start' }); } : null} />
     {status !== 'recording' && <details><summary>Practice guide</summary><ExpressionMethod /><ExpressionConnection /></details>}
     <div className="expression-layout">
       <section className="expression-panel">
-        {experiment && status === 'recording' && <div className="practice-live"><p className="expression-eyebrow">ONE FOCUS · {getDrill(experiment.drillId).skill}</p><p>{experiment.intention}</p><p className="expression-small">Take your time. Aim for about {getDrill(experiment.drillId).time}, then compare both versions.</p></div>}
+        {experiment && status === 'recording' && <div className="practice-live"><p className="expression-eyebrow">ONE FOCUS · {getDrill(experiment.drillId).skill}</p><p>{experiment.intention}</p></div>}
         <div className="expression-controls">
           {status === 'recording' ? <button onClick={stop}><Square size={17} /> Finish & review</button> : <button onClick={start} disabled={status === 'requesting' || status === 'finishing' || Boolean(experiment && !experiment.intention.trim()) || !normalizeBrief(experiment ? recordedBrief : brief)}><Camera size={18} /> {status === 'requesting' ? 'Opening camera…' : status === 'finishing' ? 'Preparing review…' : status === 'review' ? experiment ? 'Record another take' : 'Record another session' : 'Start video practice'}</button>}
           {url && <a href={url} download={`speaknow-expression.${run.current.recorder?.mimeType.includes('mp4') ? 'mp4' : 'webm'}`}><Download size={17} /> Save video</a>}
@@ -378,14 +379,14 @@ export default function CasualVideo() {
           target?.scrollIntoView({ behavior: 'auto', block: 'start' });
         }}><ArrowLeft size={16} /> Back to this moment</button>}
         {experiment && status === 'review' && !experiment.intention.trim() && <p className="expression-small">Set your intention in the experiment below before recording another take.</p>}
-        {status === 'recording' && <p aria-live="polite">{vision === 'ready' ? 'Observing visible movement on this device.' : vision === 'loading' ? 'Loading movement observation… recording continues.' : 'Movement observation unavailable. Recording continues for your own review.'}<br />{liveText || 'Speak naturally. There is no ideal gesture to perform.'}</p>}
-        <p className="expression-small">Video stays in this tab. An active experiment preserves its original video for comparison; other recordings are replaced when you start again. Leaving removes unsaved videos. Browser transcription may use your browser provider’s speech service. Transcript timing is approximate.</p>
+        {status === 'recording' && <p aria-live="polite">{vision === 'ready' ? 'Observing visible movement on this device.' : vision === 'loading' ? 'Loading movement observation… recording continues.' : 'Movement observation unavailable. Recording continues for your own review.'}<br />{liveText || 'Recording'}</p>}
+        {status !== 'recording' && <p className="expression-small">Video stays in this tab. An active experiment preserves its original video for comparison; other recordings are replaced when you start again. Leaving removes unsaved videos. Browser transcription may use your browser provider’s speech service. Transcript timing is approximate.</p>}
         {notice && status !== 'review' && <p role="status" className="expression-notice">{notice}</p>}
       </section>
       {status !== 'recording' && <aside className="expression-panel"><p className="expression-eyebrow">YOUR EXPRESSION NOTEBOOK</p><h2>Your confirmed patterns</h2><p>{new Set(history.filter(h => h.decision === 'habit').map(h => h.sessionId)).size} sessions saved.</p><p>确认“这很像我”，系统才会把动作加入你的个人模式。</p><details className="expression-evidence"><summary>识别范围</summary><p className="expression-small">动作测量只描述头部、眼睛、肩膀和手的变化，不判断情绪、注意力或意图。光线和镜头位置会影响结果。</p></details>
         <div className="expression-patterns"><h3>Patterns for this situation</h3>{patterns.length ? patterns.map(p => <p key={`${p.context}-${p.key}`}>{p.label}</p>) : <p>No recurring pattern for this situation yet. Confirm examples across separate sessions with a similar goal and camera setup.</p>}</div>
         {history.some(h => h.featureVersion !== FEATURE_VERSION) && <p className="expression-small">Earlier examples are preserved. The updated movement measurements start a separate comparison baseline.</p>}
-        <button className="expression-secondary" disabled={!history.length} onClick={() => { try { localStorage.removeItem(key); setHistory([]); setClips(current => current.map(c => ({ ...c, decision: '' }))); } catch { setNotice('Could not delete the saved notebook.'); } }}><Trash2 size={16} /> Clear notebook</button>
+        <button className="expression-secondary" disabled={!history.length} onClick={() => { if (!window.confirm('Permanently clear your saved expression notebook?')) return; try { localStorage.removeItem(key); setHistory([]); setClips(current => current.map(c => ({ ...c, decision: '' }))); } catch { setNotice('Could not delete the saved notebook.'); } }}><Trash2 size={16} /> Clear notebook</button>
       </aside>}
     </div>
     {experiment && <div id="expression-experiment" tabIndex={-1}><ExpressionPracticeLab key={experiment.id} experiment={experiment} clips={clips} currentUrl={url} status={status}
@@ -433,6 +434,7 @@ export default function CasualVideo() {
       {filtered.length > 4 && <button className="expression-secondary expression-show-more" onClick={() => setShowAll(!showAll)}>{showAll ? 'Show 4 priority moments' : `Show all ${filtered.length} moments`}</button>}
     </section>}
     <PracticeOverview records={practiceRecords} onDelete={id => {
+      if (!window.confirm('Permanently delete this reflection?')) return;
       const next = practiceRecords.filter(r => r.id !== id);
       try { localStorage.setItem(practiceKey, JSON.stringify(next)); setPracticeRecords(next); if (experiment?.id === id) setExperimentSaved(false); }
       catch { setNotice('Could not delete this reflection. Please try again.'); }

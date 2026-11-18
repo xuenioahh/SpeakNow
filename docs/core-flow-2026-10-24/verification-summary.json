@@ -1,0 +1,30 @@
+{
+  "unitApi": {
+    "passed": 82,
+    "failed": 0
+  },
+  "typecheck": "passed",
+  "lint": "passed",
+  "build": "passed",
+  "coreBrowserGroups": 13,
+  "reviewBrowserGroups": 9,
+  "legacyBrowserGroups": 16,
+  "import": {
+    "repeatSets": 49,
+    "repeatQuestions": 340,
+    "interviewSets": 77,
+    "interviewQuestions": 288,
+    "sourceAudio": 0
+  },
+  "sourceLimitations": [
+    "repeat真题参考(1).pdf not found",
+    "No original source audio supplied"
+  ],
+  "productionDeployment": false,
+  "resumesStartedUnansweredSession": true,
+  "actualProjectVerified": true,
+  "sourceFilesVerified": 31,
+  "browserGroupsPassed": 38,
+  "remainingFailedChecks": 0,
+  "verifiedAtUtc": "2026-10-25T09:45:00.828812+00:00"
+}

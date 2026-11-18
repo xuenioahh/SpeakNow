@@ -1,6 +1,9 @@
 // Stable Audio Manager using browser SpeechSynthesis as primary TTS.
 // This keeps voice playback behavior in one place so pages only need to request
 // speech, stop speech, and react to playback state changes.
+import { apiFetch } from '../api/http.js';
+import { savedFixedAudio } from './fixedAudioLibrary.js';
+import { createSpeechOutput } from './voice/speechOutput.js';
 export class StableAudioManager {
   constructor() {
     this.isPlaying = false;
@@ -13,6 +16,9 @@ export class StableAudioManager {
     this._listeners = new Set();
     this._voiceWaits = new Set();
     this._cancelUtterance = null;
+    this._dynamicTtsMode = null;
+    this.outputEnergyRef = { current: null };
+    this.spatialFrame = null;
 
     if (window.speechSynthesis) {
       const voices = window.speechSynthesis.getVoices();
@@ -40,7 +46,7 @@ export class StableAudioManager {
     return englishVoices.find((voice) => {
       const name = String(voice.name || "").toLowerCase();
       return genderHints.some((hint) => name.includes(hint));
-    }) || englishVoices[0] || voices?.[0] || null;
+    }) || englishVoices[0] || null;
   }
 
   subscribe(listener) {
@@ -48,12 +54,12 @@ export class StableAudioManager {
     return () => this._listeners.delete(listener);
   }
 
-  _publish(type, playbackId, reason = '') {
+  _publish(type, playbackId, reason = '', meta = {}) {
     this.isPlaying = type === 'start';
     this.currentPlaybackId = this.isPlaying ? playbackId : null;
     this.onSpeakingChange?.(this.isPlaying);
     this.onPlaybackMetaChange?.(this.currentPlaybackId);
-    for (const listener of this._listeners) listener({ type, playbackId, reason });
+    for (const listener of this._listeners) listener({ type, playbackId, reason, ...meta });
   }
 
   _speakUtterance(utterance, requestId, playbackId, startTimeoutMs = 5000) {
@@ -65,7 +71,7 @@ export class StableAudioManager {
         finished = true;
         window.clearTimeout(startTimer); window.clearTimeout(endTimer);
         if (this._cancelUtterance === cancel) this._cancelUtterance = null;
-        utterance.onstart = utterance.onend = utterance.onerror = utterance.onpause = utterance.onresume = null;
+        utterance.onstart = utterance.onend = utterance.onerror = utterance.onpause = utterance.onresume = utterance.onboundary = null;
         if (requestId === this._playRequestId) this._publish('end', playbackId, reason);
         resolve(ok);
       };
@@ -74,7 +80,12 @@ export class StableAudioManager {
       const start = () => {
         if (finished || requestId !== this._playRequestId) return;
         window.clearTimeout(startTimer);
-        this._publish('start', playbackId);
+        this._publish('start', playbackId, '', { text: utterance.text, provider: 'browser' });
+      };
+      utterance.onboundary = event => {
+        if (finished || requestId !== this._playRequestId) return;
+        // Native boundary events are evidence of timing; no estimated word clock.
+        for (const listener of this._listeners) listener({ type: 'boundary', playbackId, text: utterance.text, charIndex: event.charIndex, elapsedTime: event.elapsedTime, name: event.name });
       };
       utterance.onstart = start;
       utterance.onresume = start;
@@ -221,6 +232,127 @@ export class StableAudioManager {
 
     return speakChunks(preferredVoice);
   }
+
+  async playDynamicVoice(text, voiceGender = 'female', options = {}) {
+    const generation = this._playRequestId;
+    if (this._dynamicTtsMode === null) {
+      try {
+        const response = await apiFetch('/api/voice-capabilities');
+        const value = response.ok ? await response.json() : {};
+        this._dynamicTtsMode = value.dynamicTts === 'elevenlabs' ? 'elevenlabs' : 'browser';
+      } catch { this._dynamicTtsMode = 'browser'; }
+    }
+    if (generation !== this._playRequestId) return false;
+    if (this._dynamicTtsMode !== 'elevenlabs') return this.playAIVoice(text, voiceGender, options);
+    const pending = this._playServerVoice(text, options), playbackGeneration = this._playRequestId;
+    const ok = await pending;
+    if (ok || playbackGeneration !== this._playRequestId) return ok;
+    return this.playAIVoice(text, voiceGender, options);
+  }
+
+  async playFixedVoice(audioId, text, voiceGender = 'female', options = {}) {
+    const generation = this._playRequestId;
+    const entry = await savedFixedAudio(audioId, text);
+    if (generation !== this._playRequestId) return false;
+    if (!entry) return this.playAIVoice(text, voiceGender, options);
+    const pending = this.playSavedAudio(entry.audioUrl, { ...options, text }), playbackGeneration = this._playRequestId;
+    const ok = await pending;
+    if (ok || playbackGeneration !== this._playRequestId) return ok;
+    return this.playAIVoice(text, voiceGender, options);
+  }
+
+  async playSavedAudio(url, { playbackId = null, text = '' } = {}) {
+    this.stop();
+    const requestId = this._playRequestId;
+    const audio = new Audio(url);
+    let ended = false, started = false, resolveDone, output = null;
+    const done = new Promise(resolve => { resolveDone = resolve; });
+    const finish = (ok, reason) => {
+      if (ended) return;
+      ended = true;
+      output?.dispose(); if (this.outputEnergyRef.current === output) this.outputEnergyRef.current = null;
+      audio.pause(); audio.removeAttribute('src'); audio.load();
+      if (this._cancelUtterance === cancel) this._cancelUtterance = null;
+      if (requestId === this._playRequestId && started) this._publish('end', playbackId, reason);
+      resolveDone(ok);
+    };
+    const cancel = () => finish(false, 'cancelled');
+    this._cancelUtterance = cancel;
+    audio.onplaying = () => { if (!ended && !started && requestId === this._playRequestId) { started = true; this._publish('start', playbackId, '', { text, provider: 'saved' }); } };
+    audio.onended = () => finish(true, 'ended');
+    audio.onerror = () => finish(false, 'playback_error');
+    try { output = await createSpeechOutput(audio); if (ended) { output?.dispose(); return done; } this.outputEnergyRef.current = output; if (this.spatialFrame) output?.setSpatialFrame(this.spatialFrame); await audio.play(); } catch { finish(false, 'playback_error'); }
+    return done;
+  }
+
+  async _playServerVoice(text, { playbackId = null } = {}) {
+    this.stop();
+    const requestId = this._playRequestId;
+    const controller = new AbortController();
+    const audio = new Audio();
+    let objectUrl = '', started = false, ended = false;
+    let output = null;
+    const cleanup = () => {
+      output?.dispose();
+      if (this.outputEnergyRef.current === output) this.outputEnergyRef.current = null;
+      audio.pause(); audio.removeAttribute('src'); audio.load();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      if (this._cancelUtterance === cancel) this._cancelUtterance = null;
+    };
+    const finish = (ok, reason) => {
+      if (ended) return;
+      ended = true; controller.abort();
+      if (requestId === this._playRequestId && started) this._publish('end', playbackId, reason);
+      cleanup();
+      resolver(ok);
+    };
+    let resolver;
+    const done = new Promise(resolve => { resolver = resolve; });
+    const cancel = () => finish(false, 'cancelled');
+    this._cancelUtterance = cancel;
+    audio.onplaying = () => { if (!ended && !started && requestId === this._playRequestId) { started = true; this._publish('start', playbackId, '', { text, provider: 'elevenlabs' }); } };
+    audio.onended = () => finish(true, 'ended');
+    audio.onerror = () => finish(false, 'playback_error');
+    (async () => {
+      try {
+        const response = await apiFetch('/api/dynamic-tts', { method: 'POST', signal: controller.signal, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text, requestId: crypto.randomUUID() }) });
+        if (!response.ok || !response.body) throw new Error('NPC voice unavailable');
+        output = await createSpeechOutput(audio);
+        if (ended) { output?.dispose(); return; }
+        this.outputEnergyRef.current = output;
+        if (this.spatialFrame) output?.setSpatialFrame(this.spatialFrame);
+        if (typeof MediaSource === 'undefined' || !MediaSource.isTypeSupported?.('audio/mpeg')) {
+          audio.src = objectUrl = URL.createObjectURL(await response.blob());
+          await audio.play();
+          return;
+        }
+        const media = new MediaSource();
+        audio.src = objectUrl = URL.createObjectURL(media);
+        await new Promise((resolve, reject) => { media.addEventListener('sourceopen', resolve, { once: true }); media.addEventListener('error', reject, { once: true }); });
+        const source = media.addSourceBuffer('audio/mpeg');
+        const reader = response.body.getReader();
+        let playbackStarted = false;
+        while (!ended) {
+          const chunk = await reader.read();
+          if (chunk.done) break;
+          await new Promise((resolve, reject) => {
+            source.addEventListener('updateend', resolve, { once: true });
+            source.addEventListener('error', reject, { once: true });
+            source.appendBuffer(chunk.value);
+          });
+          if (!playbackStarted && source.buffered.length && source.buffered.end(0) > 0.1) {
+            playbackStarted = true;
+            await audio.play();
+          }
+        }
+        if (!playbackStarted && !ended) await audio.play();
+        if (!ended && media.readyState === 'open') media.endOfStream();
+      } catch { if (!ended) finish(false, 'tts_error'); }
+    })();
+    return done;
+  }
+
+  setSpatialFrame(frame) { this.spatialFrame = frame; this.outputEnergyRef.current?.setSpatialFrame(frame); }
 
   stop() {
     const wasPlaying = this.isPlaying;

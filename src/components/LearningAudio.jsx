@@ -1,26 +1,18 @@
 import { useEffect, useState } from 'react';
 import { recordingBlob } from '@/lib/learningStore';
-export default function LearningAudio({
-  attempt,
-  recordingId
-}) {
-  const [url, setUrl] = useState(''),
-    [error, setError] = useState('');
+export default function LearningAudio({ attempt, recordingId, label = 'Your recording', startAtSeconds = 0, onPlaybackTime = null }) {
+  const [url, setUrl] = useState(''), [error, setError] = useState(''), [retry, setRetry] = useState(0);
   useEffect(() => {
-    let active = true,
-      objectUrl;
+    let active = true, objectUrl;
+    setUrl(''); setError('');
     recordingBlob(attempt, recordingId).then(blob => {
       if (active) {
-        objectUrl = URL.createObjectURL(blob);
-        setUrl(objectUrl);
+        if (!blob.size) throw new Error('Empty recording');
+        objectUrl = URL.createObjectURL(blob); setUrl(objectUrl);
       }
-    }).catch(e => {
-      if (active) setError(e.message);
-    });
-    return () => {
-      active = false;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
-  }, [attempt.id, recordingId]);
-  return url ? <audio controls preload="metadata" src={url} aria-label="Your recording" onError={() => setError('Recording could not be played in this browser.')} /> : <p role="status">{error || 'Loading recording…'}</p>;
+    }).catch(() => { if (active) setError('Recording unavailable.'); });
+    return () => { active = false; if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [attempt.id, recordingId, retry]);
+  if (error) return <div><p role="status">{error}</p><button onClick={() => setRetry(n => n + 1)} aria-label={`Retry ${label.toLowerCase()}`}>Retry recording</button></div>;
+  return url ? <audio controls preload="metadata" src={url} aria-label={label} onLoadedMetadata={event=>{const audio=event.currentTarget;if(Number.isFinite(startAtSeconds)&&startAtSeconds>0)audio.currentTime=Math.min(startAtSeconds,Number.isFinite(audio.duration)?audio.duration:startAtSeconds);}} onTimeUpdate={event=>onPlaybackTime?.(event.currentTarget.currentTime)} onError={() => setError('Recording could not be played.')} /> : <p role="status">Loading recording…</p>;
 }

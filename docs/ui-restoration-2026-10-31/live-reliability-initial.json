@@ -1,0 +1,93 @@
+{
+  "liveProvider": true,
+  "testInput": "synthetic text; no user recording uploaded",
+  "total": 12,
+  "successful": 8,
+  "results": [
+    {
+      "name": "conversation:cafe:1",
+      "ok": true,
+      "httpStatus": 200,
+      "elapsedMs": 1326,
+      "code": null
+    },
+    {
+      "name": "conversation:cafe:2",
+      "ok": true,
+      "httpStatus": 200,
+      "elapsedMs": 1137,
+      "code": null
+    },
+    {
+      "name": "conversation:hotel:1",
+      "ok": true,
+      "httpStatus": 200,
+      "elapsedMs": 910,
+      "code": null
+    },
+    {
+      "name": "conversation:hotel:2",
+      "ok": true,
+      "httpStatus": 200,
+      "elapsedMs": 950,
+      "code": null
+    },
+    {
+      "name": "conversation:airport:1",
+      "ok": true,
+      "httpStatus": 200,
+      "elapsedMs": 803,
+      "code": null
+    },
+    {
+      "name": "conversation:airport:2",
+      "ok": true,
+      "httpStatus": 200,
+      "elapsedMs": 1370,
+      "code": null
+    },
+    {
+      "name": "feedback:TOEFL:1",
+      "ok": true,
+      "httpStatus": 200,
+      "elapsedMs": 3621,
+      "code": null
+    },
+    {
+      "name": "feedback:IELTS:1",
+      "ok": true,
+      "httpStatus": 200,
+      "elapsedMs": 3890,
+      "code": null
+    },
+    {
+      "name": "feedback:Daily:1",
+      "ok": false,
+      "httpStatus": 429,
+      "elapsedMs": 18,
+      "code": "trial_unavailable"
+    },
+    {
+      "name": "feedback:TOEFL:2",
+      "ok": false,
+      "httpStatus": 429,
+      "elapsedMs": 16,
+      "code": "trial_unavailable"
+    },
+    {
+      "name": "feedback:IELTS:2",
+      "ok": false,
+      "httpStatus": 429,
+      "elapsedMs": 12,
+      "code": "trial_unavailable"
+    },
+    {
+      "name": "feedback:Daily:2",
+      "ok": false,
+      "httpStatus": 429,
+      "elapsedMs": 8,
+      "code": "trial_unavailable"
+    }
+  ],
+  "note": "Observed sample, not a guarantee of future provider availability."
+}

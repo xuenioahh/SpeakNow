@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-05T03:07:39.106Z",
+  "scope": "local test instance only",
+  "reset": [
+    {
+      "type": "trial-day",
+      "previous": 30
+    },
+    {
+      "type": "ai-global-day",
+      "previous": 30
+    },
+    {
+      "type": "ai-global-tokens",
+      "previous": 16701
+    }
+  ],
+  "backup": "/Users/zhangzhuoru/Desktop/master/speaknow-audit/data/quota-reset-backups/security-db-2026-11-05T03-07-39-085Z.json",
+  "preserved": [
+    "authentication sessions",
+    "practice membership ledger",
+    "provider usage receipts",
+    "account data",
+    "recordings"
+  ],
+  "verified": true
+}

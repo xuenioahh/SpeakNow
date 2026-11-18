@@ -1,0 +1,306 @@
+{
+  "category": "Real API integration + real browser, synthetic typed learner input",
+  "devices": "Microphone and camera off; TTS disabled using the product control, not mocked",
+  "production": "No deployment; isolated local server data only",
+  "turns": [
+    {
+      "turn": 1,
+      "userText": "I prefer tea because coffee makes me nervous. What would you recommend?",
+      "reply": "That makes sense — we've got a few good teas that won't leave you jittery. The chamomile is really calming, and the peppermint is light and refreshing if you want something with a bit more lift. Do you usually go for caffeine-free, or is a little green tea okay?",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 3574
+    },
+    {
+      "turn": 2,
+      "userText": "Something without caffeine, please. I do not want any sugar either.",
+      "reply": "Got it — caffeine-free and no sugar. The chamomile fits that perfectly, or we also have a nice rooibos if you want something a bit fuller in flavor. Both come out naturally sweet-tasting without any sugar added.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1150
+    },
+    {
+      "turn": 3,
+      "userText": "I usually drink tea with my friend Maya on Sundays.",
+      "reply": "That sounds like a nice Sunday ritual. Is Maya a tea drinker too, or does she go for coffee while you have your tea?",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 917
+    },
+    {
+      "turn": 4,
+      "userText": "Actually, can we talk about a train trip to the coast instead?",
+      "reply": "Of course — a train trip to the coast sounds great. Are you thinking of a day trip, or staying somewhere overnight?",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1083
+    },
+    {
+      "turn": 5,
+      "userText": "I want to sketch buildings there. What should I bring?",
+      "reply": "Nice — coastal towns usually have great old buildings to draw. I'd bring a sketchbook with paper sturdy enough for light washes, a couple of pencils plus a fine-liner for crisp lines, and maybe a small watercolor set if you want to add color. A folding stool or something to sit on helps a lot when you're sketching for a while.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1647
+    },
+    {
+      "turn": 6,
+      "userText": "What could I do if it rains all day?",
+      "reply": "Rain doesn't have to ruin it — a lot of coastal towns have covered arcades or a station café with big windows where you can sketch the street from inside. Also worth checking if there's a small local museum or gallery; their interiors often have interesting shapes to draw, and you stay dry.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1522
+    },
+    {
+      "turn": 7,
+      "userText": "Maya cannot join this time; my brother Leo will come instead.",
+      "reply": "Leo coming along could work well — different company often changes what you notice and sketch. Does he draw too, or will he mostly be keeping you company while you work?",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1361
+    },
+    {
+      "turn": 8,
+      "userText": "Who is coming with me now, and who cannot come?",
+      "reply": "Right now it's your brother Leo coming with you, and Maya can't make it this time. So the sketching trip to the coast is you and Leo.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1121
+    },
+    {
+      "turn": 9,
+      "userText": "What drink did I say I preferred, and why?",
+      "reply": "You said you prefer tea because coffee makes you nervous. You wanted something caffeine-free and with no sugar, so we were looking at the chamomile or rooibos.",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1227
+    },
+    {
+      "turn": 10,
+      "userText": "The order is sorted, but I would like to keep chatting about travel. What interests you about old train stations?",
+      "reply": "Honestly, old train stations are some of the best buildings to draw — the big arched roofs, ironwork, and all those little details in the brick. They also feel like places full of anticipation, with people arriving and leaving. Would you plan to sketch the station itself before heading into town?",
+      "model": "deepseek-flash",
+      "browserRoundTripMs": 1589
+    }
+  ],
+  "receipts": [
+    {
+      "reply": "That makes sense — we've got a few good teas that won't leave you jittery. The chamomile is really calming, and the peppermint is light and refreshing if you want something with a bit more lift. Do you usually go for caffeine-free, or is a little green tea okay?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 316,
+        "completion_tokens": 63,
+        "total_tokens": 379,
+        "prompt_tokens_details": {
+          "cached_tokens": 128
+        },
+        "prompt_cache_hit_tokens": 128,
+        "prompt_cache_miss_tokens": 188
+      },
+      "firstTokenMs": 1136,
+      "totalMs": 1701
+    },
+    {
+      "reply": "Got it — caffeine-free and no sugar. The chamomile fits that perfectly, or we also have a nice rooibos if you want something a bit fuller in flavor. Both come out naturally sweet-tasting without any sugar added.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 398,
+        "completion_tokens": 49,
+        "total_tokens": 447,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 142
+      },
+      "firstTokenMs": 638,
+      "totalMs": 1077
+    },
+    {
+      "reply": "That sounds like a nice Sunday ritual. Is Maya a tea drinker too, or does she go for coffee while you have your tea?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 463,
+        "completion_tokens": 28,
+        "total_tokens": 491,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 207
+      },
+      "firstTokenMs": 603,
+      "totalMs": 847
+    },
+    {
+      "reply": "Of course — a train trip to the coast sounds great. Are you thinking of a day trip, or staying somewhere overnight?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 510,
+        "completion_tokens": 25,
+        "total_tokens": 535,
+        "prompt_tokens_details": {
+          "cached_tokens": 256
+        },
+        "prompt_cache_hit_tokens": 256,
+        "prompt_cache_miss_tokens": 254
+      },
+      "firstTokenMs": 823,
+      "totalMs": 1004
+    },
+    {
+      "reply": "Nice — coastal towns usually have great old buildings to draw. I'd bring a sketchbook with paper sturdy enough for light washes, a couple of pencils plus a fine-liner for crisp lines, and maybe a small watercolor set if you want to add color. A folding stool or something to sit on helps a lot when you're sketching for a while.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 552,
+        "completion_tokens": 72,
+        "total_tokens": 624,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 168
+      },
+      "firstTokenMs": 881,
+      "totalMs": 1569
+    },
+    {
+      "reply": "Rain doesn't have to ruin it — a lot of coastal towns have covered arcades or a station café with big windows where you can sketch the street from inside. Also worth checking if there's a small local museum or gallery; their interiors often have interesting shapes to draw, and you stay dry.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 639,
+        "completion_tokens": 60,
+        "total_tokens": 699,
+        "prompt_tokens_details": {
+          "cached_tokens": 384
+        },
+        "prompt_cache_hit_tokens": 384,
+        "prompt_cache_miss_tokens": 255
+      },
+      "firstTokenMs": 830,
+      "totalMs": 1442
+    },
+    {
+      "reply": "Leo coming along could work well — different company often changes what you notice and sketch. Does he draw too, or will he mostly be keeping you company while you work?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 717,
+        "completion_tokens": 34,
+        "total_tokens": 751,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 205
+      },
+      "firstTokenMs": 1031,
+      "totalMs": 1262
+    },
+    {
+      "reply": "Right now it's your brother Leo coming with you, and Maya can't make it this time. So the sketching trip to the coast is you and Leo.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 768,
+        "completion_tokens": 32,
+        "total_tokens": 800,
+        "prompt_tokens_details": {
+          "cached_tokens": 512
+        },
+        "prompt_cache_hit_tokens": 512,
+        "prompt_cache_miss_tokens": 256
+      },
+      "firstTokenMs": 745,
+      "totalMs": 1047
+    },
+    {
+      "reply": "You said you prefer tea because coffee makes you nervous. You wanted something caffeine-free and with no sugar, so we were looking at the chamomile or rooibos.",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 816,
+        "completion_tokens": 36,
+        "total_tokens": 852,
+        "prompt_tokens_details": {
+          "cached_tokens": 640
+        },
+        "prompt_cache_hit_tokens": 640,
+        "prompt_cache_miss_tokens": 176
+      },
+      "firstTokenMs": 832,
+      "totalMs": 1133
+    },
+    {
+      "reply": "Honestly, old train stations are some of the best buildings to draw — the big arched roofs, ironwork, and all those little details in the brick. They also feel like places full of anticipation, with people arriving and leaving. Would you plan to sketch the station itself before heading into town?",
+      "source": "ai",
+      "provider": "deepseek",
+      "model": "deepseek-flash",
+      "usage": {
+        "prompt_tokens": 880,
+        "completion_tokens": 60,
+        "total_tokens": 940,
+        "prompt_tokens_details": {
+          "cached_tokens": 640
+        },
+        "prompt_cache_hit_tokens": 640,
+        "prompt_cache_miss_tokens": 240
+      },
+      "firstTokenMs": 890,
+      "totalMs": 1475
+    }
+  ],
+  "errors": [],
+  "feedback": {
+    "dimensions": {
+      "coherence": {
+        "observation": "The learner connected ideas across turns, referring back to earlier details about Maya and the trip.",
+        "quote": "Who is coming with me now, and who cannot come?",
+        "answerIndex": 7,
+        "suggestion": "Continue linking new information to previous context to maintain a coherent narrative."
+      },
+      "lexical": {
+        "observation": "Vocabulary is appropriate for the café and travel topics, with some variety.",
+        "quote": "I prefer tea because coffee makes me nervous.",
+        "answerIndex": 0,
+        "suggestion": "Expand vocabulary for describing preferences and plans, e.g., 'I'd rather have tea; coffee tends to make me jittery.'"
+      },
+      "grammar": {
+        "observation": "Grammar is generally accurate with correct use of modals and present tense.",
+        "quote": "Something without caffeine, please. I do not want any sugar either.",
+        "answerIndex": 1,
+        "suggestion": "Vary sentence structures, such as using 'I'd like something without caffeine, and no sugar, please.'"
+      }
+    },
+    "parts": [],
+    "deliveryImprovements": [],
+    "summary": "The learner ordered tea at a café, then smoothly shifted the conversation to planning a coastal sketching trip with their brother Leo. They asked clear follow-up questions and kept the dialogue going naturally.",
+    "strengths": [
+      "Clear, polite ordering language: 'I prefer tea because coffee makes me nervous. What would you recommend?'",
+      "Smooth topic change: 'Actually, can we talk about a train trip to the coast instead?'",
+      "Good use of follow-up questions to sustain conversation: 'What could I do if it rains all day?'"
+    ],
+    "improvements": [],
+    "basis": "transcript-only",
+    "unassessedDimensions": [
+      "pronunciation",
+      "intonation",
+      "audio pauses",
+      "video behavior"
+    ],
+    "pronunciation": null,
+    "score": null,
+    "source": "ai",
+    "provider": "deepseek",
+    "model": "deepseek-v4-pro",
+    "createdAt": "2026-11-11T09:02:12.776Z"
+  },
+  "persistence": "IndexedDB refresh verified, not Supabase",
+  "status": "PASS"
+}

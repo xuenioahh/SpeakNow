@@ -56,8 +56,8 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-dvh bg-[#171717] relative overflow-hidden flex items-center justify-center px-4 py-8">
-      <div className="absolute inset-0 pointer-events-none">
+    <div className="auth-page min-h-dvh bg-background relative overflow-hidden flex items-center justify-center px-4 py-8">
+      <div className="auth-background absolute inset-0 pointer-events-none">
         <div className="absolute left-[8%] top-[10%] h-44 w-44 rounded-full bg-cyan-500/20 blur-3xl" />
         <div className="absolute right-[10%] top-[18%] h-48 w-48 rounded-full bg-indigo-500/24 blur-3xl" />
         <div className="absolute inset-x-[20%] bottom-[6%] h-52 rounded-full bg-amber-500/16 blur-[90px]" />
@@ -66,7 +66,7 @@ export default function AuthPage() {
       <motion.div
         initial={false}
         animate={{ opacity: 1, y: 0 }}
-        className="relative w-full max-w-md glass rounded-[24px] p-6 sm:p-8 border border-white/10"
+        className="relative w-full max-w-md glass rounded-[24px] p-6 sm:p-8 border border-slate-200"
       >
         <div className="flex items-center justify-between gap-3 mb-6">
           <div>
@@ -76,7 +76,7 @@ export default function AuthPage() {
             </h1>
           </div>
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center">
-            <LockKeyhole className="w-5 h-5 text-white" />
+            <LockKeyhole className="w-5 h-5 text-foreground" />
           </div>
         </div>
 
@@ -93,7 +93,7 @@ export default function AuthPage() {
                   required
                   value={form.full_name}
                   onChange={(event) => updateField("full_name", event.target.value)}
-                  className="pl-10 h-11 rounded-2xl bg-white/5 border-white/10"
+                  className="pl-10 h-11 rounded-2xl bg-white/5 border-slate-200"
                   placeholder="Your name"
                 />
               </div>
@@ -111,7 +111,7 @@ export default function AuthPage() {
                 required
                 value={form.email}
                 onChange={(event) => updateField("email", event.target.value)}
-                className="pl-10 h-11 rounded-2xl bg-white/5 border-white/10"
+                className="pl-10 h-11 rounded-2xl bg-white/5 border-slate-200"
                 placeholder="you@example.com"
               />
             </div>
@@ -128,13 +128,13 @@ export default function AuthPage() {
                 required
                 value={form.password}
                 onChange={(event) => updateField("password", event.target.value)}
-                className="pl-10 h-11 rounded-2xl bg-white/5 border-white/10"
+                className="pl-10 h-11 rounded-2xl bg-white/5 border-slate-200"
                 placeholder="Enter your password"
               />
             </div>
           </label>
 
-          {errorMessage && <p role="alert" className="rounded-xl border border-red-400/25 bg-red-400/10 p-3 text-sm text-red-200">{errorMessage}</p>}
+          {errorMessage && <p role="alert" className="rounded-xl border border-red-400/25 bg-red-400/10 p-3 text-sm text-red-800">{errorMessage}</p>}
           <Button
             type="submit"
             disabled={submitting}
@@ -156,7 +156,7 @@ export default function AuthPage() {
           </button>
         </div>
 
-        <div className="mt-5 border-t border-white/8 pt-4 text-center space-y-2">
+        <div className="mt-5 border-t border-slate-200 pt-4 text-center space-y-2">
           <p className="text-[11px] leading-relaxed text-muted-foreground">
             By continuing, you acknowledge the educational-use disclaimer and the privacy notice for saved practice data.
           </p>

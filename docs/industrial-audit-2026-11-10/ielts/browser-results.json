@@ -1,0 +1,12 @@
+{
+  "passed": [
+    "homepage and exam switch expose separate TOEFL and three-part IELTS banks",
+    "Part 1 supports bilingual search, category/status filtering and a non-first question",
+    "Part 2 displays the selected cue variant, saves notes, and stops at 120 seconds",
+    "Part 2 one-minute preparation expires, and Part 3 completes the selected whole group",
+    "cross-set selections fail clearly; source-only Chinese discussions keep their wording",
+    "IELTS selection, all banks, preparation and cue card fit 320/390px screens"
+  ],
+  "pageErrors": [],
+  "environment": "Chrome with real MediaRecorder, fake microphone, controlled recognition/TTS and local model fixture; no live model or physical microphone claim."
+}

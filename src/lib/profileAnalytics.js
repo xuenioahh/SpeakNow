@@ -4,6 +4,7 @@ const mean = values => values.length ? values.reduce((sum, n) => sum + n, 0) / v
 const round = n => n === null ? null : Math.round(n * 10) / 10;
 const dayKey = date => `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 const numeric = value => (typeof value === "number" || (typeof value === "string" && value.trim())) && Number.isFinite(Number(value)) ? Number(value) : null;
+const validDate = value => typeof value === "string" && value.trim() && Number.isFinite(new Date(value).getTime());
 
 export function metricLabel(name) {
   return String(name).replace(/_/g, " ").replace(/\b\w/g, letter => letter.toUpperCase());
@@ -13,7 +14,7 @@ export function buildProfileAnalytics({ voiceSessions = [], presentationSessions
   const records = [
     ...voiceSessions.map(s => ({ ...s, kind: "voice" })),
     ...presentationSessions.map(s => ({ ...s, kind: "presentation" })),
-  ].filter(s => s && Number.isFinite(new Date(s.created_date).getTime()) && new Date(s.created_date) <= now)
+  ].filter(s => s && validDate(s.created_date) && new Date(s.created_date) <= now)
     .sort((a, b) => new Date(a.created_date).getTime() - new Date(b.created_date).getTime());
   const start = new Date(now);
   start.setHours(0, 0, 0, 0);
@@ -56,7 +57,9 @@ export function buildProfileAnalytics({ voiceSessions = [], presentationSessions
   if (!activeDays.has(dayKey(cursor))) cursor.setDate(cursor.getDate() - 1);
   let streak = 0;
   while (activeDays.has(dayKey(cursor))) { streak++; cursor.setDate(cursor.getDate() - 1); }
-  const seconds = selected.reduce((total, s) => total + Math.max(0, numeric(s.duration_seconds) || 0), 0);
+  const timed = selected.map(s => numeric(s.duration_seconds)).filter(seconds => seconds !== null && seconds > 0);
+  const seconds = timed.reduce((total, value) => total + value, 0);
+  const practiceDays = new Set(selected.map(s => dayKey(new Date(s.created_date)))).size;
   const advice = groups.map(group => {
     const weakest = group.metrics[0];
     const metric = weakest?.name?.toLowerCase() || "";
@@ -70,7 +73,8 @@ export function buildProfileAnalytics({ voiceSessions = [], presentationSessions
     return { group: group.id, title: weakest ? `Work on ${weakest.label.toLowerCase()}` : `Continue ${group.label.toLowerCase()}`, evidence: weakest ? `${group.label}: ${weakest.value}/${group.max} across ${weakest.count} scored session${weakest.count === 1 ? "" : "s"}.` : `${group.count} scored sessions in this period.`, action, href: group.id === "presentation" ? "/presentation" : "/voice", provisional: group.count < 3 };
   });
   const scoredCount = groups.reduce((n, g) => n + g.count, 0);
-  return { total: selected.length, lifetimeTotal: records.length, minutes: Math.round(seconds / 60), averageMinutes: selected.length ? round(seconds / 60 / selected.length) : null,
+  return { total: selected.length, lifetimeTotal: records.length, minutes: timed.length ? round(seconds / 60) : null,
+    averageMinutes: timed.length ? round(seconds / 60 / timed.length) : null, timedCount: timed.length, practiceDays,
     voiceCount: selected.filter(s => s.kind === "voice").length, presentationCount: selected.filter(s => s.kind === "presentation").length,
     groups, advice, week, weekCount: week.reduce((n, d) => n + d.count, 0), streak, excludedScores: selected.length - scoredCount,
     recent: [...selected].reverse().slice(0, 5), invalidDates: voiceSessions.length + presentationSessions.length - records.length };

@@ -1,0 +1,20 @@
+{
+  "src/App.jsx": "90bf6295aa72510978eccffc5bd71a192d53ccbd37112d6e46bea9763854a45d",
+  "src/components/ScenarioStage.jsx": "5cb448d7cb484c82d46216978fe35d858d13f7abf467de851a63947955a21770",
+  "src/components/scene/createScene.js": "73738aa8552d14fd08f0568d8f08b39dea0dd07de5ddc4070638039b62560b0d",
+  "src/components/scene/buildRoom.js": "89dd9ee2870bc6bb849cf48370a8a554208b55c495e76be6b39871e834e6c6e1",
+  "src/components/scene/createHumanoid.js": "144060e510749e6dd4c8eac42f6d546006e7a16f0e8388a4e3b44db7cc7f9e1e",
+  "src/lib/immersiveScenarios.js": "894ee1c2313ae33b6ae227897ca029cba69736b03d5f6dfded2712a74e9fcd38",
+  "src/lib/conversationAnchors.js": "318cc26e14aed55ab6b9a9f2523707b3f0e826cc247160f9ed315659a04ef6d6",
+  "src/lib/dailyTasks.js": "f5647a80896f44429d1072452e743b01bf7f15c2a5626bc41afef4ea516ad450",
+  "src/lib/audioManager.js": "f60b7f514107dec1904e61cd58f83ae0d036103d8a6403a771491ccad1456ce9",
+  "src/lib/voice/VoiceInteraction.js": "653be2d5fbd18ae814fa2bff5c2bc18f2c512ff56f869856d4db62b60bed5cc4",
+  "src/lib/voice/speechOutput.js": "cd1e7995fef0f2e54b96107abb45460e9c262703592afda7cbfbe877d00c3406",
+  "src/pages/VoiceChat.jsx": "2d2cbd62a822c7879fbef2f3e760178acce2f79699e05c39bab2de885fa0134d",
+  "src/daily-immersive.css": "c68746e30bc1fd990332b863d1511a383a730a078b3f85559bc95dac453660be",
+  "src/api/conversationStream.js": "77d0e65753fb1888337ee419056d14a75d20917d384b558a106bff782826c9b2",
+  "api/voice-chat.js": "eed34d6d34ff1b1f10d76e2b41bad3a3ee3558cc47b6c0e0baf8d4f10639b28d",
+  "backend/server.js": "b6e584b0c7f61fb0e71d74301dcfc8ec0a4c58386db43f9bad1166324374d43e",
+  "vite.config.js": "54972b830df29536b7740a077df0c2d12bbba25c42bed5ef7d5208c0d07bb3a0",
+  "eslint.config.js": "026aa4a25bdb8d4cd13b0aeabca60892d3d0a26966e76aa9273211796489804f"
+}

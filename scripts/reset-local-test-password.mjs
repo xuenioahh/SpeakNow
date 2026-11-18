@@ -1,0 +1,26 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { randomBytes } from 'node:crypto';
+if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NODE_ENV === 'production') throw new Error('Local testing only.');
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+process.env.FORCE_LOCAL_DATA = 'true';
+process.env.SPEAKNOW_DATA_DIR = path.join(root, 'data');
+const { getUserByEmail, updateUserFields } = await import('../api/_appStore.js');
+const { hashPassword } = await import('../api/_auth.js');
+const { readLedger } = await import('../api/_membershipStore.js');
+const { mutateJson } = await import('../api/_jsonStore.js');
+const user = await getUserByEmail('speaknow-test@local.example');
+if (!user || user.role !== 'learner' || (await readLedger(user.id)).entitlement?.origin !== 'local-testing') throw new Error('Expected local test learner not found; no changes made.');
+const file = path.join(root, 'data', 'testing-account.local');
+const credentials = JSON.parse(await fs.readFile(file, 'utf8'));
+if (credentials.userId !== user.id) throw new Error('Credential file belongs to another account; no changes made.');
+const password = `SpeakNow-${randomBytes(9).toString('hex')}`;
+await updateUserFields(user.id, { password: await hashPassword(password) });
+await mutateJson('security-db.json', { sessions: {}, counters: {}, usage: [] }, database => {
+  for (const [key, session] of Object.entries(database.sessions || {})) if (session.user_id === user.id) delete database.sessions[key];
+  return database;
+});
+await fs.writeFile(`${file}.tmp`, JSON.stringify({ ...credentials, password, passwordResetAt: new Date().toISOString() }, null, 2), { mode: 0o600 });
+await fs.rename(`${file}.tmp`, file);
+console.log(JSON.stringify({ email: user.email, url: credentials.url, credentialFile: file, recordsPreserved: true, passwordPrinted: false }));

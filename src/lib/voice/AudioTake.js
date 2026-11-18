@@ -1,18 +1,21 @@
 // Records the same live stream used by capture. No synthetic samples or timers.
 export class AudioTake {
-  /** @param {{ onSave?: (recording: any) => Promise<any>, onError?: (message: string) => void, environment?: any }} options */
+  /** @param {{ onSave?: (recording: any) => Promise<any>, onCheckpoint?: (recording: any) => Promise<any>, onError?: (message: string) => void, environment?: any }} options */
   constructor({
     onSave,
+    onCheckpoint,
     onError,
     environment = globalThis
   } = {}) {
     this.onSave = onSave;
+    this.onCheckpoint = onCheckpoint;
     this.onError = onError;
     this.env = environment;
     /** @type {string|null} */
     this.id = null;
   }
   start(stream) {
+    if (this.recorder && this.recorder.state !== "inactive") return;
     const Recorder = this.env.MediaRecorder;
     this.id = null;
     this.stoppedAt = null;
@@ -36,9 +39,17 @@ export class AudioTake {
         mimeType: mime,
         audioBitsPerSecond: 64000
       });
+      let checkpointAt = 0;
+      let checkpoint = Promise.resolve();
       this.done = new Promise(resolve => {
         this.recorder.ondataavailable = event => {
           if (event.data.size) chunks.push(event.data);
+          if (this.onCheckpoint && chunks.length && Date.now() - checkpointAt >= 1000 && this.recorder.state === 'recording') {
+            checkpointAt = Date.now();
+            const recording = { id, blob: new Blob(chunks, { type: mime }), complete: false, startedAt: this.startedAt, durationSeconds: (Date.now() - this.startedAt) / 1000 };
+            checkpoint = checkpoint.catch(() => {}).then(() => this.onCheckpoint(recording));
+            checkpoint.catch(error => this.onError?.(error.message));
+          }
         };
         this.recorder.onerror = () => {
           this.error = new Error('Recording was interrupted. Review your transcript and record again.');
@@ -50,9 +61,11 @@ export class AudioTake {
               type: mime
             });
             if (!blob.size || this.error) throw this.error || new Error('Recording was empty. Please record again.');
+            await checkpoint.catch(() => {});
             await this.onSave?.({
               id,
               blob,
+              complete: true,
               startedAt: this.startedAt,
               durationSeconds: Math.max(0, ((this.stoppedAt || Date.now()) - this.startedAt) / 1000)
             });

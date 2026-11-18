@@ -1,0 +1,46 @@
+{
+  "environment": "Actual DeepSeek API, synthetic engineering transcripts, no microphone/ASR or official score claim",
+  "examiner": {
+    "status": 200,
+    "source": "ai",
+    "text": "Hello, welcome. Let's begin with Part 1. Do you work or are you a student?"
+  },
+  "feedback": {
+    "status": 200,
+    "source": "ai",
+    "provider": "deepseek",
+    "model": "deepseek-flash",
+    "summary": "The candidate gives clear, well-organised answers across all three parts of the mock. Part 1 responses are direct and add brief personal detail; Part 2 sustains a coherent narrative about learning to cook; Part 3 answers show balanced reasoning and examples. Vocabulary is generally appropriate and grammar is mostly accurate, with occasional small slips. Pronunciation cannot be assessed from text.",
+    "dimensions": [
+      "coherence",
+      "lexical",
+      "grammar"
+    ],
+    "parts": [
+      1,
+      2,
+      3
+    ],
+    "improvements": 2
+  },
+  "usage": [
+    {
+      "providerRequests": 1,
+      "inputTokens": 154,
+      "outputTokens": 16,
+      "ttsCharacters": null,
+      "asrSeconds": null,
+      "source": "provider-reported",
+      "outcome": "success"
+    },
+    {
+      "providerRequests": 1,
+      "inputTokens": 4071,
+      "outputTokens": 828,
+      "ttsCharacters": null,
+      "asrSeconds": null,
+      "source": "provider-reported",
+      "outcome": "success"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "category": "Mock browser failure tests + isolated local-server persistence",
+  "passed": [],
+  "errors": [],
+  "status": "FAIL",
+  "failure": "locator.waitFor: Error: strict mode violation: getByText('Engineering fixture: would you like a small or large coffee?', { exact: true }) resolved to 2 elements:\n    1) <p>Engineering fixture: would you like a small or la…</p> aka getByLabel('NPC subtitles').getByText('Engineering fixture: would')\n    2) <p>Engineering fixture: would you like a small or la…</p> aka getByLabel('Live conversation').getByText('Engineering fixture: would')\n\nCall log:\n\u001b[2m  - waiting for getByText('Engineering fixture: would you like a small or large coffee?', { exact: true }) to be visible\u001b[22m\n",
+  "visibleState": "SpeakNow\nHome\nSpeaking\nExams\nMy Progress\nMembership\nSign in\nExit\nAt the Counter\nCafé · 00:02\nAlex · Barista\n\nPaused\n\nAlex\n\nHey! Welcome to Brew & Bean! What can I get started for you?\n\nReplay\nYou\n\nCamera denial must not block text conversation.\n\nAlex\n\nEngineering fixture: would you like a small or large coffee?\n\nReplay\nResume\nFinish & review\n\nCamera unavailable. Voice practice still works; turn the camera off and retry."
+}

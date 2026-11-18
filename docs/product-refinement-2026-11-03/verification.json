@@ -1,0 +1,74 @@
+{
+  "tests": {
+    "passed": 175,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "lint": "PASS",
+  "productionBuild": "PASS",
+  "browser": {
+    "status": "PASS",
+    "scope": "Real browser, local isolated fixture backend, API authorization, IndexedDB UI. No real voice/camera acceptance in this suite.",
+    "checks": [
+      "home: desktop, 390px, 320px",
+      "exams: desktop, 390px, 320px",
+      "ielts: desktop, 390px, 320px",
+      "bank: desktop, 390px, 320px",
+      "daily: desktop, 390px, 320px",
+      "history: desktop, 390px, 320px",
+      "insights: desktop, 390px, 320px",
+      "membership: desktop, 390px, 320px",
+      "auth: desktop, 390px, 320px",
+      "account: desktop, 390px, 320px",
+      "presentation: desktop, 390px, 320px",
+      "expression: desktop, 390px, 320px",
+      "admin-only actual ledger report and configurable monthly/recharge calculator",
+      "anonymous usage report rejected"
+    ],
+    "errors": []
+  },
+  "dailyEvidence": {
+    "status": "PASS",
+    "scope": "Controlled evidence and generated media fixtures; real browser, IndexedDB, report rendering and retry routing. No claim of human motion or real acoustic assessment.",
+    "checks": [
+      "seven dimensions",
+      "timestamped audio/video overlap",
+      "verified delivery evidence",
+      "unmeasured latency remains unassessed",
+      "320/390 layouts",
+      "targeted retry relationship"
+    ],
+    "runtimeErrors": []
+  },
+  "fullProduct": {
+    "passed": [
+      "all primary routes stay light even when the operating system requests dark mode",
+      "TOEFL practice never reveals the reference automatically and gets real audio checks",
+      "TOEFL exam hides references and transcript editing until the answer is submitted",
+      "IELTS Parts 1, 2 and 3 retain preparation and get recording quality results",
+      "daily voice automatically recovers a transient AI outage without duplicating the learner turn",
+      "VIP trial is real, remains active on refresh and exposes all five allowances",
+      "administrator can revoke VIP, process a learner request and grant time-limited access",
+      "unavailable premium voice falls back to English browser speech and cancellation stays cancelled"
+    ],
+    "errors": [],
+    "accountId": "user_be41a575-4bf3-4be2-833c-8e5c13eca2f2",
+    "scope": "Real WebAudio, MediaRecorder, PCM decoding, IndexedDB, API sessions, quotas and membership actions. Controlled ASR, TTS and LLM responses. Azure Speech not configured."
+  },
+  "realUsage": {
+    "status": "PASS",
+    "providerCalls": 25,
+    "inputTokens": 34985,
+    "outputTokens": 1777,
+    "estimatedCnyLow": 0.05523174,
+    "estimatedCnyHigh": 0.11046348,
+    "ttsRealProviderCharacters": 0
+  },
+  "limitations": [
+    "No complete human microphone and camera session acceptance",
+    "No controlled physical motion accuracy matrix",
+    "No pure voice full-duplex barge-in acceptance",
+    "Azure pronunciation/prosody not configured",
+    "Direct production HTTP is inaccessible from this network"
+  ]
+}

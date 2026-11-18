@@ -1,0 +1,9 @@
+{
+  "passed": [
+    "obsolete account request cancelled",
+    "account insights reset",
+    "obsolete failure ignored",
+    "draft preserved during device storage failure"
+  ],
+  "pageErrors": []
+}

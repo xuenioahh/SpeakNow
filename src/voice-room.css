@@ -1,26 +1,26 @@
 /* Task 01: selectors stay inside the existing speaking page. */
 .speaking-room {
-  background: radial-gradient(ellipse at 22% 34%, #7052af24, transparent 55%),
-    radial-gradient(ellipse at 80% 16%, #4b78a115, transparent 44%), hsl(var(--background));
+  background: radial-gradient(ellipse at 22% 34%, rgba(24,34,53,0.035), transparent 55%),
+    radial-gradient(ellipse at 80% 16%, rgba(24,34,53,0.021), transparent 44%), hsl(var(--background));
 }
 .speaking-room .room-presence {
-  background: radial-gradient(ellipse at 48% 46%, #8263bd16, transparent 62%),
-    linear-gradient(135deg, #ffffff05, #ffffff01);
-  box-shadow: inset 0 1px 0 #d8c5ff13, 0 25px 55px -38px #000a;
+  background: radial-gradient(ellipse at 48% 46%, rgba(98,64,179,0.052), transparent 62%),
+    linear-gradient(135deg, rgba(98,64,179,0.025), rgba(98,64,179,0.025));
+  box-shadow: inset 0 1px 0 rgba(24,34,53,0.01), 0 25px 55px -38px rgba(24,34,53,0.12);
 }
 .speaking-room .room-header {
-  background: linear-gradient(120deg, #ffffff06, transparent), #1a1922e8;
-  box-shadow: inset 0 1px 0 #ffffff13, 0 10px 30px -22px #000;
+  background: linear-gradient(120deg, rgba(98,64,179,0.025), transparent), rgba(24,34,53,0.160);
+  box-shadow: inset 0 1px 0 rgba(24,34,53,0.01), 0 10px 30px -22px rgba(24,34,53,0.12);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
 .speaking-room .room-controls {
-  background: linear-gradient(140deg, #ffffff07, transparent), #211d2bf2;
-  box-shadow: inset 0 1px 0 #d7bfff24, 0 20px 42px -25px #0009;
+  background: linear-gradient(140deg, rgba(98,64,179,0.025), transparent), rgba(24,34,53,0.160);
+  box-shadow: inset 0 1px 0 rgba(24,34,53,0.03), 0 20px 42px -25px rgba(24,34,53,0.12);
 }
 .speaking-room .room-conversation {
-  background: #17151db8;
-  box-shadow: inset 0 1px 0 #ffffff08;
+  background: rgba(24,34,53,0.160);
+  box-shadow: inset 0 1px 0 rgba(24,34,53,0.01);
 }
 .speaking-room .room-status {
   transition: color 250ms ease, background 250ms ease, border-color 250ms ease;
@@ -33,15 +33,15 @@
   transform: translateY(1px) scale(.97);
 }
 .speaking-room .room-status[data-state=processing] {
-  color: #d2bcf8;
-  border-color: #b592ed4a;
+  color: #6240b3;
+  border-color: rgba(24,34,53,0.29);
 }
 .speaking-room .room-status[data-state=speaking] {
-  color: #b7d4fa;
-  border-color: #8faee347;
+  color: #6240b3;
+  border-color: rgba(24,34,53,0.28);
 }
 .speaking-room .room-status[data-state=completed] {
-  color: #b1e2cb;
+  color: #14714d;
 }
 .speaking-room .room-status-detail {
   max-width: 340px;
@@ -51,7 +51,7 @@
   content: '';
   position: absolute;
   inset: 16% 24%;
-  border: 1px solid #c5b2f100;
+  border: 1px solid rgba(24,34,53,0.12);
   border-radius: 50%;
   pointer-events: none;
 }
@@ -59,13 +59,13 @@
   animation: voice-room-complete 850ms ease-out both;
 }
 @keyframes voice-room-complete {
-  from { border-color: #c4ead05c; transform: scale(.9); opacity: .65; }
-  to { border-color: #c4ead000; transform: scale(1.3); opacity: 0; }
+  from { border-color: rgba(24,34,53,0.30); transform: scale(.9); opacity: .65; }
+  to { border-color: rgba(24,34,53,0.12); transform: scale(1.3); opacity: 0; }
 }
 @media (hover: hover) and (pointer: fine) {
   .speaking-room .room-controls button:not(:disabled):hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 20px -12px #b78cf94a;
+    box-shadow: 0 8px 20px -12px rgba(24,34,53,0.06);
   }
   .speaking-room .room-guidance {
     transition: transform 200ms ease;
@@ -89,18 +89,18 @@
 }
 /* Speech updates reserve their own region instead of moving the controls. */
 .speaking-room .voice-live-transcript { height: 112px; overflow-y: auto; }
-.speaking-room .voice-final-words { color: #eee5fa; }
-.speaking-room .voice-interim-words { color: #b3a5c2; font-style: italic; }
-.speaking-room .voice-transcript-label { font-size: 10px; letter-spacing: .1em; color: #aa9abb; margin: 3px 0 6px; }
-.speaking-room .voice-input-options { display: flex; flex-wrap: wrap; gap: 8px 18px; color: #c6b9d6; font-size: 11px; }
+.speaking-room .voice-final-words { color: #182235; }
+.speaking-room .voice-interim-words { color: #6240b3; font-style: italic; }
+.speaking-room .voice-transcript-label { font-size: 10px; letter-spacing: .1em; color: #6240b3; margin: 3px 0 6px; }
+.speaking-room .voice-input-options { display: flex; flex-wrap: wrap; gap: 8px 18px; color: #6240b3; font-size: 11px; }
 .speaking-room .voice-input-options label { display: flex; align-items: center; gap: 7px; min-height: 32px; }
-.speaking-room .voice-input-options input { accent-color: #a68add; width: 16px; height: 16px; }
-.speaking-room .voice-input-options select { color: #ece4f7; background: #282232; padding: 5px 8px; border-radius: 8px; border: 1px solid #a68add30; }
-.speaking-room .voice-recovery-button { color: #dac7f7; padding: 8px 14px; border: 1px solid #b792e53d; border-radius: 12px; margin-right: 10px; font-size: 12px; }
-.speaking-room .voice-timing { color: #b7a8c9; font-size: 11px; }
+.speaking-room .voice-input-options input { accent-color: #6240b3; width: 16px; height: 16px; }
+.speaking-room .voice-input-options select { color: #182235; background: #ffffff; padding: 5px 8px; border-radius: 8px; border: 1px solid rgba(24,34,53,0.19); }
+.speaking-room .voice-recovery-button { color: #6240b3; padding: 8px 14px; border: 1px solid rgba(24,34,53,0.24); border-radius: 12px; margin-right: 10px; font-size: 12px; }
+.speaking-room .voice-timing { color: #6240b3; font-size: 11px; }
 .speaking-room .voice-timing summary { cursor: pointer; min-height: 32px; padding: 6px 0; }
 .speaking-room .voice-timing dl { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin: 8px 0; }
-.speaking-room .voice-timing dd { color: #e5d8f5; font-variant-numeric: tabular-nums; }
+.speaking-room .voice-timing dd { color: #6240b3; font-variant-numeric: tabular-nums; }
 
 /* A café visit needs enough room for the world and its conversation. */
 .speaking-room.is-cafe-scene-active{height:auto;display:block}
@@ -140,4 +140,35 @@
 
 .camera-preview { width: min(240px, 100%); margin: 12px auto; }
 .camera-preview video { width: 100%; aspect-ratio: 4/3; object-fit: cover; border-radius: 12px; }
-.camera-preview p { font-size: 12px; color: var(--muted-foreground, #a7a7bd); }
+.camera-preview p { font-size: 12px; color: var(--muted-foreground, #526075); }
+
+/* The scene remains the main surface throughout Daily practice. */
+.speaking-room.daily-practice{height:auto;min-height:100vh;display:flex;flex-direction:column}
+.daily-practice .room-workspace{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(280px,.7fr);gap:16px;align-items:start;overflow:visible;padding:14px 20px}
+.daily-practice .room-presence{position:relative;display:flex;flex-direction:column;align-items:stretch;padding:0;min-height:0}
+.daily-practice .daily-practice-scene{width:100%;order:0}
+.daily-practice .daily-practice-scene .scenario-stage{border-radius:18px;overflow:hidden}
+.daily-practice .daily-practice-scene .scene-viewport{height:clamp(430px,64vh,760px);flex-basis:clamp(430px,64vh,760px)}
+.daily-practice .room-task{order:1;text-align:left;margin:8px 0 2px}.daily-practice .room-task p{font-size:14px}
+.daily-practice .voice-orb{order:2;width:90px;height:70px;margin:0}.daily-practice .room-status{order:3;align-self:start;margin:0}
+.daily-practice .room-status-detail{order:4;text-align:left}.daily-practice .room-presence>.voice-scene-toggle{order:5;max-width:220px;margin-top:8px}
+.daily-practice .room-session-meta{order:7}.daily-practice .camera-preview{position:absolute;right:16px;top:75px;z-index:5;width:160px;margin:0;padding:6px;border-radius:12px;background:rgba(24,34,53,0.160);box-shadow:0 8px 24px rgba(24,34,53,0.11)}
+.daily-practice .camera-preview video{display:block}.daily-practice .camera-preview p{line-height:1.3;margin-top:4px}
+.daily-practice .room-conversation{max-height:75vh;overflow:auto;padding:15px;border:1px solid rgba(24,34,53,0.12);border-radius:16px;background:rgba(24,34,53,0.160)}
+.daily-practice .room-controls{margin:0 20px 20px}
+@media(max-width:900px){.daily-practice .room-workspace{grid-template-columns:1fr}.daily-practice .room-conversation{max-height:36vh}.daily-practice .daily-practice-scene .scene-viewport{height:48vh;min-height:320px;flex-basis:48vh}}
+@media(max-width:760px){.speaking-room.daily-practice .room-workspace{display:flex;flex-direction:column;padding:8px 12px}.daily-practice .room-presence,.daily-practice .room-conversation{width:100%;order:initial}.daily-practice .voice-orb{height:65px;width:80px;margin:0}.daily-practice .room-controls{order:3;margin:0 12px 12px}.daily-practice .camera-preview{top:65px;right:10px;width:118px}.daily-practice .room-conversation{order:2}.daily-practice .room-presence{order:1}}
+
+/* Keep the current exchange and recording controls ahead of optional scenery. */
+.speaking-room.daily-practice .room-workspace{min-height:0;grid-template-columns:minmax(200px,.65fr) minmax(0,1.4fr)}
+.speaking-room.daily-practice .room-conversation{min-height:0;max-height:45vh;border:0;background:transparent}
+.speaking-room.daily-practice .daily-practice-scene{border:0;margin:0 0 12px}
+.speaking-room.daily-practice .daily-practice-scene>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:#526075;font-size:13px}
+.speaking-room.daily-practice .voice-scene-toggle{min-height:44px}
+@media(max-width:760px){
+ .speaking-room.daily-practice .room-workspace{display:flex;gap:12px;padding:8px 12px;min-height:0}
+ .speaking-room.daily-practice .room-presence{min-height:0}
+ .speaking-room.daily-practice .room-conversation{min-height:0;max-height:30vh;padding:8px 0}
+ .speaking-room.daily-practice .room-session-meta{margin-top:6px}
+ .speaking-room.daily-practice .room-controls{padding:12px;margin-bottom:12px}
+}

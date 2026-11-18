@@ -1,0 +1,13 @@
+{
+  "realProvider": "deepseek",
+  "conversationModel": "deepseek-flash",
+  "feedbackModel": "deepseek-v4-pro",
+  "replies": [
+    "Sounds good — a small cappuccino with oat milk. Anything to eat with that, or just the drink today?",
+    "Got it — iced cappuccino with oat milk, no sugar. I'll get that started for you."
+  ],
+  "feedbackSummary": "The user successfully ordered a small iced cappuccino with oat milk and no sugar, responding appropriately to the café prompts.",
+  "improvements": 1,
+  "browserAsr": "not_tested",
+  "voice": "controlled_browser_tts"
+}

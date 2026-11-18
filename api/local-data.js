@@ -140,6 +140,7 @@ async function createEntity(req, payload) {
   if (!payload.data || typeof payload.data !== 'object' || Array.isArray(payload.data) || JSON.stringify(payload.data).length > 300000) throw new Error('Invalid or oversized practice record');
   const data = normalizeEntityData(payload.entity, payload.data);
   const { id: ignoredId, user_id: ignoredOwner, created_date: ignoredDate, ...safe } = data;
+  if (safe.report?.learning) throw new Error('Learning attempts must use the verified speaking save interface.');
   if (payload.entity === 'PresentationSession' && safe.report?.impact) throw new Error('Impact practices must use the verified presentation save interface.');
   if (safe.report) safe.report = { ...safe.report, source: safe.report.source === 'fallback' ? 'fallback' : 'heuristic', measurement_basis: 'unverified-client-estimate' };
   return saveOwned(collection, current.id, { ...safe, id: createId(collection), created_date: new Date().toISOString() });

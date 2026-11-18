@@ -1,0 +1,53 @@
+{
+  "projectDirectory": "/Users/zhangzhuoru/Desktop/master/speaknow-audit",
+  "preview": "http://localhost:5173/",
+  "unitTests": {
+    "passed": 157,
+    "failed": 0
+  },
+  "checks": {
+    "typecheck": "passed",
+    "lint": "passed",
+    "build": "passed"
+  },
+  "uiBrowser": {
+    "passed": [
+      "accepted NPC opening speaks before capture and conversation stays beside the mounted scene",
+      "voice replay, camera consent and practice details remain separate and usable",
+      "long conversation preserves reading position and provides an explicit jump to new replies",
+      "mobile transcript, composer and primary controls remain in view at 390px and 320px",
+      "feedback citations expand the saved answer and targeted retry retains its parent and focus",
+      "primary pages keep one navigation, compact sizing and light colors",
+      "account editing, feedback focus and the previous exam safeguards remain reachable"
+    ],
+    "errors": [],
+    "scope": "Real WebAudio, MediaRecorder, local sessions and persistence. Controlled recognition, TTS events and model replies. Physical speaker output is not asserted."
+  },
+  "actualProviderSample": {
+    "artifact": "live-reliability.json",
+    "successful": 12,
+    "total": 12
+  },
+  "actualBrowserFlow": {
+    "artifact": "real-browser.json",
+    "conversationReplies": 2,
+    "feedbackResults": 1,
+    "passed": true
+  },
+  "fullProductBrowser": {
+    "passed": [
+      "all primary routes stay light even when the operating system requests dark mode",
+      "TOEFL practice never reveals the reference automatically and gets real audio checks",
+      "TOEFL exam hides references and transcript editing until the answer is submitted",
+      "IELTS Parts 1, 2 and 3 retain preparation and get recording quality results",
+      "daily voice automatically recovers a transient AI outage without duplicating the learner turn",
+      "VIP trial is real, remains active on refresh and exposes all five allowances",
+      "administrator can revoke VIP, process a learner request and grant time-limited access",
+      "unavailable premium voice falls back to English browser speech and cancellation stays cancelled"
+    ],
+    "errors": [],
+    "accountId": "user_f9678a53-817d-4861-a80d-bf332da075f7",
+    "scope": "Real WebAudio, MediaRecorder, PCM decoding, IndexedDB, API sessions, quotas and membership actions. Controlled ASR, TTS and LLM responses. Azure Speech not configured."
+  },
+  "browserGroupsPassed": 15
+}

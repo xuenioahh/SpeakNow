@@ -1,0 +1,19 @@
+{
+  "passed": [
+    "A: two large home cards and two task types route to real banks, without playback",
+    "B/D: Painting full set records all seven real answers in order; preparation is independent",
+    "D: AI loading prevents duplicate submission; outage retains recordings and retry shows grounded feedback",
+    "E: retry selected non-first sentence, compare actual attempts, retry whole set, and return to correct bank",
+    "D: unavailable playback, microphone denial and empty recognition have honest recoverable states",
+    "B/E: Campus sentence five uses different material; refresh, exit, bank resume and playback preserve that take",
+    "C: search, category and status filters use real data; reference is absent until the selected answer is submitted",
+    "C/E: interview full topic resumes exact question and records all four source questions in order",
+    "F: partial and combined source groups keep actual counts; invalid cross-set URLs do not load a default",
+    "E: anonymous save, authenticated failed/successful sync, cloud reload with real recordings, and confirmed deletion",
+    "A/E: Daily card enters the selected real scenario and voice interaction remains functional",
+    "E: signing out keeps owned attempts private while preserving guest practice",
+    "A/F: desktop and 390/320px layouts, keyboard choices and visible focus retain the same routes"
+  ],
+  "pageErrors": [],
+  "environment": "Real Chrome MediaRecorder and decoding with fake microphone; controlled ASR/TTS/AI; isolated local account and media API. Hardware microphone, live recognition/TTS voices and production AI quality are not verified."
+}

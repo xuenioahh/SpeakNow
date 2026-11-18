@@ -1,5 +1,6 @@
+import { getConversationAnchors } from './conversationAnchors.js';
 // Practice cues are fictional role-play details, not real bookings or policies.
-const cue = (id, title, detail, phrase, position) => ({ id, title, detail, phrase, position });
+const cue = (id, title, detail, phrase, position, spatial = {}) => ({ id, title, detail, phrase, position, ...spatial });
 
 export const IMMERSIVE_SCENARIOS = {
   bank: {
@@ -13,9 +14,9 @@ export const IMMERSIVE_SCENARIOS = {
   cafe: {
     name: 'Brew & Bean', atmosphere: 'A slow morning · warm oak & fresh coffee', accent: '#e8bb83', wall: '#526654', floor: '#b48a62', light: '#ffdaa3',
     cues: [
-      cue('menu', 'Read the menu', 'Five colleagues. Different drinks. One person needs a dairy-free option.', 'Could I get five drinks, including one latte with oat milk?', [-0.85, 2.4, -2.6]),
-      cue('coffee', 'Your coffee order', 'Check the milk choice and whether the drinks are to go.', 'Could you label the oat-milk latte and make all five to go?', [0.6, 1.45, -0.5]),
-      cue('pastry', 'Choose pastries', 'Ask what is available and check ingredients before ordering for the group.', 'Which pastries are dairy-free, and could you pack them separately?', [1.95, 1.4, -0.5]),
+      cue('menu', 'At the Counter', 'Order drinks for your group and explain the oat-milk preference.', 'Could I get five drinks, including one latte with oat milk?', [-0.85, 2.4, -2.6]),
+      cue('coffee', 'At the Pickup Area', 'Ask the barista to check a mix-up with your order.', 'I think one drink has dairy milk. Could you help me check it?', [0.6, 1.45, -0.5]),
+      cue('pastry', 'At the Table', 'Chat with a friend by the window about your morning plans.', 'It is nice to sit by the window. What are you doing later today?', [-1.45, 1.35, 0.8]),
     ],
   },
   airport: {
@@ -99,3 +100,5 @@ export const IMMERSIVE_SCENARIOS = {
     ],
   },
 };
+
+Object.entries(IMMERSIVE_SCENARIOS).forEach(([id, theme]) => { theme.cues = getConversationAnchors(id, theme.cues); });

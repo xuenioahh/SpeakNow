@@ -33,12 +33,12 @@ function RecordingReplay({ id = '', legacyUrl = '' }) {
 
 function MomentCard({ moment, primary = false, onPractice, canPractice = true }) {
   return <article className={primary ? 'impact-moment primary' : 'impact-moment'}>
-    <p className="eyebrow">{primary ? 'Primary Improvement · AI Coaching Suggestion' : 'Secondary Improvement · AI Coaching Suggestion'}</p>
+    <p className="eyebrow">{primary ? 'Start here' : 'Another idea to try'}</p>
     <h3>{moment.category}</h3>
     <span className="impact-label">Original sentence · transcript excerpt</span>
     <blockquote>{moment.originalText}</blockquote>
     <h4>Why It Matters</h4><p>{moment.explanation}</p><p>{moment.audienceImpact}</p>
-    <h4>Suggested priority · not independently confirmed</h4><p>{moment.priorityReason}</p>
+    <details><summary>Why start here?</summary><p>{moment.priorityReason}</p></details>
     <h4>How to Improve</h4><p>{moment.instruction}</p>
     {moment.suggestedRevision && <details><summary>Suggested Version · optional example</summary><p>{moment.suggestedRevision}</p></details>}
     <h4>Practice objective · 30–60 seconds</h4><p>{moment.practiceObjective}</p>
@@ -52,7 +52,7 @@ function Comparison({ session, metadata, comparison }) {
   const originalMetadata = original?.report?.impact
   return <article className="report-setup-card impact-comparison">
     <p className="eyebrow">Before / After</p>
-    <h3>{comparison?.improvementStatus || 'Comparison pending'}</h3><p>AI Coaching Suggestion: this comparison is the model’s judgement of the two texts. It is not confirmed learning improvement or a human evaluation.</p>
+    <h3>{comparison?.improvementStatus || 'Comparison pending'}</h3><details><summary>About this comparison</summary><p>The AI compares the two texts. It does not measure spoken delivery or establish learning progress.</p></details>
     <p>Target: {metadata.target.category} · {metadata.target.practiceObjective}</p>
     <div className="impact-compare-grid">
       <div><h4>Before · original moment</h4><blockquote>{metadata.target.originalText}</blockquote></div>
@@ -128,10 +128,8 @@ export default function ImpactReport({ session: savedSession }) {
     <article className="report-setup-card impact-summary">
       <p className="eyebrow">SpeakNow Impact Studio</p>
       <h3>Your presentation · one change to practise</h3>
-      <p className="impact-slogan">Prepare your important presentation and improve the parts that matter.</p>
-      <p>{isComparison ? 'See whether this attempt addresses your original practice objective.' : 'Focus on the one moment worth fixing first, then practice it in your own words.'}</p>
-      <p><strong>Your core message:</strong> {context.coreMessage || 'Not configured in this older practice.'}</p>
-      <p><strong>Desired outcome:</strong> {context.desiredOutcome || 'Not configured in this older practice.'}</p>
+      {context.coreMessage && <p><strong>Your core message:</strong> {context.coreMessage}</p>}
+      {context.desiredOutcome && <p><strong>Desired outcome:</strong> {context.desiredOutcome}</p>}
       <p><strong>Intended audience:</strong> {context.targetAudience} Audience {context.audienceDescription && `· ${context.audienceDescription}`}</p>
       {metadata?.inputSource === 'typed' && <p>Text fallback: this feedback evaluates your typed practice text. It does not establish what was spoken in the recording.</p>}
       {metadata?.inputSource === 'mixed' && <p>This practice combines transcribed speech and text fallback. Coaching evaluates the supplied text; spoken delivery is not assessed.</p>}
@@ -143,7 +141,7 @@ export default function ImpactReport({ session: savedSession }) {
       {!!metadata?.analysis?.rejectedEvidence && <p>Some feedback was omitted because its quote or suggested numerical claim could not be verified.</p>}
     </article>
 
-    <article className="report-setup-card"><h3>Recorded evidence</h3><p>Saved duration: {savedSession.duration_seconds}s · source: {metadata.inputSource}. Duration is browser timing, not a delivery score. The transcript is recognized or supplied text; check it against the recording.</p></article>
+    <details className="report-setup-card"><summary>Recording and feedback source</summary><p>Saved duration: {savedSession.duration_seconds}s · source: {metadata.inputSource}. The AI reviews the transcript; check its quotes against your recording.</p></details>
     {isComparison && <Comparison session={session} metadata={metadata} comparison={metadata.comparison} />}
     {view && <article className="report-setup-card impact-surgeon">
       <h3>The one thing worth fixing first · {audience} Audience</h3><p>AI Coaching Suggestion. Check whether it serves your goal and audience before practising it.</p>{audience !== context.targetAudience && <p>For a comparable retry, return to the intended {context.targetAudience} Audience. Use the separate audience practice action to change listeners.</p>}

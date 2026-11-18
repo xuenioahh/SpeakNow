@@ -1,0 +1,46 @@
+[
+  {
+    "file": "src/casual-video.css",
+    "declarations": 50
+  },
+  {
+    "file": "src/core-flow.css",
+    "declarations": 45
+  },
+  {
+    "file": "src/daily-immersive.css",
+    "declarations": 69
+  },
+  {
+    "file": "src/expression-practice.css",
+    "declarations": 20
+  },
+  {
+    "file": "src/impact/impact.css",
+    "declarations": 8
+  },
+  {
+    "file": "src/index.css",
+    "declarations": 44
+  },
+  {
+    "file": "src/learning.css",
+    "declarations": 57
+  },
+  {
+    "file": "src/profile.css",
+    "declarations": 24
+  },
+  {
+    "file": "src/scenario-studio.css",
+    "declarations": 88
+  },
+  {
+    "file": "src/spatial-studio.css",
+    "declarations": 92
+  },
+  {
+    "file": "src/voice-room.css",
+    "declarations": 36
+  }
+]

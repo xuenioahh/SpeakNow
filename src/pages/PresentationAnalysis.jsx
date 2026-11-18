@@ -137,7 +137,7 @@ export default function PresentationAnalysis() {
       <div className="px-4 pt-5 space-y-4">
         {errorMessage && (
           <div className="glass rounded-2xl px-4 py-3">
-            <p className="text-[14px] text-amber-200">{errorMessage}</p>
+            <p className="text-[14px] text-amber-800">{errorMessage}</p>
             {fallbackReason && (
               <p className="text-[12px] text-amber-100/80 mt-2 break-words">Reason: {fallbackReason}</p>
             )}
@@ -151,7 +151,7 @@ export default function PresentationAnalysis() {
         <div className="glass rounded-[28px] p-5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[13px] uppercase tracking-[0.18em] text-amber-300/80">Presentation Map</p>
+              <p className="text-[13px] uppercase tracking-[0.18em] text-amber-800/80">Presentation Map</p>
               <h1 className="text-[22px] leading-tight font-bold font-space text-foreground mt-1">
                 Quick start before practice
               </h1>
@@ -240,7 +240,7 @@ export default function PresentationAnalysis() {
 
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="glass rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3">
-            <Lightbulb className="w-4 h-4 text-amber-300" />
+            <Lightbulb className="w-4 h-4 text-amber-800" />
             <h2 className="text-[16px] font-semibold text-foreground">Words to say out loud</h2>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -267,13 +267,7 @@ export default function PresentationAnalysis() {
         </motion.div>
 
         <div className="flex gap-3 pt-1">
-          <Button
-            onClick={() => navigate("/presentation")}
-            variant="outline"
-            className="flex-1 h-12 rounded-2xl border-white/10 hover:bg-white/5"
-          >
-            Back
-          </Button>
+
           <Button
             onClick={() => navigate("/presentation/practice")}
             className="flex-1 h-12 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600"

@@ -1,6 +1,7 @@
 .env
 .env.*
 !.env.example
+/audio-review/
 
 logs/
 *.log
@@ -11,8 +12,10 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules/
+.local-asr/
 public/expression-worker.js
-public/expression-vision/
+public/expression-vision/*
+!public/expression-vision/*.task
 dist/
 dist-ssr/
 .vite/
@@ -32,3 +35,5 @@ data/
 *.njsproj
 *.sln
 *.sw?
+
+.cache/vite/

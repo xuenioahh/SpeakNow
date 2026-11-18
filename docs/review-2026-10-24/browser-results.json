@@ -1,0 +1,16 @@
+{
+  "passed": [
+    "short answer: visible original and answer; no empty framework, rate or duplicated sync",
+    "repeat differences stay visible, distinguish separate edits, and do not leak into interview feedback",
+    "multiple and complete answers remain visible; quick progress is 1 of 1",
+    "feedback loading prevents duplicate requests, failure retries, success shows evidence and targeted retry",
+    "zero suggestions, duplicates, invalid cached evidence and links share the same three-item limit",
+    "empty transcript, absent audio, no answers and missing media have accurate actionable states",
+    "real audio decoding/playback and linked attempts retain separate data",
+    "delete confirmation cancels, blocks parents with retries, and removes retry only",
+    "anonymous local status; actual authenticated sync failure, success and cloud reload",
+    "daily review shows only supported observations and two useful continuation actions"
+  ],
+  "pageErrors": [],
+  "environment": "Real Chromium, IndexedDB and isolated API; controlled AI failure/success, generated WAV playback; no production data"
+}

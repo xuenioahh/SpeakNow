@@ -1,0 +1,11 @@
+{
+  "category": "Mock browser failure tests + isolated local-server persistence",
+  "passed": [
+    "Camera permission failure is visible and typed conversation still works",
+    "Model loading failure is visible, navigation stops media tracks",
+    "Account save, feedback, cache removal and server retrieval preserve data without claiming Supabase",
+    "Authenticated write without CSRF token is rejected"
+  ],
+  "errors": [],
+  "status": "PASS"
+}

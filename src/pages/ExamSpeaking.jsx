@@ -1,7 +1,19 @@
 import { Link } from 'react-router-dom';
-import { SPEAKING_TASKS } from '../../shared/speakingTasks';
-import BottomNav from '@/components/BottomNav';
+import { TOEFL_TASK_TYPES, IELTS_TASK_TYPES, questionBankPath } from '../../shared/questionBank';
 import '@/learning.css';
-export default function ExamSpeaking() {
-  return <main className="learning-page"><header><Link to="/">← SpeakNow</Link><Link to="/practice/history">Practice history</Link></header><p className="learning-kicker">Academic & Exam Speaking</p><h1>Choose your speaking task.</h1><p className="learning-muted">Original practice questions, structured around the current exam formats.</p>{['toefl', 'ielts'].map(exam => <section key={exam}><h2>{exam === 'toefl' ? 'TOEFL iBT · 2026' : 'IELTS Speaking'}</h2><div className="learning-grid">{SPEAKING_TASKS.filter(t => t.exam === exam).map(t => <article className="learning-card" key={t.id}><h3>{t.title}</h3><p>{t.type === 'listen-repeat' ? 'Listen, record, compare your words.' : t.type === 'part2' ? 'A topic card, 1 minute to prepare, up to 2 minutes to speak.' : `${t.prompts.length} connected questions · ${t.timing.answerSeconds}s practice limit per answer`}</p><div className="learning-actions"><Link className="learning-button primary" to={`/exam/practice?task=${t.id}&question=0`}>Quick practice →</Link>{t.prompts.length > 1 && <Link to={`/exam/practice?task=${t.id}`}>Full practice set ({t.prompts.length})</Link>}</div></article>)}</div>{exam === 'toefl' && <details><summary>Mock test</summary><p>7 repetitions followed by 4 interview questions. Automatic recording and timed progression. Original material with browser voice playback.</p><Link className="learning-button" to="/exam/practice?task=toefl-mock-campus-v1">Start speaking mock →</Link></details>}</section>)}<p className="learning-muted">Original simulations use browser voice playback. They are not official test papers. Feedback uses your transcript; pronunciation and official scores are not assessed.</p><BottomNav /></main>;
+import { bankAccess } from '@/lib/bankAccess';
+import { getSpeakingTask } from '../../shared/speakingTasks';
+import { examPath } from '../../shared/questionBank';
+export default function ExamSpeaking({ exam = 'toefl' }) {
+  const ielts = exam === 'ielts';
+  const types = ielts ? IELTS_TASK_TYPES : TOEFL_TASK_TYPES;
+  return <main className="learning-page selection-page"><header><Link to="/">← Home</Link></header>
+    <nav className="exam-switch" aria-label="Speaking exam"><Link to="/exam" aria-current={!ielts ? 'page' : undefined}>TOEFL</Link><Link to="/exam/ielts" aria-current={ielts ? 'page' : undefined}>IELTS</Link></nav>
+    <h1>{ielts ? 'IELTS Speaking' : 'TOEFL Speaking'}</h1>
+    <p className="page-introduction">Take a full test, or spend a few minutes on one part.</p>
+    {ielts && <p className="learning-muted exam-season">September–December 2026 · New, retained and familiar topics</p>}
+    {ielts && <section className="mock-choice"><div><p className="learning-kicker">Full IELTS Mock Test</p><h2>Parts 1, 2 and 3</h2><p>Complete the full speaking test, then review your answers.</p></div><Link className="learning-button primary" to={examPath(getSpeakingTask(bankAccess.fullMockTaskId))}>Start Full Mock Test</Link></section>}
+    {ielts && <h2 className="quick-practice-title">Quick Practice</h2>}
+    <div className={`task-type-grid${ielts ? ' ielts-types' : ''}`}>{types.map(type => <Link className="task-type-card" key={type.id} to={questionBankPath(type.id)}><h2>{type.title}</h2><p>{type.description}</p></Link>)}</div>
+  </main>;
 }

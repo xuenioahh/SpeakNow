@@ -18,17 +18,17 @@ export default function RecordingControls({ interaction, state, replyInputRef = 
     speaking: 'Your coach is speaking. Recording will stop playback.',
     completed: 'Practice complete.',
   }[state.status];
-  return <div className="voice-recording-panel glass border-t border-white/5 px-4 py-3 space-y-2">
+  return <div className="voice-recording-panel glass border-t border-slate-200 px-4 py-3 space-y-2">
     {!compact && <div className="voice-input-status" aria-live="polite">
-      {state.status === 'error' ? <AlertCircle className="h-4 w-4 text-amber-300" /> : state.inputActive ? <CheckCircle2 className="h-4 w-4 text-emerald-300" /> : <Mic className="h-4 w-4 text-primary" />}
+      {state.status === 'error' ? <AlertCircle className="h-4 w-4 text-amber-800" /> : state.inputActive ? <CheckCircle2 className="h-4 w-4 text-emerald-800" /> : <Mic className="h-4 w-4 text-primary" />}
       <span>{state.error || statusText || state.notice || 'Speak or type your reply. Your words remain available if a request fails.'}</span>
     </div>}
     {compact && state.notice && <p className="text-xs text-muted-foreground" role="status">{state.notice}</p>}
-    {state.draftStorageUnavailable && <p className="text-xs text-amber-200">Your browser cannot save an unsent draft. Your words remain here; copy them before leaving.</p>}
+    {state.draftStorageUnavailable && <p className="text-xs text-amber-800">Your browser cannot save an unsent draft. Your words remain here; copy them before leaving.</p>}
     <div className="flex items-center gap-2">
       <Input ref={replyInputRef} aria-label="Your reply" value={state.typedText} onChange={event => interaction.setTypedText(event.target.value)} onKeyDown={event => {
         if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent?.isComposing && !busy && !starting) { event.preventDefault(); void interaction.send(); }
-      }} placeholder="Type or review your reply" disabled={busy || starting} className="h-11 rounded-2xl border-white/10 bg-white/5 text-foreground placeholder:text-muted-foreground" />
+      }} placeholder="Type or review your reply" disabled={busy || starting} className="h-11 rounded-2xl border-slate-200 bg-white/5 text-foreground placeholder:text-muted-foreground" />
       <button type="button" aria-label="Send reply" onClick={() => void interaction.send()} disabled={busy || starting || !hasWords} className="h-11 w-11 flex-shrink-0 rounded-2xl glass hover:bg-white/10 disabled:opacity-30 transition-all flex items-center justify-center"><Send className="w-5 h-5 text-primary" /></button>
     </div>
     {(!compact || recording || state.finalText || state.interimText) && <div className="voice-live-transcript glass rounded-xl px-3 py-2" aria-label="Live transcription">
@@ -45,7 +45,7 @@ export default function RecordingControls({ interaction, state, replyInputRef = 
     <div className="flex items-center justify-center gap-6">
       <button type="button" aria-label="Record again" onClick={() => void interaction.startRecording({ restart: true })} disabled={busy || starting || (!recording && !state.finalText && !state.interimText && !state.typedText)} className="p-3 rounded-full glass hover:bg-white/10 disabled:opacity-30"><RotateCcw className="w-5 h-5 text-muted-foreground" /></button>
       <button type="button" aria-label={starting && !state.recordingSession ? 'Cancel microphone startup' : recording ? 'Stop recording and send' : 'Start recording'} aria-pressed={state.inputActive} onClick={() => starting && !state.recordingSession ? interaction.cancelRecording() : recording ? void interaction.stopRecording() : void interaction.startRecording()} disabled={busy || state.status === 'completed'} className={`p-5 rounded-full transition-all ${recording ? 'bg-accent shadow-lg shadow-accent/30' : 'bg-primary shadow-lg shadow-primary/30'} disabled:opacity-50`}>
-        {busy || starting ? <Loader2 className="w-6 h-6 text-white animate-spin" /> : recording ? <Square className="w-6 h-6 text-white" /> : <Mic className="w-6 h-6 text-white" />}
+        {busy || starting ? <Loader2 className="w-6 h-6 text-foreground animate-spin" /> : recording ? <Square className="w-6 h-6 text-foreground" /> : <Mic className="w-6 h-6 text-foreground" />}
       </button>
       <div className="w-11" />
     </div>

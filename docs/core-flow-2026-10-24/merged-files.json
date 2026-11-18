@@ -1,0 +1,162 @@
+[
+  {
+    "file": "src/App.jsx",
+    "beforeSha256": "92dcd268444c8f9655e613daf68f49708944e3507b4cdf3fe219ac959ea44fd0",
+    "sha256": "92dcd268444c8f9655e613daf68f49708944e3507b4cdf3fe219ac959ea44fd0"
+  },
+  {
+    "file": "src/core-flow.css",
+    "beforeSha256": "b02a19a079f23ef6088b97b2fc89b67ffce8900cac3cfcacc83a6c6084b371e7",
+    "sha256": "b02a19a079f23ef6088b97b2fc89b67ffce8900cac3cfcacc83a6c6084b371e7"
+  },
+  {
+    "file": "src/pages/MainLanding.jsx",
+    "beforeSha256": "e59d6aeac980d199175f6ae10036afba44a2054363a65be4d5c34e9212b6eae3",
+    "sha256": "e59d6aeac980d199175f6ae10036afba44a2054363a65be4d5c34e9212b6eae3"
+  },
+  {
+    "file": "src/pages/ExamSpeaking.jsx",
+    "beforeSha256": "9e5db7b6704fff48a3bd9bdaee41cc735c8564b6dc4c27fea3844fd473f9bf13",
+    "sha256": "597148ca939ce30c26683adfa619f1e3cc246d1e026a83512bb5c5ded6ed569e"
+  },
+  {
+    "file": "src/pages/QuestionBank.jsx",
+    "beforeSha256": "b012984eed1bf8753f9c8d3faf16530664f1d9dc1668b8a1a72b69876e989384",
+    "sha256": "b012984eed1bf8753f9c8d3faf16530664f1d9dc1668b8a1a72b69876e989384"
+  },
+  {
+    "file": "src/pages/ExamPreparation.jsx",
+    "beforeSha256": "3b449ab617585b96b04291835d92c81255f47d6ddda2cb1b7c1295ff2dd49e31",
+    "sha256": "573867448b11097aa6c5584a4035f09e8a8a38dcb62f222c3d04beabd3ebbf0a"
+  },
+  {
+    "file": "src/pages/ExamPractice.jsx",
+    "beforeSha256": "0e9b7d7fc978cf11f9a9b7ab14a04225159c251f41b4f621688769491c5d6550",
+    "sha256": "93dab85730a9608e14ab0b894bf29c9bca9f2b8fc4cdeaef80ec57e87af6460f",
+    "followup": "Scope generated Interview playback to imported bank tasks; keep audio captions accurate for legacy text-only tasks."
+  },
+  {
+    "file": "src/pages/LearningReview.jsx",
+    "beforeSha256": "e3bfdcd479354583bf18a0f72b941b18c05c8071b688a8963f68d4ab5be29dc1",
+    "sha256": "2da864c08db75e81cce1a9c63b57468559c7bbdab6a411fd6ecc210362cd8c10"
+  },
+  {
+    "file": "src/pages/LearningHistory.jsx",
+    "beforeSha256": "df9e0b2b55e7add430b71a4416fc3564de4412e9871296c58c2a5256c5d87ead",
+    "sha256": "df9e0b2b55e7add430b71a4416fc3564de4412e9871296c58c2a5256c5d87ead"
+  },
+  {
+    "file": "src/pages/Home.jsx",
+    "beforeSha256": "0aea1e4a68e70d4128c3c7946ec64528ab7c34ac10de5d9deebe01098d785de5",
+    "sha256": "626b1731efc6e118c6e15d4026ccad93981295ad9f7d0bacd5ddc4aa58de791c"
+  },
+  {
+    "file": "src/pages/DailyPreparation.jsx",
+    "beforeSha256": "d077881103403d3432e5f21956f10d62ceb062c20eb65d6a08483fe3671379b9",
+    "sha256": "d077881103403d3432e5f21956f10d62ceb062c20eb65d6a08483fe3671379b9"
+  },
+  {
+    "file": "src/pages/VoiceChat.jsx",
+    "beforeSha256": "0355eedd4588d2d1c2e30adf6b56c78ba0235160083c2e62552eab440ba9b2be",
+    "sha256": "c2dee0339414cdcff7900cdc6ad52897675b846117369efc54b6b3a09896b0d6"
+  },
+  {
+    "file": "src/voice-room.css",
+    "beforeSha256": "f9aead03f72abee8b5e66371de11a4640b0c240b652543b3eb7f26a226dde383",
+    "sha256": "9b5f262c89335018a1d54129d04ab1376478a3c5312ac55d3ace97643aceddf0"
+  },
+  {
+    "file": "src/lib/examSelection.js",
+    "beforeSha256": "fd345a0cc7c5ddde86e864e149f50629f745049507253b0f7974e3abbc1200de",
+    "sha256": "fd345a0cc7c5ddde86e864e149f50629f745049507253b0f7974e3abbc1200de"
+  },
+  {
+    "file": "shared/questionBank.js",
+    "beforeSha256": "6bdfdceb68be17ccd81068a05b6a8644543a4fe09f29c9ee52e3d21d3a39a2b4",
+    "sha256": "04d4f07b6a0e26ea7ddab37e50a71d855eb397d64ddbdd1375b61863052cf951",
+    "followup": "A saved started session with zero answers remains resumable and counts zero completed questions."
+  },
+  {
+    "file": "shared/speakingTasks.js",
+    "beforeSha256": "856164779124a3804950d89447a40f9ec01b5906baf4194398849932d1a9bfd8",
+    "sha256": "822cd3d2a42719fb20dc64deb151f68bcb11f9654016ac9e585ace8fada4c2d9"
+  },
+  {
+    "file": "scripts/import-question-bank.py",
+    "beforeSha256": "2a58179f36db0fa8b4a0d6aff24d88cc175fdd010960cae08ead42ab47ce55a3",
+    "sha256": "e9ba0f188859b6b57a8f1e0a37de4390eadf843dbfc95a850f5f50257dd30e50"
+  },
+  {
+    "file": "scripts/extract-bank-pdf.swift",
+    "beforeSha256": "705a4a78225edef77192749f3bd6cd004b3b80a4ae2496b5f5a43ffc60fe0475",
+    "sha256": "705a4a78225edef77192749f3bd6cd004b3b80a4ae2496b5f5a43ffc60fe0475"
+  },
+  {
+    "file": "tests/learning/question-bank.test.mjs",
+    "beforeSha256": "e49e210fb858db5ca772790492b372734e2dd6e8e4340e61d0e989d7a290e5f4",
+    "sha256": "4b3a5c61b94babacabbd27b27989268b1522b88b90a4dcf46ddbcc66555a3529",
+    "followup": "A saved started session with zero answers remains resumable and counts zero completed questions."
+  },
+  {
+    "file": "tests/learning/repeat-differences.test.mjs",
+    "beforeSha256": "5c0bd7cc80c0cd24f8c1f0c8464bc20f0476fae9abf39f4caed7f4881aa96eec",
+    "sha256": "aa3c5e718d1ead01aa6b9037f95069c792437cca0943649abcc5c2a9684167e3"
+  },
+  {
+    "file": "tests/learning/core-flow-browser.mjs",
+    "beforeSha256": "85cde0cbd1b69b774c32de30a71b0a43a41744b95f635e813588dda232be4ec4",
+    "sha256": "6ebe875271abefc649ba4a5805ce8c9c1f35fc59650587f939afa0fad25a1829",
+    "followup": "A saved started session with zero answers remains resumable and counts zero completed questions."
+  },
+  {
+    "file": "tests/learning/review-browser.mjs",
+    "beforeSha256": "4ebe9805b5071039c7e378f6707f4b7d9a575329175194ebe927c9b2d3ca03c0",
+    "sha256": "af64f75b010ffb91edbe9884442fa2e26b7affd85f37163c74884a8b1cb0f508"
+  },
+  {
+    "file": "tests/learning/browser.mjs",
+    "beforeSha256": "c32a7c61b58cf7c824a0eeec9104bc75786a517d923787249ce4c9efa966ea3f",
+    "sha256": "b22be1082ca4c2260695868632f097ddbd5b086f2ea3134fd16207e4ad619193",
+    "followup": "Exit after browser teardown so completed fake-device regression does not retain Node handles."
+  },
+  {
+    "file": "shared/question-bank/import-report.json",
+    "beforeSha256": "6278cc7f1f682213e49d986b3c653f84525d0220217ad6ab807e2cc2c1886c26",
+    "sha256": "6278cc7f1f682213e49d986b3c653f84525d0220217ad6ab807e2cc2c1886c26"
+  },
+  {
+    "file": "shared/question-bank/catalogue.json",
+    "beforeSha256": "363df77f40d37ee08a79b604f2da1c9ab1b67eb9d4d29fe02794be205014926d",
+    "sha256": "c6b6fce3d7617394b349b8529d89327e11080b8e90ef7349eacff5ec86473b17"
+  },
+  {
+    "file": "shared/question-bank/sources/repeat-pdf.sha256",
+    "beforeSha256": "04c5276d5c0791cf55aa9b11f6035a157199f6b400ffa21f66129d7983bb4b91",
+    "sha256": "04c5276d5c0791cf55aa9b11f6035a157199f6b400ffa21f66129d7983bb4b91"
+  },
+  {
+    "file": "shared/question-bank/sources/repeat-pdf-pages.json",
+    "beforeSha256": "8267d12eb091b37aa57eb47071a41284b70dfa9b20f803c632439292f54552f9",
+    "sha256": "8267d12eb091b37aa57eb47071a41284b70dfa9b20f803c632439292f54552f9"
+  },
+  {
+    "file": "shared/question-bank/sources/interview-document.txt",
+    "beforeSha256": "e842cd94948fd082e4195d361a9249b28117899551cf99ee00baf770762fd8e0",
+    "sha256": "e842cd94948fd082e4195d361a9249b28117899551cf99ee00baf770762fd8e0"
+  },
+  {
+    "file": "shared/question-bank/sources/pdf-extraction-verification.json",
+    "beforeSha256": "892fcb708763a596085b50a93ea89791bb4a60ee645d152ff62469b6b36b8936",
+    "sha256": "892fcb708763a596085b50a93ea89791bb4a60ee645d152ff62469b6b36b8936"
+  },
+  {
+    "file": "shared/question-bank/sources/repeat-text.txt",
+    "beforeSha256": "1dacadf6efa81696c57fa8a5d7af2c4e94b40c11adc5d7ad766c29375e8ae6f6",
+    "sha256": "1dacadf6efa81696c57fa8a5d7af2c4e94b40c11adc5d7ad766c29375e8ae6f6"
+  },
+  {
+    "file": "README.md",
+    "sha256": "b688a42e4f69a042142c83823f71c0deb6574bdb387a16d2ed0a3cae5b3de888",
+    "change": "Document the implemented flows, source import, audio provenance and local versus deployed state."
+  }
+]

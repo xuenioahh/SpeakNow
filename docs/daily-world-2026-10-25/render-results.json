@@ -1,0 +1,2211 @@
+{
+  "browser": "155.0.8059.86",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "gpu": {
+    "vendor": "Google Inc. (Apple)",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)"
+  },
+  "rows": [
+    {
+      "scene": "cafe",
+      "before": {
+        "cameraPosition": [
+          0.04000000000000001,
+          1.65,
+          3.5
+        ],
+        "fps": 27.765359184922,
+        "renderMsP50": 2.1000000089406967,
+        "renderMsP95": 3,
+        "drawCalls": 136,
+        "triangles": 17376,
+        "memory": {
+          "geometries": 141,
+          "textures": 9
+        },
+        "jsHeapUsedBytes": 9159728
+      },
+      "after": {
+        "sceneId": "cafe",
+        "roomId": "9aead98b-08b3-44ed-bbc2-a5afd99e883d",
+        "focusedId": "menu",
+        "transitioning": false,
+        "frames": 120,
+        "cameraPosition": [
+          0.0400000002738555,
+          1.6500000002419843,
+          3.5000000811636927
+        ],
+        "cameraTarget": [
+          0.04999999999862743,
+          1.349999999990392,
+          -1.6199999999555286
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "menu",
+            "faceVisible": true,
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "09b2a22a-018c-4da2-a13c-6a74f527fcd2",
+            "position": [
+              0.05,
+              0.055,
+              -1.62
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6466853176497226,
+              1.9570000409148631,
+              0.4487706273327414
+            ]
+          },
+          {
+            "id": "coffee",
+            "faceVisible": true,
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "17aca3ec-7889-4ee7-9e2d-4ce69d9b0dbc",
+            "position": [
+              1.65,
+              0.055,
+              -1.62
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6672707479792142,
+              1.9570000409148631,
+              0.47247861355645027
+            ]
+          },
+          {
+            "id": "pastry",
+            "faceVisible": true,
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "abff2a38-6527-449e-a061-2a543e43010b",
+            "position": [
+              -2.25,
+              0.055,
+              1.15
+            ],
+            "bones": 17,
+            "pose": "seated",
+            "bounds": [
+              0.699378699605743,
+              1.7329744506993499,
+              0.8955922146054794
+            ]
+          }
+        ],
+        "fps": 28.44846834880787,
+        "renderMsP50": 3.6000000089406967,
+        "renderMsP95": 5.100000008940697,
+        "drawCalls": 159,
+        "triangles": 77118,
+        "memory": {
+          "geometries": 192,
+          "textures": 15
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 14433088
+      }
+    },
+    {
+      "scene": "airport",
+      "before": {
+        "cameraPosition": [
+          -0.8,
+          1.6500000000000004,
+          3.500000000000001
+        ],
+        "fps": 27.76601251823615,
+        "renderMsP50": 0.8999999910593033,
+        "renderMsP95": 2.2000000029802322,
+        "drawCalls": 76,
+        "triangles": 8752,
+        "memory": {
+          "geometries": 104,
+          "textures": 11
+        },
+        "jsHeapUsedBytes": 9644872
+      },
+      "after": {
+        "sceneId": "airport",
+        "roomId": "570ab889-a7bb-4a2f-9208-e6d9252e9efe",
+        "focusedId": "board",
+        "transitioning": false,
+        "frames": 114,
+        "cameraPosition": [
+          -0.7999999991323878,
+          1.6500000006840787,
+          3.500000220405276
+        ],
+        "cameraTarget": [
+          -0.9999999999223959,
+          1.3499999999728387,
+          -1.2999999998991145
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "board",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "4005a3aa-8d22-4bb2-8c66-16a601e13739",
+            "position": [
+              -1,
+              0.055,
+              -1.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.659136441901738,
+              1.9570000409148631,
+              0.46351448372369686
+            ]
+          },
+          {
+            "id": "passport",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "c4cdebe5-25b5-49d9-8af3-e0e030a59fb2",
+            "position": [
+              0.85,
+              0.055,
+              -1.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6572400387076021,
+              1.9570000409148631,
+              0.46170010833781494
+            ]
+          },
+          {
+            "id": "luggage",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "1a497d96-3f45-4de8-b979-02a9682cf11f",
+            "position": [
+              2.65,
+              0.055,
+              0.25
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6905305694543715,
+              1.9570000409148631,
+              0.5274479055583099
+            ]
+          }
+        ],
+        "fps": 26.694157711918535,
+        "renderMsP50": 1.7000000029802322,
+        "renderMsP95": 4.899999991059303,
+        "drawCalls": 104,
+        "triangles": 69430,
+        "memory": {
+          "geometries": 132,
+          "textures": 15
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 24061268
+      }
+    },
+    {
+      "scene": "bank",
+      "before": {
+        "cameraPosition": [
+          -0.9199999999999999,
+          1.6499999999999995,
+          3.500000000000001
+        ],
+        "fps": 29.399007181068967,
+        "renderMsP50": 0.8999999910593033,
+        "renderMsP95": 1.7000000029802322,
+        "drawCalls": 62,
+        "triangles": 7106,
+        "memory": {
+          "geometries": 81,
+          "textures": 9
+        },
+        "jsHeapUsedBytes": 9256156
+      },
+      "after": {
+        "sceneId": "bank",
+        "roomId": "3b20c685-8b59-458f-8ea0-07a71c0c54dd",
+        "focusedId": "rates",
+        "transitioning": false,
+        "frames": 122,
+        "cameraPosition": [
+          -0.9199999997912761,
+          1.6500000001620772,
+          3.5000000543621432
+        ],
+        "cameraTarget": [
+          -1.1499999999788553,
+          1.349999999993565,
+          -1.2999999999760974
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "rates",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "14446058-e5f9-4ce2-b617-f299de62fb9f",
+            "position": [
+              -1.15,
+              0.055,
+              -1.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6610062084593029,
+              1.9570000409148631,
+              0.4657697668198786
+            ]
+          },
+          {
+            "id": "form",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "ff2f33f6-1485-429d-98a1-eca6ae7bc88f",
+            "position": [
+              0.8,
+              0.055,
+              -1.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6566020165691888,
+              1.9570000409148631,
+              0.46091067505726513
+            ]
+          },
+          {
+            "id": "card",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "04b28b82-1eae-4b0d-aa17-218e333d3f71",
+            "position": [
+              2.65,
+              0.055,
+              0.25
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6905305694543715,
+              1.9570000409148631,
+              0.5274479055583099
+            ]
+          }
+        ],
+        "fps": 28.696786434246413,
+        "renderMsP50": 1.800000011920929,
+        "renderMsP95": 3.7000000029802322,
+        "drawCalls": 89,
+        "triangles": 67448,
+        "memory": {
+          "geometries": 109,
+          "textures": 13
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 18315764
+      }
+    },
+    {
+      "scene": "hotel",
+      "before": {
+        "cameraPosition": [
+          -0.9199999999999999,
+          1.6500000000000004,
+          3.500000000000001
+        ],
+        "fps": 28.697467033488287,
+        "renderMsP50": 0.5999999940395355,
+        "renderMsP95": 1.1000000089406967,
+        "drawCalls": 99,
+        "triangles": 16986,
+        "memory": {
+          "geometries": 121,
+          "textures": 8
+        },
+        "jsHeapUsedBytes": 10612960
+      },
+      "after": {
+        "sceneId": "hotel",
+        "roomId": "eee48b83-01fa-4cfe-8f39-c2f05e831af1",
+        "focusedId": "bell",
+        "transitioning": false,
+        "frames": 121,
+        "cameraPosition": [
+          -0.919999999744962,
+          1.6500000001980406,
+          3.500000066384793
+        ],
+        "cameraTarget": [
+          -1.1499999999741635,
+          1.3499999999921368,
+          -1.4499999999674236
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "bell",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "9ef12066-478d-4e3d-a5d4-b007f75c1c2e",
+            "position": [
+              -1.15,
+              0.055,
+              -1.45
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6605742028745105,
+              1.9570000409148631,
+              0.4652475384261703
+            ]
+          },
+          {
+            "id": "key",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "9ddebcea-59ee-44fa-9508-bebc802bb11d",
+            "position": [
+              0.85,
+              0.055,
+              -1.45
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6569117272658905,
+              1.9570000409148631,
+              0.4612936941398238
+            ]
+          },
+          {
+            "id": "clock",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "c900bb6d-7557-48ac-a017-8121ccd3f6b7",
+            "position": [
+              2.65,
+              0.055,
+              0.35
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6916340336930267,
+              1.9570000409148631,
+              0.5290243938909813
+            ]
+          }
+        ],
+        "fps": 28.347349522819613,
+        "renderMsP50": 1.5999999940395355,
+        "renderMsP95": 3.5999999940395355,
+        "drawCalls": 126,
+        "triangles": 77328,
+        "memory": {
+          "geometries": 149,
+          "textures": 12
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 20514028
+      }
+    },
+    {
+      "scene": "restaurant",
+      "before": {
+        "cameraPosition": [
+          -1.7,
+          1.65,
+          3.6999999999999997
+        ],
+        "fps": 28.91705624367439,
+        "renderMsP50": 1,
+        "renderMsP95": 1.7000000029802322,
+        "drawCalls": 61,
+        "triangles": 9378,
+        "memory": {
+          "geometries": 97,
+          "textures": 9
+        },
+        "jsHeapUsedBytes": 9583200
+      },
+      "after": {
+        "sceneId": "restaurant",
+        "roomId": "57e29a40-c817-4fcf-bab5-12cb5466fe98",
+        "focusedId": "menu",
+        "transitioning": false,
+        "frames": 120,
+        "cameraPosition": [
+          -1.699999999657886,
+          1.6500000002418393,
+          3.700000078619163
+        ],
+        "cameraTarget": [
+          -2.249999999938271,
+          1.349999999990398,
+          0.14999999999588476
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "menu",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "f28e1df6-5031-423c-9296-06cd7f0c8e27",
+            "position": [
+              -2.25,
+              0.055,
+              0.15
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6887547252251474,
+              1.9570000409148631,
+              0.5012035290357323
+            ]
+          },
+          {
+            "id": "plate",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "693d75e0-fdfb-4ad6-b3a5-bdbb9caefde5",
+            "position": [
+              0.3,
+              0.055,
+              -1.7
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6497529301144147,
+              1.9570000409148631,
+              0.45252756831265484
+            ]
+          },
+          {
+            "id": "wine",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "56294d28-a947-4f5d-bfba-eee222ac27f2",
+            "position": [
+              2.5,
+              0.055,
+              -0.7
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6803624928809238,
+              1.9570000409148631,
+              0.5133985786597863
+            ]
+          }
+        ],
+        "fps": 28.4471218206158,
+        "renderMsP50": 2.699999988079071,
+        "renderMsP95": 4.199999988079071,
+        "drawCalls": 92,
+        "triangles": 71282,
+        "memory": {
+          "geometries": 132,
+          "textures": 12
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 17900888
+      }
+    },
+    {
+      "scene": "shopping",
+      "before": {
+        "cameraPosition": [
+          -2.6500000000000004,
+          1.6500000000000004,
+          3.4000000000000004
+        ],
+        "fps": 29.15732909226729,
+        "renderMsP50": 2.3999999910593033,
+        "renderMsP95": 2.800000011920929,
+        "drawCalls": 108,
+        "triangles": 19762,
+        "memory": {
+          "geometries": 114,
+          "textures": 8
+        },
+        "jsHeapUsedBytes": 18082324
+      },
+      "after": {
+        "sceneId": "shopping",
+        "roomId": "54e7ec2f-9fd8-4d22-ba13-3545409e83d2",
+        "focusedId": "laptop",
+        "transitioning": false,
+        "frames": 121,
+        "cameraPosition": [
+          -2.649999999689253,
+          1.6500000001980408,
+          3.400000082362932
+        ],
+        "cameraTarget": [
+          -1.0499999999764105,
+          1.349999999992137,
+          -1.0499999999764105
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "laptop",
+            "faceVisible": true,
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "854ddd15-25c7-4786-a53f-1aafda0e2cb4",
+            "position": [
+              -1.05,
+              0.055,
+              -1.05
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.7192158330085066,
+              1.9570000409148631,
+              0.5667702205426982
+            ]
+          },
+          {
+            "id": "receipt",
+            "faceVisible": true,
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "78f9dff6-77fb-44f7-9905-69c3233b878e",
+            "position": [
+              0.85,
+              0.055,
+              -1.05
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6578333386286545,
+              1.9570000409148631,
+              0.4624355807667204
+            ]
+          },
+          {
+            "id": "exchange",
+            "faceVisible": true,
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "11e1c329-fd22-45fc-b8f1-b04bcba03ec8",
+            "position": [
+              2.65,
+              0.055,
+              0.6
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6946224515142552,
+              1.9570000409148631,
+              0.5333555848567544
+            ]
+          }
+        ],
+        "fps": 28.572789180437162,
+        "renderMsP50": 3.7000000029802322,
+        "renderMsP95": 4.799999997019768,
+        "drawCalls": 135,
+        "triangles": 80104,
+        "memory": {
+          "geometries": 142,
+          "textures": 12
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 21707400
+      }
+    },
+    {
+      "scene": "hospital",
+      "before": {
+        "cameraPosition": [
+          -0.48,
+          1.65,
+          3.5
+        ],
+        "fps": 28.92522470835723,
+        "renderMsP50": 0.7000000029802322,
+        "renderMsP95": 1.6000000089406967,
+        "drawCalls": 60,
+        "triangles": 11072,
+        "memory": {
+          "geometries": 65,
+          "textures": 9
+        },
+        "jsHeapUsedBytes": 9363060
+      },
+      "after": {
+        "sceneId": "hospital",
+        "roomId": "bd372145-f393-4184-8882-b35ebbdeb2e3",
+        "focusedId": "notes",
+        "transitioning": false,
+        "frames": 119,
+        "cameraPosition": [
+          -0.47999999967486057,
+          1.6500000002673272,
+          3.500000089610098
+        ],
+        "cameraTarget": [
+          -0.5999999999818041,
+          1.349999999989386,
+          -1.2999999999605754
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "notes",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "d91a9e2c-1b63-4b53-a916-24a3760feecb",
+            "position": [
+              -0.6,
+              0.055,
+              -1.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.654020678023933,
+              1.9570000409148631,
+              0.4574070815236124
+            ]
+          },
+          {
+            "id": "chart",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "3b0e77ad-f43b-4564-92da-66e062dbfd86",
+            "position": [
+              -2.25,
+              0.055,
+              1
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6972999694854947,
+              1.9570000409148631,
+              0.5132281765426335
+            ]
+          },
+          {
+            "id": "plan",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "170fd8ac-ef77-4285-8f31-f45368cec2d6",
+            "position": [
+              2.55,
+              0.055,
+              0.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6897296305561609,
+              1.9570000409148631,
+              0.5263107883158964
+            ]
+          }
+        ],
+        "fps": 27.44322624428285,
+        "renderMsP50": 1.7000000029802322,
+        "renderMsP95": 8.900000005960464,
+        "drawCalls": 84,
+        "triangles": 70910,
+        "memory": {
+          "geometries": 93,
+          "textures": 12
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 15373124
+      }
+    },
+    {
+      "scene": "university",
+      "before": {
+        "cameraPosition": [
+          -0.5599999999999999,
+          1.65,
+          3.5
+        ],
+        "fps": 27.53070732740364,
+        "renderMsP50": 1.4000000059604645,
+        "renderMsP95": 5.899999991059303,
+        "drawCalls": 85,
+        "triangles": 16348,
+        "memory": {
+          "geometries": 95,
+          "textures": 8
+        },
+        "jsHeapUsedBytes": 10443776
+      },
+      "after": {
+        "sceneId": "university",
+        "roomId": "d1d33db6-eefa-4b65-a56e-39d8ba91a6eb",
+        "focusedId": "plan",
+        "transitioning": false,
+        "frames": 122,
+        "cameraPosition": [
+          -0.559999999800644,
+          1.6500000001621744,
+          3.5000000543947696
+        ],
+        "cameraTarget": [
+          -0.6999999999871216,
+          1.3499999999935608,
+          -1.2999999999760832
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "plan",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "62e1fa55-26fa-4aae-a2d8-7baab2addc37",
+            "position": [
+              -0.7,
+              0.055,
+              -1.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6553171827901285,
+              1.9570000409148631,
+              0.4589464954546414
+            ]
+          },
+          {
+            "id": "books",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "2cd07cc6-464f-47ba-98fb-b101837473a3",
+            "position": [
+              -2.35,
+              0.055,
+              -0.8
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6840071777940557,
+              1.9570000409148631,
+              0.4948116251274166
+            ]
+          },
+          {
+            "id": "calendar",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "8e0ee5ac-51a5-42d4-b13e-7fdfcb5c9a20",
+            "position": [
+              2.5,
+              0.055,
+              0.15
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6874891949136708,
+              1.9570000409148631,
+              0.5231601828285907
+            ]
+          }
+        ],
+        "fps": 28.58357743550978,
+        "renderMsP50": 2.4000000059604645,
+        "renderMsP95": 4.100000008940697,
+        "drawCalls": 112,
+        "triangles": 76690,
+        "memory": {
+          "geometries": 123,
+          "textures": 11
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 19877008
+      }
+    },
+    {
+      "scene": "office",
+      "before": {
+        "cameraPosition": [
+          0.32000000000000006,
+          1.6500000000000004,
+          3.499999999999999
+        ],
+        "fps": 29.158031712371677,
+        "renderMsP50": 1.300000011920929,
+        "renderMsP95": 1.9000000059604645,
+        "drawCalls": 97,
+        "triangles": 17138,
+        "memory": {
+          "geometries": 98,
+          "textures": 10
+        },
+        "jsHeapUsedBytes": 11075928
+      },
+      "after": {
+        "sceneId": "office",
+        "roomId": "8251dd17-f61c-49a2-8e28-ddc37fb6249e",
+        "focusedId": "calendar",
+        "transitioning": false,
+        "frames": 121,
+        "cameraPosition": [
+          0.3200000001945987,
+          1.6500000001791588,
+          3.500000049179065
+        ],
+        "cameraTarget": [
+          0.3999999999918703,
+          1.3499999999928867,
+          -1.2999999999735783
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "calendar",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "46c44d33-9c9c-486c-8688-aaedd473e20f",
+            "position": [
+              0.4,
+              0.055,
+              -1.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6513928959726106,
+              1.9570000409148631,
+              0.4545202087674043
+            ]
+          },
+          {
+            "id": "laptop",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "243fd5cb-7656-4aa7-a626-ec0c929d8c3c",
+            "position": [
+              -2.15,
+              0.055,
+              -0.6
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6728216785834837,
+              1.9570000409148631,
+              0.48035157468802475
+            ]
+          },
+          {
+            "id": "handover",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "d409fed9-aa5d-40a7-807e-d9980b2db9ac",
+            "position": [
+              2.5,
+              0.055,
+              0.2
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6879962123340122,
+              1.9570000409148631,
+              0.523869410056021
+            ]
+          }
+        ],
+        "fps": 28.57277557370562,
+        "renderMsP50": 2,
+        "renderMsP95": 4.299999997019768,
+        "drawCalls": 122,
+        "triangles": 76978,
+        "memory": {
+          "geometries": 126,
+          "textures": 13
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 18546596
+      }
+    },
+    {
+      "scene": "phone",
+      "before": {
+        "cameraPosition": [
+          -0.6400000000000001,
+          1.6499999999999997,
+          3.500000000000001
+        ],
+        "fps": 29.04184473797776,
+        "renderMsP50": 1.1000000089406967,
+        "renderMsP95": 2,
+        "drawCalls": 91,
+        "triangles": 16022,
+        "memory": {
+          "geometries": 106,
+          "textures": 10
+        },
+        "jsHeapUsedBytes": 11140612
+      },
+      "after": {
+        "sceneId": "phone",
+        "roomId": "d8dd3788-eb58-4420-be70-256c57aa45b5",
+        "focusedId": "phone",
+        "transitioning": false,
+        "frames": 121,
+        "cameraPosition": [
+          -0.6399999997539787,
+          1.6500000001980408,
+          3.500000066424636
+        ],
+        "cameraTarget": [
+          -0.799999999982027,
+          1.349999999992137,
+          -1.2999999999707936
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "phone",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "53e7a3d2-4e89-4086-8b49-07fdd90c83cd",
+            "position": [
+              -0.8,
+              0.055,
+              -1.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6566020165691888,
+              1.9570000409148631,
+              0.4604775823794125
+            ]
+          },
+          {
+            "id": "bill",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "836230af-95ab-4b68-8104-77f64ca33453",
+            "position": [
+              -2.2,
+              0.055,
+              -0.7
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6818189630067115,
+              1.9570000409148631,
+              0.49192175622748563
+            ]
+          },
+          {
+            "id": "notes",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "f019d0e3-73a0-4793-b3c5-ae1e034e95a4",
+            "position": [
+              2.25,
+              0.055,
+              0.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6855206163155443,
+              1.9570000409148631,
+              0.520426248695026
+            ]
+          }
+        ],
+        "fps": 28.572789180437162,
+        "renderMsP50": 2.1000000089406967,
+        "renderMsP95": 3.8999999910593033,
+        "drawCalls": 125,
+        "triangles": 78060,
+        "memory": {
+          "geometries": 141,
+          "textures": 13
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 20855104
+      }
+    },
+    {
+      "scene": "car_rental",
+      "before": {
+        "cameraPosition": [
+          -2.6,
+          1.65,
+          3.7999999999999994
+        ],
+        "fps": 29.041161646465856,
+        "renderMsP50": 0.7999999970197678,
+        "renderMsP95": 1.0999999940395355,
+        "drawCalls": 49,
+        "triangles": 6392,
+        "memory": {
+          "geometries": 72,
+          "textures": 8
+        },
+        "jsHeapUsedBytes": 8850824
+      },
+      "after": {
+        "sceneId": "car_rental",
+        "roomId": "b5936811-de56-497a-831e-60a361289c78",
+        "focusedId": "car",
+        "transitioning": false,
+        "frames": 121,
+        "cameraPosition": [
+          -2.5999999996908634,
+          1.6500000001980408,
+          3.8000000773712395
+        ],
+        "cameraTarget": [
+          -2.6499999999404635,
+          1.3499999999921368,
+          -1.1499999999741635
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "car",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "73287ba2-985b-4913-99fe-e58e52a5b2cc",
+            "position": [
+              -2.65,
+              0.055,
+              -1.15
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6492901371182711,
+              1.9570000409148631,
+              0.45183553488508776
+            ]
+          },
+          {
+            "id": "keys",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "d528be48-c62a-4149-8b14-3bab1df44fb4",
+            "position": [
+              2,
+              0.055,
+              -1.6
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6697471390503431,
+              1.9570000409148631,
+              0.4775139337650445
+            ]
+          },
+          {
+            "id": "policy",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "aa283952-c698-4fa4-bdd3-3cc44caee443",
+            "position": [
+              2.65,
+              0.055,
+              0.85
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.661380995754874,
+              1.9570000409148631,
+              0.488196838607893
+            ]
+          }
+        ],
+        "fps": 28.686173264486516,
+        "renderMsP50": 2.4000000059604645,
+        "renderMsP95": 3.2999999970197678,
+        "drawCalls": 79,
+        "triangles": 68294,
+        "memory": {
+          "geometries": 107,
+          "textures": 12
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 16133668
+      }
+    },
+    {
+      "scene": "museum",
+      "before": {
+        "cameraPosition": [
+          -2.3,
+          1.6500000000000001,
+          3.599999999999999
+        ],
+        "fps": 29.281621030540247,
+        "renderMsP50": 1.2000000029802322,
+        "renderMsP95": 1.7999999970197678,
+        "drawCalls": 54,
+        "triangles": 4686,
+        "memory": {
+          "geometries": 96,
+          "textures": 5
+        },
+        "jsHeapUsedBytes": 10312580
+      },
+      "after": {
+        "sceneId": "museum",
+        "roomId": "48bd9aa9-79c7-4508-815b-49bb264fe973",
+        "focusedId": "painting",
+        "transitioning": false,
+        "frames": 122,
+        "cameraPosition": [
+          -2.29999999975476,
+          1.6500000001621746,
+          3.6000000654027184
+        ],
+        "cameraTarget": [
+          -2.449999999954926,
+          1.349999999993561,
+          -1.3499999999751633
+        ],
+        "subtitleVisible": false,
+        "npc": [
+          {
+            "id": "painting",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "87d16564-0a45-4a1e-8c8f-18f670e65c5e",
+            "position": [
+              -2.45,
+              0.055,
+              -1.35
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6556687519210516,
+              1.9570000409148631,
+              0.4593648935398489
+            ]
+          },
+          {
+            "id": "sculpture",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "92ed63b0-47c6-4106-9158-37a0957d87b5",
+            "position": [
+              1.45,
+              0.055,
+              0.25
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6726842600986307,
+              1.9570000409148631,
+              0.4813337306799751
+            ]
+          },
+          {
+            "id": "landscape",
+            "state": "idle",
+            "mouthEnergy": 0,
+            "uuid": "8b773bc3-548d-4be1-bc0f-0dd44b259c9f",
+            "position": [
+              2.45,
+              0.055,
+              -1.3
+            ],
+            "bones": 17,
+            "pose": "standing",
+            "bounds": [
+              0.6760718989022383,
+              1.9570000409148631,
+              0.5076844792806832
+            ]
+          }
+        ],
+        "fps": 28.810895756940813,
+        "renderMsP50": 2.5,
+        "renderMsP95": 3.7000000029802322,
+        "drawCalls": 84,
+        "triangles": 66588,
+        "memory": {
+          "geometries": 131,
+          "textures": 9
+        },
+        "reducedMotion": false,
+        "pixelRatio": 1,
+        "width": 1400,
+        "height": 900,
+        "jsHeapUsedBytes": 18792548
+      }
+    }
+  ],
+  "stress": {
+    "seconds": 30,
+    "start": {
+      "sceneId": "shopping",
+      "roomId": "54e7ec2f-9fd8-4d22-ba13-3545409e83d2",
+      "focusedId": "laptop",
+      "transitioning": false,
+      "frames": 125,
+      "cameraPosition": [
+        -2.649999999860428,
+        1.6500000000889496,
+        3.4000000369932506
+      ],
+      "cameraTarget": [
+        -1.0499999999894047,
+        1.3499999999964685,
+        -1.0499999999894047
+      ],
+      "subtitleVisible": false,
+      "npc": [
+        {
+          "id": "laptop",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "854ddd15-25c7-4786-a53f-1aafda0e2cb4",
+          "position": [
+            -1.05,
+            0.055,
+            -1.05
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.7192158330085066,
+            1.9570000409148631,
+            0.5667702205426982
+          ]
+        },
+        {
+          "id": "receipt",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "78f9dff6-77fb-44f7-9905-69c3233b878e",
+          "position": [
+            0.85,
+            0.055,
+            -1.05
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6578333386286545,
+            1.9570000409148631,
+            0.4624355807667204
+          ]
+        },
+        {
+          "id": "exchange",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "11e1c329-fd22-45fc-b8f1-b04bcba03ec8",
+          "position": [
+            2.65,
+            0.055,
+            0.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6946224515142552,
+            1.9570000409148631,
+            0.5333555848567544
+          ]
+        }
+      ],
+      "fps": 28.616265115849718,
+      "renderMsP50": 3.6000000089406967,
+      "renderMsP95": 4.799999997019768,
+      "drawCalls": 135,
+      "triangles": 80104,
+      "memory": {
+        "geometries": 142,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    },
+    "end": {
+      "sceneId": "shopping",
+      "roomId": "54e7ec2f-9fd8-4d22-ba13-3545409e83d2",
+      "focusedId": "laptop",
+      "transitioning": false,
+      "frames": 1025,
+      "cameraPosition": [
+        -2.649999999999999,
+        1.6500000000000004,
+        3.400000000000001
+      ],
+      "cameraTarget": [
+        -1.0499999999999996,
+        1.3499999999999996,
+        -1.0499999999999996
+      ],
+      "subtitleVisible": false,
+      "npc": [
+        {
+          "id": "laptop",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "854ddd15-25c7-4786-a53f-1aafda0e2cb4",
+          "position": [
+            -1.05,
+            0.055,
+            -1.05
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.7192158330085066,
+            1.9570000409148631,
+            0.5667702205426982
+          ]
+        },
+        {
+          "id": "receipt",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "78f9dff6-77fb-44f7-9905-69c3233b878e",
+          "position": [
+            0.85,
+            0.055,
+            -1.05
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6578333386286545,
+            1.9570000409148631,
+            0.4624355807667204
+          ]
+        },
+        {
+          "id": "exchange",
+          "faceVisible": true,
+          "state": "idle",
+          "mouthEnergy": 0,
+          "uuid": "11e1c329-fd22-45fc-b8f1-b04bcba03ec8",
+          "position": [
+            2.65,
+            0.055,
+            0.6
+          ],
+          "bones": 17,
+          "pose": "standing",
+          "bounds": [
+            0.6946224515142552,
+            1.9570000409148631,
+            0.5333555848567544
+          ]
+        }
+      ],
+      "fps": 30.00075001875046,
+      "renderMsP50": 4,
+      "renderMsP95": 4.700000002980232,
+      "drawCalls": 135,
+      "triangles": 80104,
+      "memory": {
+        "geometries": 142,
+        "textures": 12
+      },
+      "reducedMotion": false,
+      "pixelRatio": 1,
+      "width": 1400,
+      "height": 900
+    }
+  },
+  "nativeTts": {
+    "events": [
+      {
+        "type": "start",
+        "playbackId": "intro-cafe-coffee",
+        "reason": "",
+        "text": "Hi! Is something wrong with your drink?",
+        "provider": "browser",
+        "at": 3814.800000011921
+      },
+      {
+        "type": "boundary",
+        "playbackId": "intro-cafe-coffee",
+        "text": "Hi! Is something wrong with your drink?",
+        "charIndex": 0,
+        "elapsedTime": 863.5999755859375,
+        "name": "word",
+        "at": 3903.4000000059605
+      },
+      {
+        "type": "boundary",
+        "playbackId": "intro-cafe-coffee",
+        "text": "Hi! Is something wrong with your drink?",
+        "charIndex": 4,
+        "elapsedTime": 1465.699951171875,
+        "name": "word",
+        "at": 4505.5
+      },
+      {
+        "type": "boundary",
+        "playbackId": "intro-cafe-coffee",
+        "text": "Hi! Is something wrong with your drink?",
+        "charIndex": 7,
+        "elapsedTime": 1632.5999755859375,
+        "name": "word",
+        "at": 4672.300000011921
+      },
+      {
+        "type": "boundary",
+        "playbackId": "intro-cafe-coffee",
+        "text": "Hi! Is something wrong with your drink?",
+        "charIndex": 17,
+        "elapsedTime": 1998.300048828125,
+        "name": "word",
+        "at": 5038.100000008941
+      },
+      {
+        "type": "boundary",
+        "playbackId": "intro-cafe-coffee",
+        "text": "Hi! Is something wrong with your drink?",
+        "charIndex": 23,
+        "elapsedTime": 2249.89990234375,
+        "name": "word",
+        "at": 5289.800000011921
+      },
+      {
+        "type": "boundary",
+        "playbackId": "intro-cafe-coffee",
+        "text": "Hi! Is something wrong with your drink?",
+        "charIndex": 28,
+        "elapsedTime": 2420.699951171875,
+        "name": "word",
+        "at": 5460.4000000059605
+      },
+      {
+        "type": "boundary",
+        "playbackId": "intro-cafe-coffee",
+        "text": "Hi! Is something wrong with your drink?",
+        "charIndex": 33,
+        "elapsedTime": 2559.199951171875,
+        "name": "word",
+        "at": 5599
+      },
+      {
+        "type": "end",
+        "playbackId": "intro-cafe-coffee",
+        "reason": "ended",
+        "at": 6102.600000008941
+      }
+    ],
+    "voices": [
+      {
+        "name": "Samantha",
+        "lang": "en-US"
+      },
+      {
+        "name": "Aaron",
+        "lang": "en-US"
+      },
+      {
+        "name": "Albert",
+        "lang": "en-US"
+      },
+      {
+        "name": "Alice",
+        "lang": "it-IT"
+      },
+      {
+        "name": "Alva",
+        "lang": "sv-SE"
+      },
+      {
+        "name": "Amélie",
+        "lang": "fr-CA"
+      },
+      {
+        "name": "Amira",
+        "lang": "ms-MY"
+      },
+      {
+        "name": "Anna",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Arthur",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Bad News",
+        "lang": "en-US"
+      },
+      {
+        "name": "Bahh",
+        "lang": "en-US"
+      },
+      {
+        "name": "Bells",
+        "lang": "en-US"
+      },
+      {
+        "name": "Boing",
+        "lang": "en-US"
+      },
+      {
+        "name": "Bubbles",
+        "lang": "en-US"
+      },
+      {
+        "name": "Carmit",
+        "lang": "he-IL"
+      },
+      {
+        "name": "Catherine",
+        "lang": "en-AU"
+      },
+      {
+        "name": "Cellos",
+        "lang": "en-US"
+      },
+      {
+        "name": "Damayanti",
+        "lang": "id-ID"
+      },
+      {
+        "name": "Daniel (English (United Kingdom))",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Daniel (French (France))",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Daria",
+        "lang": "bg-BG"
+      },
+      {
+        "name": "Eddy (German (Germany))",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Eddy (English (United Kingdom))",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Eddy (English (United States))",
+        "lang": "en-US"
+      },
+      {
+        "name": "Eddy (Spanish (Spain))",
+        "lang": "es-ES"
+      },
+      {
+        "name": "Eddy (Spanish (Mexico))",
+        "lang": "es-MX"
+      },
+      {
+        "name": "Eddy (Finnish (Finland))",
+        "lang": "fi-FI"
+      },
+      {
+        "name": "Eddy (French (Canada))",
+        "lang": "fr-CA"
+      },
+      {
+        "name": "Eddy (French (France))",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Eddy (Italian (Italy))",
+        "lang": "it-IT"
+      },
+      {
+        "name": "Eddy (Portuguese (Brazil))",
+        "lang": "pt-BR"
+      },
+      {
+        "name": "Ellen",
+        "lang": "nl-BE"
+      },
+      {
+        "name": "Flo (German (Germany))",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Flo (English (United Kingdom))",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Flo (English (United States))",
+        "lang": "en-US"
+      },
+      {
+        "name": "Flo (Spanish (Spain))",
+        "lang": "es-ES"
+      },
+      {
+        "name": "Flo (Spanish (Mexico))",
+        "lang": "es-MX"
+      },
+      {
+        "name": "Flo (Finnish (Finland))",
+        "lang": "fi-FI"
+      },
+      {
+        "name": "Flo (French (Canada))",
+        "lang": "fr-CA"
+      },
+      {
+        "name": "Flo (French (France))",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Flo (Italian (Italy))",
+        "lang": "it-IT"
+      },
+      {
+        "name": "Flo (Portuguese (Brazil))",
+        "lang": "pt-BR"
+      },
+      {
+        "name": "Fred",
+        "lang": "en-US"
+      },
+      {
+        "name": "Good News",
+        "lang": "en-US"
+      },
+      {
+        "name": "Gordon",
+        "lang": "en-AU"
+      },
+      {
+        "name": "Grandma (German (Germany))",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Grandma (English (United Kingdom))",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Grandma (English (United States))",
+        "lang": "en-US"
+      },
+      {
+        "name": "Grandma (Spanish (Spain))",
+        "lang": "es-ES"
+      },
+      {
+        "name": "Grandma (Spanish (Mexico))",
+        "lang": "es-MX"
+      },
+      {
+        "name": "Grandma (Finnish (Finland))",
+        "lang": "fi-FI"
+      },
+      {
+        "name": "Grandma (French (Canada))",
+        "lang": "fr-CA"
+      },
+      {
+        "name": "Grandma (French (France))",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Grandma (Italian (Italy))",
+        "lang": "it-IT"
+      },
+      {
+        "name": "Grandma (Portuguese (Brazil))",
+        "lang": "pt-BR"
+      },
+      {
+        "name": "Grandpa (German (Germany))",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Grandpa (English (United Kingdom))",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Grandpa (English (United States))",
+        "lang": "en-US"
+      },
+      {
+        "name": "Grandpa (Spanish (Spain))",
+        "lang": "es-ES"
+      },
+      {
+        "name": "Grandpa (Spanish (Mexico))",
+        "lang": "es-MX"
+      },
+      {
+        "name": "Grandpa (Finnish (Finland))",
+        "lang": "fi-FI"
+      },
+      {
+        "name": "Grandpa (French (Canada))",
+        "lang": "fr-CA"
+      },
+      {
+        "name": "Grandpa (French (France))",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Grandpa (Italian (Italy))",
+        "lang": "it-IT"
+      },
+      {
+        "name": "Grandpa (Portuguese (Brazil))",
+        "lang": "pt-BR"
+      },
+      {
+        "name": "Hattori",
+        "lang": "ja-JP"
+      },
+      {
+        "name": "Helena",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Ioana",
+        "lang": "ro-RO"
+      },
+      {
+        "name": "Jacques",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Jester",
+        "lang": "en-US"
+      },
+      {
+        "name": "Joana",
+        "lang": "pt-PT"
+      },
+      {
+        "name": "Junior",
+        "lang": "en-US"
+      },
+      {
+        "name": "Kanya",
+        "lang": "th-TH"
+      },
+      {
+        "name": "Karen",
+        "lang": "en-AU"
+      },
+      {
+        "name": "Kathy",
+        "lang": "en-US"
+      },
+      {
+        "name": "Kyoko",
+        "lang": "ja-JP"
+      },
+      {
+        "name": "Lana",
+        "lang": "hr-HR"
+      },
+      {
+        "name": "Laura",
+        "lang": "sk-SK"
+      },
+      {
+        "name": "Lekha",
+        "lang": "hi-IN"
+      },
+      {
+        "name": "Lesya",
+        "lang": "uk-UA"
+      },
+      {
+        "name": "Li-Mu",
+        "lang": "zh-CN"
+      },
+      {
+        "name": "Linh",
+        "lang": "vi-VN"
+      },
+      {
+        "name": "Luciana",
+        "lang": "pt-BR"
+      },
+      {
+        "name": "Majed",
+        "lang": "ar-001"
+      },
+      {
+        "name": "Marie",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Martha",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Martin",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Meijia",
+        "lang": "zh-TW"
+      },
+      {
+        "name": "Melina",
+        "lang": "el-GR"
+      },
+      {
+        "name": "Milena",
+        "lang": "ru-RU"
+      },
+      {
+        "name": "Moira",
+        "lang": "en-IE"
+      },
+      {
+        "name": "Montse",
+        "lang": "ca-ES"
+      },
+      {
+        "name": "Mónica",
+        "lang": "es-ES"
+      },
+      {
+        "name": "Nicky",
+        "lang": "en-US"
+      },
+      {
+        "name": "Nora",
+        "lang": "nb-NO"
+      },
+      {
+        "name": "O-Ren",
+        "lang": "ja-JP"
+      },
+      {
+        "name": "Organ",
+        "lang": "en-US"
+      },
+      {
+        "name": "Paulina",
+        "lang": "es-MX"
+      },
+      {
+        "name": "Ralph",
+        "lang": "en-US"
+      },
+      {
+        "name": "Reed (German (Germany))",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Reed (English (United Kingdom))",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Reed (English (United States))",
+        "lang": "en-US"
+      },
+      {
+        "name": "Reed (Spanish (Spain))",
+        "lang": "es-ES"
+      },
+      {
+        "name": "Reed (Spanish (Mexico))",
+        "lang": "es-MX"
+      },
+      {
+        "name": "Reed (Finnish (Finland))",
+        "lang": "fi-FI"
+      },
+      {
+        "name": "Reed (French (Canada))",
+        "lang": "fr-CA"
+      },
+      {
+        "name": "Reed (Italian (Italy))",
+        "lang": "it-IT"
+      },
+      {
+        "name": "Reed (Portuguese (Brazil))",
+        "lang": "pt-BR"
+      },
+      {
+        "name": "Rishi",
+        "lang": "en-IN"
+      },
+      {
+        "name": "Rocko (German (Germany))",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Rocko (English (United Kingdom))",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Rocko (English (United States))",
+        "lang": "en-US"
+      },
+      {
+        "name": "Rocko (Spanish (Spain))",
+        "lang": "es-ES"
+      },
+      {
+        "name": "Rocko (Spanish (Mexico))",
+        "lang": "es-MX"
+      },
+      {
+        "name": "Rocko (Finnish (Finland))",
+        "lang": "fi-FI"
+      },
+      {
+        "name": "Rocko (French (Canada))",
+        "lang": "fr-CA"
+      },
+      {
+        "name": "Rocko (French (France))",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Rocko (Italian (Italy))",
+        "lang": "it-IT"
+      },
+      {
+        "name": "Rocko (Portuguese (Brazil))",
+        "lang": "pt-BR"
+      },
+      {
+        "name": "Sandy (German (Germany))",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Sandy (English (United Kingdom))",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Sandy (English (United States))",
+        "lang": "en-US"
+      },
+      {
+        "name": "Sandy (Spanish (Spain))",
+        "lang": "es-ES"
+      },
+      {
+        "name": "Sandy (Spanish (Mexico))",
+        "lang": "es-MX"
+      },
+      {
+        "name": "Sandy (Finnish (Finland))",
+        "lang": "fi-FI"
+      },
+      {
+        "name": "Sandy (French (Canada))",
+        "lang": "fr-CA"
+      },
+      {
+        "name": "Sandy (French (France))",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Sandy (Italian (Italy))",
+        "lang": "it-IT"
+      },
+      {
+        "name": "Sandy (Portuguese (Brazil))",
+        "lang": "pt-BR"
+      },
+      {
+        "name": "Sara",
+        "lang": "da-DK"
+      },
+      {
+        "name": "Satu",
+        "lang": "fi-FI"
+      },
+      {
+        "name": "Shelley (German (Germany))",
+        "lang": "de-DE"
+      },
+      {
+        "name": "Shelley (English (United Kingdom))",
+        "lang": "en-GB"
+      },
+      {
+        "name": "Shelley (English (United States))",
+        "lang": "en-US"
+      },
+      {
+        "name": "Shelley (Spanish (Spain))",
+        "lang": "es-ES"
+      },
+      {
+        "name": "Shelley (Spanish (Mexico))",
+        "lang": "es-MX"
+      },
+      {
+        "name": "Shelley (Finnish (Finland))",
+        "lang": "fi-FI"
+      },
+      {
+        "name": "Shelley (French (Canada))",
+        "lang": "fr-CA"
+      },
+      {
+        "name": "Shelley (French (France))",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Shelley (Italian (Italy))",
+        "lang": "it-IT"
+      },
+      {
+        "name": "Shelley (Portuguese (Brazil))",
+        "lang": "pt-BR"
+      },
+      {
+        "name": "Sinji",
+        "lang": "zh-HK"
+      },
+      {
+        "name": "Superstar",
+        "lang": "en-US"
+      },
+      {
+        "name": "Tessa",
+        "lang": "en-ZA"
+      },
+      {
+        "name": "Thomas",
+        "lang": "fr-FR"
+      },
+      {
+        "name": "Tingting",
+        "lang": "zh-CN"
+      },
+      {
+        "name": "Trinoids",
+        "lang": "en-US"
+      },
+      {
+        "name": "Tünde",
+        "lang": "hu-HU"
+      },
+      {
+        "name": "Whisper",
+        "lang": "en-US"
+      },
+      {
+        "name": "Wobble",
+        "lang": "en-US"
+      },
+      {
+        "name": "Xander",
+        "lang": "nl-NL"
+      },
+      {
+        "name": "Yelda",
+        "lang": "tr-TR"
+      },
+      {
+        "name": "Yu-shu",
+        "lang": "zh-CN"
+      },
+      {
+        "name": "Yuna",
+        "lang": "ko-KR"
+      },
+      {
+        "name": "Zarvox",
+        "lang": "en-US"
+      },
+      {
+        "name": "Zosia",
+        "lang": "pl-PL"
+      },
+      {
+        "name": "Zuzana",
+        "lang": "cs-CZ"
+      }
+    ],
+    "native": true
+  },
+  "errors": []
+}

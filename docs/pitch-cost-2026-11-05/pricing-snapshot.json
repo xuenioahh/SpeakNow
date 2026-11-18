@@ -1,0 +1,35 @@
+{
+  "verifiedAt": "2026-11-05",
+  "source": "https://api-docs.deepseek.com/zh-cn/quick_start/pricing/",
+  "currency": "CNY per million tokens",
+  "rates": {
+    "deepseek-flash": {
+      "cacheHit": [
+        0.02,
+        0.04
+      ],
+      "cacheMiss": [
+        1,
+        2
+      ],
+      "output": [
+        4,
+        8
+      ]
+    },
+    "deepseek-v4-pro": {
+      "cacheHit": [
+        0.15,
+        0.3
+      ],
+      "cacheMiss": [
+        4.5,
+        9
+      ],
+      "output": [
+        13.5,
+        27
+      ]
+    }
+  }
+}
