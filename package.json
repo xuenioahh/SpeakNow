@@ -8,7 +8,7 @@
     "dev": "node scripts/dev-with-backend.js",
     "dev:frontend": "vite",
     "dev:backend": "node backend/server.js",
-    "prebuild": "node scripts/check-production-storage.mjs",
+    "prebuild": "node scripts/check-production-storage.mjs && node scripts/verify-deployment.mjs --if-configured",
     "build": "vite build",
     "lint": "eslint . --quiet",
     "lint:fix": "eslint . --fix",
