@@ -1,0 +1,24 @@
+{
+  "production": "https://omniverse-ent208.vercel.app",
+  "deploymentId": "dpl_CVeoshaprLWGpYE3t1sAC3GhZJ6h",
+  "candidate": "https://omniverse-ent208-77isk042b-weifiabscxdgib.vercel.app",
+  "promoted": true,
+  "storage": "mongodb",
+  "verifiedAt": "2026-11-19T03:29:56.951887+00:00",
+  "checks": [
+    "page",
+    "anonymous access blocked",
+    "registration and session",
+    "initial recording upload, retry, binary retrieval",
+    "membership and usage",
+    "login and persisted history",
+    "cross-account media blocked"
+  ],
+  "verification": "Vercel cloud build against public production URL, without deployment bypass token",
+  "verificationBuild": "dpl_65Pangay7iJ6mJhFmw3uCasmbnUq",
+  "limitations": [
+    "Synthetic container bytes validate storage, not acoustic quality.",
+    "Old Supabase records were not migrated.",
+    "Local network could not directly reach vercel.app; cloud public checks passed."
+  ]
+}

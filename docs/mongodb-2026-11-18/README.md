@@ -57,15 +57,33 @@ The existing domain continues to serve its previous deployment until promotion.
 ## Verification recorded on 2026-11-18
 
 - Existing automated suite: 201 passed.
-- `npm run test:mongodb`: 12 passed against an isolated real MongoDB 8.0.17
+- `npm run test:mongodb`: 13 passed against an isolated real MongoDB 8.0.17
   process. Includes 60 concurrent budget requests and 20 competing ledger CAS
   writes, plus ownership, CSRF, reconnect persistence and recording bytes.
 - `node tests/learning/mongodb-browser.mjs`: real browser registration, login,
   cloud practice save and history reload, with 1365px / 390px / 320px review
   screenshots and no page errors. Uses an isolated local MongoDB, not Atlas.
 - Lint, typecheck and local build passed before the final documentation update.
-- No Atlas production connection or production deployment has yet been verified.
-  Those remain required; local tests do not establish production readiness.
+
+## Production verified on 2026-11-19
+
+- Atlas free M0 cluster `SpeakNow`, AWS US_EAST_1, database `speaknow` is configured.
+- Real Atlas connection, indexes and disposable read/write preflight passed locally and in Vercel.
+- Fixed first recording upload to accept MongoDB missing-object 404 and added handler lifecycle coverage.
+- Promoted tested deployment `dpl_CVeoshaprLWGpYE3t1sAC3GhZJ6h` to
+  https://omniverse-ent208.vercel.app.
+- Cloud checks passed against both the candidate and the public production URL:
+  registration, session, logout/relogin, history persistence, initial recording
+  upload/retry/retrieval, membership/usage, and cross-account media denial.
+- Public production checks used no deployment-protection bypass credential.
+- `scripts/verify-deployment.mjs --if-configured` is an optional cloud prebuild
+  verification gate when `SPEAKNOW_SMOKE_URL` is set. It creates synthetic
+  accounts and emits their exact IDs for scoped cleanup. Do not set that variable
+  for ordinary builds. Recording fixtures check storage bytes, not playable audio.
+- This is a new MongoDB database; old Supabase accounts/history are not migrated.
+- This workstation's network could not reach `vercel.app` directly; remote public
+  production tests passed. Network-specific access is separate from database login.
+- Details and cloud verification deployment IDs are recorded in `candidate.json`.
 
 Test fixture transcripts are synthetic. These checks make no claim about model
 quality, acoustic accuracy, provider availability, or capacity under real load.
