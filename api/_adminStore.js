@@ -1,9 +1,7 @@
 import { mutateAdminDb, readAdminDb } from "./_adminDb.js";
 import { securityRequest } from './_securityStore.js';
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const FORCE_LOCAL_DATA = /^(1|true|yes)$/i.test(String(process.env.FORCE_LOCAL_DATA || ""));
+import { hasRemoteStorage, storageProvider } from './_storageProvider.js';
 
 const TABLES = {
   users: "admin_users",
@@ -12,11 +10,9 @@ const TABLES = {
   presentationSessions: "admin_presentation_sessions",
 };
 
-function hasSupabase() {
-  return !FORCE_LOCAL_DATA && Boolean(SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY);
-}
 
-async function supabaseRequest(table, { method = "GET", query = "", body, prefer } = {}) {
+
+async function persistentRequest(table, { method = "GET", query = "", body, prefer } = {}) {
   return securityRequest(table, { method, query, body, prefer: prefer || (method === 'GET' ? 'count=exact' : 'return=representation') });
 }
 
@@ -38,7 +34,7 @@ function normalizeUser(payload = {}) {
 }
 
 export async function listAdminData() {
-  if (!hasSupabase()) {
+  if (!hasRemoteStorage()) {
     const db = await readAdminDb();
     return {
       provider: "local-json",
@@ -48,14 +44,14 @@ export async function listAdminData() {
 
   try {
     const [users, events, voiceSessions, presentationSessions] = await Promise.all([
-      supabaseRequest(TABLES.users, { query: "select=*&order=last_seen_at.desc" }),
-      supabaseRequest(TABLES.events, { query: "select=*&order=timestamp.desc&limit=200" }),
-      supabaseRequest(TABLES.voiceSessions, { query: "select=*&order=created_date.desc&limit=100" }),
-      supabaseRequest(TABLES.presentationSessions, { query: "select=*&order=created_date.desc&limit=100" }),
+      persistentRequest(TABLES.users, { query: "select=*&order=last_seen_at.desc" }),
+      persistentRequest(TABLES.events, { query: "select=*&order=timestamp.desc&limit=200" }),
+      persistentRequest(TABLES.voiceSessions, { query: "select=*&order=created_date.desc&limit=100" }),
+      persistentRequest(TABLES.presentationSessions, { query: "select=*&order=created_date.desc&limit=100" }),
     ]);
 
     return {
-      provider: "supabase",
+      provider: storageProvider(),
       users,
       events,
       voiceSessions,
@@ -70,7 +66,7 @@ export async function appendAdminEvent({ type = "event", user, payload = {}, tim
   const safeUser = normalizeUser(user);
   const eventTimestamp = timestamp || new Date().toISOString();
 
-  if (!hasSupabase()) {
+  if (!hasRemoteStorage()) {
     const db = await mutateAdminDb((current) => {
       const next = {
         users: [...current.users],
@@ -127,14 +123,14 @@ export async function appendAdminEvent({ type = "event", user, payload = {}, tim
 
   try {
     if (safeUser) {
-      await supabaseRequest(TABLES.users, {
+      await persistentRequest(TABLES.users, {
         method: "POST",
         prefer: "resolution=merge-duplicates,return=representation",
         body: { ...safeUser, last_seen_at: eventTimestamp },
       });
     }
 
-    await supabaseRequest(TABLES.events, {
+    await persistentRequest(TABLES.events, {
       method: "POST",
       body: {
         id: createId("event"),
@@ -147,14 +143,14 @@ export async function appendAdminEvent({ type = "event", user, payload = {}, tim
     });
 
     if (type === "voice_session_saved" && payload?.session) {
-      await supabaseRequest(TABLES.voiceSessions, {
+      await persistentRequest(TABLES.voiceSessions, {
         method: "POST",
         body: payload.session,
       });
     }
 
     if (type === "presentation_session_saved" && payload?.session) {
-      await supabaseRequest(TABLES.presentationSessions, {
+      await persistentRequest(TABLES.presentationSessions, {
         method: "POST",
         body: payload.session,
       });
@@ -162,7 +158,7 @@ export async function appendAdminEvent({ type = "event", user, payload = {}, tim
 
     const data = await listAdminData();
     return {
-      provider: "supabase",
+      provider: storageProvider(),
       counts: {
         users: data.users.length,
         events: data.events.length,
@@ -180,7 +176,7 @@ export async function deleteAdminRecord({ collection, id }) {
     throw Object.assign(new Error("A supported collection and record id are required"), { status: 400 });
   }
 
-  if (!hasSupabase()) {
+  if (!hasRemoteStorage()) {
     const db = await mutateAdminDb((current) => {
       const next = {
         users: [...current.users],
@@ -219,11 +215,11 @@ export async function deleteAdminRecord({ collection, id }) {
   }
 
   try {
-    await supabaseRequest(table, { method: 'DELETE', query: `id=eq.${encodeURIComponent(id)}` });
+    await persistentRequest(table, { method: 'DELETE', query: `id=eq.${encodeURIComponent(id)}` });
 
     const data = await listAdminData();
     return {
-      provider: "supabase",
+      provider: storageProvider(),
       counts: {
         users: data.users.length,
         events: data.events.length,

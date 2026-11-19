@@ -1,9 +1,7 @@
 import { mutateAppDb, readAppDb } from "./_appDb.js";
 import { securityRequest } from './_securityStore.js';
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const FORCE_LOCAL_DATA = /^(1|true|yes)$/i.test(String(process.env.FORCE_LOCAL_DATA || ""));
+import { hasRemoteStorage, storageProvider } from './_storageProvider.js';
 
 const TABLES = {
   users: "app_users",
@@ -14,19 +12,19 @@ const TABLES = {
 };
 
 export async function getUserById(id) {
-  if (!hasSupabase()) return (await readAppDb()).users.find(user => user.id === id) || null;
-  return (await supabaseRequest(TABLES.users, { query: `select=*&id=eq.${encodeURIComponent(id)}` }))[0] || null;
+  if (!hasRemoteStorage()) return (await readAppDb()).users.find(user => user.id === id) || null;
+  return (await persistentRequest(TABLES.users, { query: `select=*&id=eq.${encodeURIComponent(id)}` }))[0] || null;
 }
 export async function listAccountSummaries() {
-  const users = hasSupabase() ? await supabaseRequest(TABLES.users, { query: 'select=id,email,full_name,role,avatar_url,created_date&order=created_date.desc' }) : (await readAppDb()).users;
+  const users = hasRemoteStorage() ? await persistentRequest(TABLES.users, { query: 'select=id,email,full_name,role,avatar_url,created_date&order=created_date.desc' }) : (await readAppDb()).users;
   return users.map(user => ({ id: user.id, email: user.email, full_name: user.full_name || '', role: user.role || 'learner', avatar_url: user.avatar_url || '', created_date: user.created_date }));
 }
 export async function getUserByEmail(email) {
-  if (!hasSupabase()) return (await readAppDb()).users.find(user => user.email === email) || null;
-  return (await supabaseRequest(TABLES.users, { query: `select=*&email=eq.${encodeURIComponent(email)}` }))[0] || null;
+  if (!hasRemoteStorage()) return (await readAppDb()).users.find(user => user.email === email) || null;
+  return (await persistentRequest(TABLES.users, { query: `select=*&email=eq.${encodeURIComponent(email)}` }))[0] || null;
 }
 export async function saveUser(user, { insert = false } = {}) {
-  if (hasSupabase()) return supabaseRequest(TABLES.users, { method: 'POST', body: user, prefer: insert ? 'return=representation' : 'resolution=merge-duplicates,return=representation' });
+  if (hasRemoteStorage()) return persistentRequest(TABLES.users, { method: 'POST', body: user, prefer: insert ? 'return=representation' : 'resolution=merge-duplicates,return=representation' });
   await mutateAppDb(db => {
     if (db.users.some(item => item.email === user.email && (insert || item.id !== user.id))) throw Object.assign(new Error('This email is already registered'), { status: 409 });
     const index = db.users.findIndex(item => item.id === user.id);
@@ -36,19 +34,19 @@ export async function saveUser(user, { insert = false } = {}) {
 }
 export async function listOwned(collection, owner) {
   if (!TABLES[collection] || collection === 'users' || collection === 'settings') throw new Error('Invalid collection');
-  if (!hasSupabase()) return (await readAppDb())[collection].filter(item => item.user_id === owner);
-  return supabaseRequest(TABLES[collection], { query: `select=*&user_id=eq.${encodeURIComponent(owner)}&order=created_date.desc` });
+  if (!hasRemoteStorage()) return (await readAppDb())[collection].filter(item => item.user_id === owner);
+  return persistentRequest(TABLES[collection], { query: `select=*&user_id=eq.${encodeURIComponent(owner)}&order=created_date.desc` });
 }
 export async function getOwned(collection, owner, id) {
-  if (!hasSupabase()) return (await listOwned(collection, owner)).find(item => item.id === id) || null;
-  return (await supabaseRequest(TABLES[collection], { query: `select=*&user_id=eq.${encodeURIComponent(owner)}&id=eq.${encodeURIComponent(id)}` }))[0] || null;
+  if (!hasRemoteStorage()) return (await listOwned(collection, owner)).find(item => item.id === id) || null;
+  return (await persistentRequest(TABLES[collection], { query: `select=*&user_id=eq.${encodeURIComponent(owner)}&id=eq.${encodeURIComponent(id)}` }))[0] || null;
 }
 export async function saveOwned(collection, owner, record, { update = false } = {}) {
   if (update && !await getOwned(collection, owner, record.id)) throw Object.assign(new Error('Practice not found'), { status: 404 });
   const value = { ...record, user_id: owner };
-  if (hasSupabase()) {
-    if (update) await supabaseRequest(TABLES[collection], { method: 'PATCH', query: `id=eq.${encodeURIComponent(record.id)}&user_id=eq.${encodeURIComponent(owner)}`, body: value });
-    else await supabaseRequest(TABLES[collection], { method: 'POST', body: value });
+  if (hasRemoteStorage()) {
+    if (update) await persistentRequest(TABLES[collection], { method: 'PATCH', query: `id=eq.${encodeURIComponent(record.id)}&user_id=eq.${encodeURIComponent(owner)}`, body: value });
+    else await persistentRequest(TABLES[collection], { method: 'POST', body: value });
   } else await mutateAppDb(db => {
     const index = db[collection].findIndex(item => item.id === value.id && item.user_id === owner);
     if (update) { if (index === -1) throw Object.assign(new Error('Practice not found'), { status: 404 }); db[collection][index] = value; }
@@ -59,19 +57,19 @@ export async function saveOwned(collection, owner, record, { update = false } = 
 }
 export async function deleteOwned(collection, owner, id) {
   if (!await getOwned(collection, owner, id)) throw Object.assign(new Error('Practice not found'), { status: 404 });
-  if (hasSupabase()) await supabaseRequest(TABLES[collection], { method: 'DELETE', query: `id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(owner)}` });
+  if (hasRemoteStorage()) await persistentRequest(TABLES[collection], { method: 'DELETE', query: `id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(owner)}` });
   else await mutateAppDb(db => { db[collection] = db[collection].filter(item => !(item.id === id && item.user_id === owner)); return db; });
 }
 
 export async function updateUserFields(id, patch) {
-  if (hasSupabase()) return (await supabaseRequest(TABLES.users, { method: 'PATCH', query: `id=eq.${encodeURIComponent(id)}`, body: patch }))[0];
+  if (hasRemoteStorage()) return (await persistentRequest(TABLES.users, { method: 'PATCH', query: `id=eq.${encodeURIComponent(id)}`, body: patch }))[0];
   let result;
   await mutateAppDb(db => { const index = db.users.findIndex(user => user.id === id); if (index < 0) throw Object.assign(new Error('User not found'), { status: 404 }); db.users[index] = { ...db.users[index], ...patch }; result = db.users[index]; return db; });
   return result;
 }
 export async function updateImpact(owner, id, operation, patch) {
-  if (hasSupabase()) {
-    const value = await supabaseRequest('rpc/speaknow_update_impact', { method: 'POST', body: { owner_id: owner, practice_id: id, operation, patch } });
+  if (hasRemoteStorage()) {
+    const value = await persistentRequest('rpc/speaknow_update_impact', { method: 'POST', body: { owner_id: owner, practice_id: id, operation, patch } });
     if (!value) throw Object.assign(new Error('Practice not found'), { status: 404 });
     return value;
   }
@@ -115,12 +113,10 @@ function shouldFallbackToLocal(error) {
   );
 }
 
-function hasSupabase() {
-  return !FORCE_LOCAL_DATA && Boolean(SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY);
-}
-export function appStorageMode() { return hasSupabase() ? 'supabase' : 'server-local'; }
 
-async function supabaseRequest(table, { method = "GET", query = "", body, prefer } = {}) {
+export function appStorageMode() { return storageProvider(); }
+
+async function persistentRequest(table, { method = "GET", query = "", body, prefer } = {}) {
   return securityRequest(table, { method, query, body, prefer: prefer || (method === 'GET' ? 'count=exact' : 'return=representation') });
 }
 
@@ -138,7 +134,7 @@ function toLocalShape(db = {}) {
 
 async function readSupabaseSettings() {
   try {
-    const rows = await supabaseRequest(TABLES.settings, {
+    const rows = await persistentRequest(TABLES.settings, {
       query: "select=key,value&key=eq.adminEmails",
     });
     return Array.isArray(rows) && rows[0]?.value
@@ -157,7 +153,7 @@ async function readSupabaseSettings() {
 
 async function writeSupabaseSettings(settings) {
   try {
-    await supabaseRequest(TABLES.settings, {
+    await persistentRequest(TABLES.settings, {
       method: "POST",
       prefer: "resolution=merge-duplicates,return=representation",
       body: {
@@ -177,16 +173,16 @@ async function writeSupabaseSettings(settings) {
 }
 
 export async function readAppStore() {
-  if (!hasSupabase()) {
+  if (!hasRemoteStorage()) {
     return toLocalShape(await readAppDb());
   }
 
   try {
     const [users, voiceSessions, presentationSessions, activityRecords, settings] = await Promise.all([
-      supabaseRequest(TABLES.users, { query: "select=*&order=created_date.desc" }),
-      supabaseRequest(TABLES.voiceSessions, { query: "select=*&order=created_date.desc" }),
-      supabaseRequest(TABLES.presentationSessions, { query: "select=*&order=created_date.desc" }),
-      supabaseRequest(TABLES.activityRecords, { query: "select=*&order=created_date.desc" }),
+      persistentRequest(TABLES.users, { query: "select=*&order=created_date.desc" }),
+      persistentRequest(TABLES.voiceSessions, { query: "select=*&order=created_date.desc" }),
+      persistentRequest(TABLES.presentationSessions, { query: "select=*&order=created_date.desc" }),
+      persistentRequest(TABLES.activityRecords, { query: "select=*&order=created_date.desc" }),
       readSupabaseSettings(),
     ]);
 
@@ -206,7 +202,7 @@ export async function readAppStore() {
 }
 
 export async function mutateAppStore(mutator) {
-  if (!hasSupabase()) {
+  if (!hasRemoteStorage()) {
     return toLocalShape(await mutateAppDb(async db => await mutator(toLocalShape(db)) || db));
   }
 
@@ -225,7 +221,7 @@ export async function mutateAppStore(mutator) {
 
     await Promise.all(
       [...nextUsers.values()].filter(entry => JSON.stringify(entry) !== JSON.stringify(previousUsers.get(entry.id))).map((entry) =>
-        supabaseRequest(TABLES.users, {
+        persistentRequest(TABLES.users, {
           method: "POST",
           prefer: "resolution=merge-duplicates,return=representation",
           body: entry,
@@ -237,7 +233,7 @@ export async function mutateAppStore(mutator) {
       [...previousUsers.keys()]
         .filter((id) => !nextUsers.has(id))
         .map((id) =>
-          supabaseRequest(TABLES.users, {
+          persistentRequest(TABLES.users, {
             method: "DELETE",
             query: `id=eq.${encodeURIComponent(id)}`,
           })
@@ -250,7 +246,7 @@ export async function mutateAppStore(mutator) {
 
       await Promise.all(
         [...nextMap.values()].filter(entry => JSON.stringify(entry) !== JSON.stringify(previousMap.get(entry.id))).map((entry) =>
-          supabaseRequest(table, {
+          persistentRequest(table, {
             method: "POST",
             prefer: "resolution=merge-duplicates,return=representation",
             body: entry,
@@ -262,7 +258,7 @@ export async function mutateAppStore(mutator) {
         [...previousMap.keys()]
           .filter((id) => !nextMap.has(id))
           .map((id) =>
-            supabaseRequest(table, {
+            persistentRequest(table, {
               method: "DELETE",
               query: `id=eq.${encodeURIComponent(id)}`,
             })

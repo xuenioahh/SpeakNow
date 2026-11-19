@@ -73,7 +73,7 @@ export function practicePayload(attempt) {
 }
 export function accountSavedAttempt(remote, ownerId) {
   validateAttempt(remote);
-  const cloud = remote.storageMode === 'supabase';
+  const cloud = ['supabase', 'mongodb'].includes(remote.storageMode);
   return { ...remote, ownerId, accountSaved: true, cloudSaved: cloud,
     storageMode: remote.storageMode || 'unverified', feedbackAccountSaved: Boolean(remote.feedback), feedbackCloudSaved: cloud && Boolean(remote.feedback) };
 }
@@ -123,9 +123,9 @@ export async function cloudAttempt(attempt, ownerId) {
     audioAssessments: { ...attempt.audioAssessments, ...remote.audioAssessments },
     storageMode: remote.storageMode || 'unverified',
     feedbackAccountSaved: Boolean(remote.feedback),
-    feedbackCloudSaved: remote.storageMode === 'supabase' && Boolean(remote.feedback),
+    feedbackCloudSaved: ['supabase', 'mongodb'].includes(remote.storageMode) && Boolean(remote.feedback),
     accountSaved: true,
-    cloudSaved: remote.storageMode === 'supabase'
+    cloudSaved: ['supabase', 'mongodb'].includes(remote.storageMode)
   };
   // Audio checks can finish while the account upload is in flight.
   return await updateAttempt(attempt.id, latest => ({ ...latest, ...result,

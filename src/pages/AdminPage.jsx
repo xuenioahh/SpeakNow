@@ -209,7 +209,7 @@ export default function AdminPage() {
             Signed in as <span className="text-foreground font-medium">{user?.email || "-"}</span>
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            `supabase` means server-side Postgres sync is active. `local-json` means this app is using the local file fallback.
+            `mongodb` and `supabase` indicate cloud database storage. `local-json` indicates storage on this server only.
           </p>
           <Button onClick={handleExportJson} variant="outline" className="rounded-2xl border-slate-200 mt-4">
             <Download className="w-4 h-4 mr-2" />

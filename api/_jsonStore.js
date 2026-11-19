@@ -3,7 +3,7 @@ import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 
 export function dataDirectory() {
-  if ((process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) && !process.env.SPEAKNOW_DATA_DIR) throw Object.assign(new Error('Persistent storage is required; apply the Supabase consolidation migration.'), { status: 503 });
+  if ((process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) && !process.env.SPEAKNOW_DATA_DIR) throw Object.assign(new Error('Persistent cloud storage must be configured.'), { status: 503 });
   return process.env.SPEAKNOW_DATA_DIR || path.join(process.cwd(), 'data');
 }
 export async function readJson(name, empty) {

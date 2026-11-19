@@ -168,7 +168,7 @@ export default function LearningReview() {
       }, {
         signal: request.current.signal
       });
-      value = await updateAttempt(value.id, latest => ({ ...latest, feedback: result, feedbackAccountSaved: Boolean(user), feedbackCloudSaved: Boolean(user) && latest.storageMode === 'supabase', feedbackRequest: { status: 'ready' } }));
+      value = await updateAttempt(value.id, latest => ({ ...latest, feedback: result, feedbackAccountSaved: Boolean(user), feedbackCloudSaved: Boolean(user) && ['supabase', 'mongodb'].includes(latest.storageMode), feedbackRequest: { status: 'ready' } }));
       if (active.current) {
         setAttempt(value);
         setStatus('Feedback ready.');
@@ -248,7 +248,7 @@ export default function LearningReview() {
   const total = attempt.practiceMode === 'quick' ? 1 : task?.prompts?.length;
   const answered = attempt.answers.filter(answer => answer.text?.trim() || answer.recordingId).length;
   const accountSaved = attempt.accountSaved || attempt.cloudSaved;
-  const syncLabel = syncFailed ? 'Sync failed' : !accountSaved ? 'Saved locally' : attempt.storageMode === 'server-local' ? 'Saved on this server · not cloud-synced' : attempt.storageMode !== 'supabase' ? 'Server copy · cloud storage unverified' : report && !attempt.feedbackCloudSaved ? 'Answers synced · feedback saved locally' : 'Synced to your account';
+  const syncLabel = syncFailed ? 'Sync failed' : !accountSaved ? 'Saved locally' : attempt.storageMode === 'server-local' ? 'Saved on this server · not cloud-synced' : !['supabase', 'mongodb'].includes(attempt.storageMode) ? 'Server copy · cloud storage unverified' : report && !attempt.feedbackCloudSaved ? 'Answers synced · feedback saved locally' : 'Synced to your account';
   const windows = attempt.visualEvidence?.windows || [];
   const liveMetrics = attempt.track === 'daily' ? attempt.liveMetrics?.metrics || {} : {};
   const performanceGroups = dailyPerformanceGroups(liveMetrics);
@@ -269,7 +269,7 @@ export default function LearningReview() {
     {report?.summary && <p className="review-summary">{report.summary}</p>}</div>
     <div className="review-save"><span role="status">{busy && operation === 'sync' ? 'Syncing…' : syncLabel}</span>
       {user ? (!accountSaved || syncFailed) && <button disabled={busy} onClick={sync}>{syncFailed ? 'Retry sync' : 'Sync to my account'}</button> : <Link to={`/auth?returnTo=${encodeURIComponent(location.pathname + location.search)}`}>Sign in to sync</Link>}
-      <details><summary>Save details</summary><p>Clearing browser data removes local copies. {attempt.storageMode === 'supabase' ? 'Synced copies remain in your account.' : attempt.storageMode === 'server-local' ? 'The account copy is stored on this server only, not in Supabase. It does not establish cloud backup or multi-server persistence.' : 'Cloud persistence has not been verified for this copy.'}</p>{report && user && accountSaved && !(attempt.feedbackAccountSaved || attempt.feedbackCloudSaved) && <button disabled={busy} onClick={feedback}>Generate account feedback</button>}</details>
+      <details><summary>Save details</summary><p>Clearing browser data removes local copies. {['supabase', 'mongodb'].includes(attempt.storageMode) ? 'Synced copies remain in your account.' : attempt.storageMode === 'server-local' ? 'The account copy is stored on this server only. It does not establish cloud backup or multi-server persistence.' : 'Cloud persistence has not been verified for this copy.'}</p>{report && user && accountSaved && !(attempt.feedbackAccountSaved || attempt.feedbackCloudSaved) && <button disabled={busy} onClick={feedback}>Generate account feedback</button>}</details>
     </div>
     {operation === 'sync' && error && <p role="alert">{error}</p>}
     <nav className="review-section-nav" aria-label="Feedback sections"><a href="#review-performance">Overall</a><a href="#review-improvements">Improvements</a><a href="#review-again">Practice again</a></nav>

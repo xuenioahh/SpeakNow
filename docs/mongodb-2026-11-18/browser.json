@@ -1,0 +1,10 @@
+{
+  "checks": [
+    "Real UI registration and authenticated session with MongoDB",
+    "Browser IndexedDB and account sync mark MongoDB saves as cloud-saved",
+    "MongoDB sync label, light theme and review layout at 1365/390/320px",
+    "Logout, password login and account history reload persist through MongoDB"
+  ],
+  "errors": [],
+  "scope": "Local real MongoDB and real browser; no Atlas deployment or AI-provider call"
+}

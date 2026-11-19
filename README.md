@@ -138,3 +138,7 @@ An existing hosted installation needs [repair_2026_10_13.sql](supabase/repair_20
 - [COMPLETE_TECHNICAL_REPORT_BILINGUAL.md](./COMPLETE_TECHNICAL_REPORT_BILINGUAL.md)
 
 Latest core-flow audit and validation: [2026-10-24–25 implementation report](docs/core-flow-2026-10-24/REPORT.md).
+
+## MongoDB Atlas deployment
+
+MongoDB is supported for all persistent application data and private recordings. See [MongoDB deployment and validation](docs/mongodb-2026-11-18/README.md). Production requires a valid Atlas database connection; a website login alone is not a database credential.

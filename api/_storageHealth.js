@@ -1,5 +1,11 @@
+import { storageProvider } from './_storageProvider.js';
+import { checkMongoHealth } from './_mongoStore.js';
 // Read schema and call only no-op/validation paths. Never return rows or keys.
 export async function checkStorageHealth({ env = process.env, fetcher = fetch } = {}) {
+  if (/^(true|1|yes)$/i.test(env.FORCE_LOCAL_DATA || '')) return { ok: false, checks: [{ resource: 'configuration', ok: false, code: 'local_storage_enabled' }] };
+  let provider;
+  try { provider = storageProvider(env); } catch { return { ok: false, checks: [{ resource: 'configuration', ok: false, code: 'missing_configuration' }] }; }
+  if (provider === 'mongodb') return checkMongoHealth(env);
   const url = env.SUPABASE_URL, key = env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key || /^(true|1|yes)$/i.test(env.FORCE_LOCAL_DATA || '')) return { ok: false, checks: [{ resource: 'configuration', ok: false, code: !url || !key ? 'missing_configuration' : 'local_storage_enabled' }] };
   const specs = [
