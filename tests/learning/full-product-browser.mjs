@@ -76,10 +76,11 @@ try {
     await start(repeat); const reference = repeat.questions[0].questionText;
     assert.ok(!(await page.locator('main').innerText()).includes(reference));
     await page.getByRole('button', { name: 'Play sentence', exact: true }).click(); await record();
+    await page.getByText('Recording & transcript tools', {exact:true}).click();
     await page.locator('.recording-quality > summary').click(); await page.getByLabel('Recording quality results').waitFor();
     assert.ok(!(await page.locator('main').innerText()).includes(reference));
-    await page.getByText('Reveal reference sentence', { exact: true }).click(); await page.getByText(reference, { exact: true }).waitFor();
-    await page.getByText('Reveal reference sentence', { exact: true }).click();
+    await page.getByRole('button', { name: 'Compare with the reference' }).click(); await page.getByText(reference, { exact: true }).waitFor();
+    await page.getByRole('button', { name: 'Hide comparison' }).click();
     await page.route('**/api/speaking-feedback', route => route.fulfill({ status: 503, json: { error: 'Controlled feedback service outage.', retryable: true } }), { times: 1 });
     await finished(); await page.getByRole('alert').filter({ hasText: 'Controlled feedback service outage.' }).waitFor();
     savedPracticeId = new URL(page.url()).searchParams.get('id');

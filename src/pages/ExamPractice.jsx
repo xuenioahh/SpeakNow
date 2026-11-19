@@ -7,6 +7,7 @@ import { AudioTake } from '@/lib/voice/AudioTake';
 import { prepareRecordedTranscription } from '@/lib/dailyTranscription';
 import { audioManager } from '@/lib/audioManager';
 import { learningStore, saveAttempt, discardPracticeDraft } from '@/lib/learningStore';
+import RepeatTakeReview from '@/components/RepeatTakeReview';
 import AnswerFeedback from '@/components/AnswerFeedback';
 import { apiJson } from '@/api/http';
 import { useAuth } from '@/lib/AuthContext';
@@ -141,7 +142,7 @@ export default function ExamPractice() {
       else setError('Question audio unavailable. Try again.');
     } catch (e) { if (alive.current) setError(e.message || 'Question audio unavailable. Try again.'); }
     finally { lock.current = false; if (alive.current) setPhase(current.current.recordingId ? 'review' : 'ready'); }
-    if (ok && (isMock || sessionMode === 'exam') && alive.current) {
+    if (ok && !current.current.recordingId && (isMock || sessionMode === 'exam') && alive.current) {
       auto.current = true;
       if (preparationSeconds > 0 && !current.current.prepared) { preparing.current = true; deadline.current = Date.now() + preparationSeconds * 1000; setRemaining(preparationSeconds); setPhase('preparing'); }
       else await start(true);
@@ -276,26 +277,30 @@ export default function ExamPractice() {
 }
 
 function ActiveExamPage({ title, sessionMode, index, indices, stepType, draft, prompt, task, busy, phase, isMock, heard, playPrompt, preparationSeconds, remaining, setRemaining, setPhase, preparing, deadline, update, finishPreparation, stop, canRecord, start, audioUrl, setError, text, accept, error, exit, discard, auto }) {
+  const repeatReview = stepType === 'listen-repeat' && sessionMode === 'practice' && draft.recordingId && (!busy || phase === 'playing');
+  const sessionActions = <div className="learning-actions">{!busy && (draft.answers.length > 0 || draft.recordingId) && index + (draft.recordingId ? 1 : 0) < indices.length && <button onClick={() => accept(false, true)}>Finish early &amp; review answered questions</button>}<button disabled={phase === 'saving' || phase === 'permission' || phase === 'playing' || phase === 'processing'} onClick={exit}>Save and exit</button><button disabled={phase === 'saving' || phase === 'permission' || phase === 'playing'} onClick={discard}>Exit without saving</button></div>;
   return <main className="learning-page exam-page"><header><span>{['ielts-mock','ielts-paired'].includes(task.type) ? `IELTS Speaking · Part ${task.steps[indices[index]]?.part}` : title}</span><span>Question {index + 1} / {indices.length}</span></header>
     <p className="session-mode-label">{sessionMode === 'exam' ? 'Exam mode · one playback, one take' : 'Practice mode'}</p>
     <section className="exam-question"><h1>{stepType === 'listen-repeat' ? 'Listen and Repeat' : prompt}</h1>
       {task.questions?.[indices[index]]?.sourceLanguage === 'zh' && <p className="learning-muted">Answer in English. This source prompt is in Chinese.</p>}
       {stepType === 'part2' && (task.questions?.[indices[index]]?.cuePoints || task.cuePoints) && <ul>{(task.questions?.[indices[index]]?.cuePoints || task.cuePoints).map(p => <li key={p}>{p}</li>)}</ul>}
       {stepType === 'part2' && draft.notes && phase !== 'preparing' && <blockquote>{draft.notes}</blockquote>}
-      {!busy && phase !== 'preparing' && !(sessionMode === 'exam' && heard) && (stepType === 'listen-repeat' || task.bankTaskType === 'interview' || task.exam === 'ielts' && task.questions?.[indices[index]]?.sourceLanguage !== 'zh' || task.audio?.[index] || isMock && !auto.current) && <button onClick={playPrompt}>{isMock ? 'Resume mock' : stepType === 'listen-repeat' ? heard ? 'Listen again' : 'Play sentence' : 'Listen to question'}</button>}
+      {!repeatReview && !busy && phase !== 'preparing' && !(sessionMode === 'exam' && heard) && (stepType === 'listen-repeat' || task.bankTaskType === 'interview' || task.exam === 'ielts' && task.questions?.[indices[index]]?.sourceLanguage !== 'zh' || task.audio?.[index] || isMock && !auto.current) && <button onClick={playPrompt}>{isMock ? 'Resume mock' : stepType === 'listen-repeat' ? heard ? 'Listen again' : 'Play sentence' : 'Listen to question'}</button>}
       {task.type === 'ielts-mock' && draft.examinerSource === 'script' && <p className="learning-muted">Continuing with the practice questions.</p>}
       {preparationSeconds > 0 && !draft.prepared && phase === 'ready' && <button onClick={() => { preparing.current = true; deadline.current = Date.now() + preparationSeconds * 1000; setRemaining(preparationSeconds); setPhase('preparing'); }}>Start 1-minute preparation</button>}
       {phase === 'preparing' && <><p className="learning-timer" role="timer">Preparation · {remaining}s</p><textarea aria-label="Preparation notes" value={draft.notes || ''} onChange={e => void update({ notes: e.target.value })} /><button onClick={finishPreparation}>Finish preparation early</button></>}
       {phase === 'recording' && <p className="learning-timer" role="timer">Recording · {remaining}s</p>}
       {['permission', 'playing', 'processing', 'saving'].includes(phase) && <p role="status">{{ permission: 'Microphone permission pending', playing: 'Playing question', processing: 'Processing', saving: 'Saving' }[phase]}</p>}
-      <div className="learning-actions">{phase === 'recording' ? <button className="primary" onClick={stop}>Stop recording</button> : (!isMock || draft.recordingId || error) && <button className={draft.recordingId ? '' : 'primary'} disabled={!canRecord} onClick={() => start()}>{draft.recordingId ? sessionMode === 'practice' ? 'Try again' : 'Record another take' : 'Record answer'}</button>}</div>
-      {audioUrl && !busy && sessionMode === 'practice' && <audio controls src={audioUrl} aria-label="Review recording" onError={() => setError('Recording could not be played. Record again.')} />}
-      {draft.recordingId && !busy && sessionMode === 'practice' && <label>Your transcript<textarea aria-label="Your transcript" value={text} maxLength={8000} onChange={e => void update({ text: e.target.value })} /></label>}
-      {stepType === 'listen-repeat' && draft.recordingId && !busy && sessionMode === 'practice' && <details className="repeat-reference"><summary>Reveal reference sentence</summary><p>{prompt}</p></details>}
-      {draft.recordingId && phase === 'review' && sessionMode === 'practice' && <><AnswerFeedback key={`${draft.recordingId}:${text}`} repeat={stepType === 'listen-repeat'} attempt={{ id: draft.id, track: 'exam', taskId: task.id, practiceMode: 'quick', answers: [{ questionIndex: indices[index], prompt, text, recordingId: draft.recordingId, inputMode: 'voice' }] }} /><RecordingQuality recordingId={draft.recordingId} /></>}
-      {draft.recordingId && !busy && !text.trim() && sessionMode === 'practice' && <p className="learning-muted">Your recording can be checked without a transcript. Add text if you also want language feedback.</p>}
+      {!repeatReview && <div className="learning-actions">{phase === 'recording' ? <button className="primary" onClick={stop}>Stop recording</button> : (!isMock || draft.recordingId || error) && <button className={draft.recordingId ? '' : 'primary'} disabled={!canRecord} onClick={() => start()}>{draft.recordingId ? sessionMode === 'practice' ? 'Try again' : 'Record another take' : 'Record answer'}</button>}</div>}
+      {!repeatReview && audioUrl && !busy && sessionMode === 'practice' && <audio controls src={audioUrl} aria-label="Review recording" onError={() => setError('Recording could not be played. Record again.')} />}
+      {!repeatReview && draft.recordingId && !busy && sessionMode === 'practice' && <label>Your transcript<textarea aria-label="Your transcript" value={text} maxLength={8000} onChange={e => void update({ text: e.target.value })} /></label>}
+      {repeatReview && <RepeatTakeReview key={draft.recordingId} prompt={prompt} text={text} recordingId={draft.recordingId}
+        audioUrl={audioUrl} replaying={phase === 'playing'} onAudioError={() => setError('Recording could not be played. Record again.')}
+        onListen={playPrompt} onRetry={() => start()} canRecord={canRecord} onEdit={value => void update({ text: value })} />}
+      {!repeatReview && draft.recordingId && phase === 'review' && sessionMode === 'practice' && <><AnswerFeedback key={`${draft.recordingId}:${text}`} attempt={{ id: draft.id, track: 'exam', taskId: task.id, practiceMode: 'quick', answers: [{ questionIndex: indices[index], prompt, text, recordingId: draft.recordingId, inputMode: 'voice' }] }} /><RecordingQuality recordingId={draft.recordingId} /></>}
+      {!repeatReview && draft.recordingId && !busy && !text.trim() && sessionMode === 'practice' && <p className="learning-muted">Your recording can be checked without a transcript. Add text if you also want language feedback.</p>}
       {draft.recordingId && !busy && <button className="primary" onClick={() => accept()}>{index + 1 === indices.length ? sessionMode === 'exam' ? 'Submit exam' : text.trim() ? 'Finish and get feedback' : 'Finish practice' : 'Next Question'}</button>}
     </section>{error && <p role="alert" className="learning-alert">{error}</p>}
-    <footer>{!busy && (draft.answers.length > 0 || draft.recordingId) && index + (draft.recordingId ? 1 : 0) < indices.length && <button onClick={() => accept(false, true)}>Finish early &amp; review answered questions</button>}<button disabled={phase === 'saving' || phase === 'permission' || phase === 'playing' || phase === 'processing'} onClick={exit}>Save and exit</button><button disabled={phase === 'saving' || phase === 'permission' || phase === 'playing'} onClick={discard}>Exit without saving</button></footer>
+    <footer>{repeatReview ? <details className="repeat-session-menu"><summary>Session options</summary>{sessionActions}</details> : sessionActions}</footer>
   </main>;
 }

@@ -36,7 +36,7 @@ async function record(index = 0, repeat = true) {
   await button('Stop recording').waitFor(); await page.waitForTimeout(750);
   await button('Stop recording').click();
   await button('Try again').waitFor();
-  if (repeat) await page.getByRole('textbox', { name: 'Your transcript' }).fill(task.prompts[index].split(' ').slice(1).join(' '));
+  if (repeat) { await page.getByText('Recording & transcript tools', {exact:true}).click(); await page.getByLabel('Edit transcript').fill(task.prompts[index].split(' ').slice(1).join(' ')); }
 }
 async function snapshot() {
   return page.evaluate(async () => { const { learningStore: store } = await import('/src/lib/learningStore.js'); return { drafts: await store.all('drafts'), attempts: await store.all('attempts'), clips: (await store.all('recordings')).map(r => r.id) }; });
@@ -46,25 +46,23 @@ try {
   await test('single answer at question 1/7 is reviewed without creating a saved attempt; metrics stay collapsed', async () => {
     await start(); await record();
     await page.getByText('Question 1 / 7', { exact: true }).waitFor();
-    assert.equal(await page.getByLabel('Word and phrase review').count(), 0);
+    assert.equal(await page.locator('.repeat-word-focus').count(), 0);
     assert.equal(await page.getByText('Average level', { exact: true }).isVisible(), false);
-    const response = page.waitForResponse(r => r.url().endsWith('/api/speaking-feedback') && r.request().postDataJSON()?.action === 'practice-answer');
-    await button('Review this answer').click();
-    const result = await response; assert.equal(result.status(), 200);
-    assert.equal(result.request().postDataJSON().attempt.answers.length, 1);
-    await page.getByLabel('Word and phrase review').waitFor();
-    await page.getByText('Engineering fixture: your answer gives a clear reason.', { exact: true }).waitFor();
+    await button('Compare with the reference').click();
+    await page.locator('.repeat-word-focus').waitFor();
     assert.equal((await snapshot()).attempts.length, 0);
     await page.screenshot({ path: `${output}/single-answer.png`, fullPage: true });
   });
   await test('retry keeps question position, replaces transcript and clears obsolete coaching', async () => {
     await button('Try again').click(); await button('Stop recording').waitFor(); await page.waitForTimeout(700); await button('Stop recording').click();
-    await button('Review this answer').waitFor();
+    await button('Compare with the reference').waitFor();
     assert.equal(await page.getByText('Engineering fixture: your answer gives a clear reason.', { exact: true }).count(), 0);
     await page.getByText('Question 1 / 7', { exact: true }).waitFor();
   });
   await test('failed feedback retains input; edited answer cannot receive a stale delayed result', async () => {
     await page.route('**/api/speaking-feedback', route => route.fulfill({ status: 503, json: { error: 'Controlled feedback outage' } }), { times: 1 });
+    await page.getByText('Session options', {exact:true}).click(); await button('Exit without saving').click(); await page.waitForURL('**/exam');
+    await start('ielts-part1-study-v1'); await record(0, false);
     const before = await page.getByRole('textbox', { name: 'Your transcript' }).inputValue();
     await button('Review this answer').click(); await page.getByRole('alert').filter({ hasText: 'Controlled feedback outage' }).waitFor();
     assert.equal(await page.getByRole('textbox', { name: 'Your transcript' }).inputValue(), before);
@@ -80,12 +78,12 @@ try {
   await test('discard removes unfinished draft and unshared takes, preserving an earlier saved recording', async () => {
     const before = await snapshot(), keepId = before.clips[0];
     await page.evaluate(async keepId => { const { learningStore } = await import('/src/lib/learningStore.js'); await learningStore.put('attempts', { id: 'earlier-saved-fixture', answers: [{ recordingId: keepId }] }); }, keepId);
-    await button('Exit without saving').click(); await page.waitForURL('**/exam'); await page.reload();
+    await button('Exit without saving').click(); await page.waitForURL('**/exam/ielts'); await page.reload();
     const after = await snapshot(); assert.equal(after.drafts.length, 0); assert.deepEqual(after.clips, [keepId]); assert.equal(after.attempts.length, 1);
   });
   await test('discard during recording stops tracks and cannot resurrect a draft after callbacks settle', async () => {
     await start('ielts-part1-study-v1'); await button('Record answer').click(); await button('Stop recording').waitFor(); await page.waitForTimeout(1300);
-    await button('Exit without saving').click(); await page.waitForURL('**/exam'); await page.waitForTimeout(400);
+    await button('Exit without saving').click(); await page.waitForURL('**/exam/ielts'); await page.waitForTimeout(400);
     assert.ok(await page.evaluate(() => window.__streams.every(s => s.getTracks().every(t => t.readyState === 'ended'))));
     const after = await snapshot(); assert.equal(after.drafts.length, 0); assert.equal(after.clips.length, 1); assert.equal(after.attempts.length, 1);
   });
@@ -108,13 +106,13 @@ try {
     await start(task.id, 'exam'); await button('Play sentence').click(); await button('Stop recording').waitFor(); await page.waitForTimeout(700); await button('Stop recording').click();
     await button('Next Question').waitFor();
     assert.equal(await button('Review this answer').count(), 0); assert.equal(await button('Try again').count(), 0);
-    assert.equal(await page.getByLabel('Word and phrase review').count(), 0); assert.equal(await page.getByText('Reveal reference sentence', { exact: true }).count(), 0);
+    assert.equal(await page.locator('.repeat-word-focus').count(), 0); assert.equal(await page.getByText('Reveal reference sentence', { exact: true }).count(), 0);
     await button('Exit without saving').click(); await page.waitForURL('**/exam');
   });
   await test('full mock in practice mode pauses after an answer so it can be reviewed or retried', async () => {
     await start('toefl-mock-campus-v1'); await button('Stop recording').waitFor(); await page.waitForTimeout(700); await button('Stop recording').click();
-    await button('Review this answer').waitFor(); await button('Try again').waitFor(); await page.getByText('Question 1 / 11', { exact: true }).waitFor();
-    await button('Exit without saving').click(); await page.waitForURL('**/exam');
+    await button('Compare with the reference').waitFor(); await button('Try again').waitFor(); await page.getByText('Question 1 / 11', { exact: true }).waitFor();
+    await page.getByText('Session options', {exact:true}).click(); await button('Exit without saving').click(); await page.waitForURL('**/exam');
   });
   assert.deepEqual(report.errors, []); report.status = 'PASS';
 } catch (error) { report.status = 'FAIL'; report.failure = error.stack; report.visibleState = await page.locator('body').innerText(); await page.screenshot({ path: `${output}/failure.png`, fullPage: true }); process.exitCode = 1; }

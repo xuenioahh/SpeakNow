@@ -55,3 +55,13 @@ test('empty transcript and reference comparisons retain actual missing or added 
   assert.deepEqual(compareRepeat('It is open.', '').omissions, ['it', 'is', 'open']);
   assert.deepEqual(compareRepeat('', 'It is open.').additions, ['it', 'is', 'open']);
 });
+
+test('a whole-hour clock rendering does not distract from an actual article substitution', () => {
+  const result = compareRepeat('The library opens at nine.', 'a library opens at 9:00');
+  assert.deepEqual(result.substitutions, [{ reference:'the', spoken:'a' }]);
+  assert.deepEqual(result.additions, []);
+  assert.deepEqual(result.omissions, []);
+  assert.equal(compareRepeat('Meet at 09:00.', 'Meet at nine.').missing.length, 0);
+  assert.equal(compareRepeat('Meet at nine.', 'Meet at 9:15.').substitutions.length, 1);
+  assert.equal(compareRepeat('Meet at nine.', 'Meet at 10:00.').substitutions.length, 1);
+});

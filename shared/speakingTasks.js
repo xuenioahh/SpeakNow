@@ -219,10 +219,24 @@ export function validateFeedback(value, attempt) {
   };
 }
 // Ordered word alignment is a transcript comparison, never an acoustic score.
+const hourWords = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+function repeatTokens(text) {
+  const normalized = String(text).normalize('NFKC').replace(/[‘’ʼ]/g, "'").toLowerCase();
+  const words = normalized.match(/\b\d{1,2}:\d{2}\b|\p{L}+(?:'\p{L}+)?|\d+/gu) || [];
+  const tokens = [];
+  for (const word of words) {
+    // A clock display often replaces the spoken hour in a transcript.
+    // Keep non-zero minutes intact so "9:15" cannot match "nine".
+    const hour = /^(0?[1-9]|1[0-2]):00$/.exec(word);
+    if (hour) tokens.push(hourWords[Number(hour[1])]);
+    else if (/^(?:[0-9]|1[0-2])$/.test(word)) tokens.push(hourWords[Number(word)]);
+    else tokens.push(word);
+  }
+  return tokens;
+}
+
 export function compareRepeat(reference, transcript) {
-  const tokenize = text => String(text).normalize('NFKC').replace(/[‘’ʼ]/g, "'").toLowerCase().match(/\p{L}+(?:'\p{L}+)?|\d+/gu) || [];
-  const expected = tokenize(reference),
-    actual = tokenize(transcript);
+  const expected = repeatTokens(reference), actual = repeatTokens(transcript);
   const matrix = Array.from({
     length: expected.length + 1
   }, () => Array(actual.length + 1).fill(0));
