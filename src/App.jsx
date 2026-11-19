@@ -130,7 +130,7 @@ function App() {
           <Router>
             <RouteScroll />
             <MainNav />
-            <AuthenticatedApp />
+            <div id="page-content" tabIndex={-1}><AuthenticatedApp /></div>
           </Router>
           <Toaster />
           <SonnerToaster

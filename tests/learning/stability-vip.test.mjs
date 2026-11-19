@@ -65,3 +65,19 @@ test('VIP requests are idempotent and only an administrator can grant, decline o
   assert.equal((await membershipSnapshot(request)).trialAvailable, false);
   await assert.rejects(() => adminMembership({ ...admin, body: { ...admin.body, days: 999 } }), error => error.status === 400);
 });
+
+test('Pro applications use deck prices and approvals grant the selected duration once', async () => {
+  for (const [days, price] of [[30,30],[90,78],[360,298]]) {
+    const req = member();
+    await saveUser({ id:req.user.id, email:req.user.id+'@example.invalid', role:'user' });
+    const application = await requestVip({ ...req, body:{termDays:days, priceCny:1} });
+    assert.equal(application.priceCny, price);
+    const admin = {user:{id:'admin',role:'admin'},body:{action:'admin-grant',userId:req.user.id,days,requestId:application.id}};
+    await assert.rejects(() => adminMembership({...admin,body:{...admin.body, days:7}}), e => e.status === 409);
+    await adminMembership(admin);
+    const status = await membershipSnapshot(req);
+    assert.equal(Date.parse(status.membership.currentPeriodEnd) - Date.parse(status.membership.currentPeriodStart), days * 86400000);
+    await assert.rejects(() => adminMembership(admin), e => e.status === 409);
+  }
+  await assert.rejects(() => requestVip({...member(),body:{termDays:365}}), e => e.status === 400);
+});

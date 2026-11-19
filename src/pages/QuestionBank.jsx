@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/lib/AuthContext';
 import { learningStore } from '@/lib/learningStore';
 import { apiJson } from '@/api/http';
@@ -10,9 +10,17 @@ import { bankAccess } from '@/lib/bankAccess';
 
 export default function QuestionBank() {
   const { taskType } = useParams(), { user } = useAuth();
-  const [search, setSearch] = useState(''), [category, setCategory] = useState('all'), [filter, setFilter] = useState('all');
+  const [params, setParams] = useSearchParams();
+  const search = params.get('q') || '', category = params.get('category') || 'all', filter = params.get('progress') || 'all';
+  function updateFilter(key, value) {
+    setParams(previous => {
+      const next = new URLSearchParams(previous);
+      if (!value || value === 'all' && key !== 'q') next.delete(key);
+      else next.set(key, value);
+      return next;
+    }, { replace: true, preventScrollReset: true });
+  }
   const [attempts, setAttempts] = useState([]), [drafts, setDrafts] = useState([]), [loading, setLoading] = useState(true), [error, setError] = useState(''), [revision, setRevision] = useState(0);
-  useEffect(() => { setSearch(''); setCategory('all'); setFilter('all'); }, [taskType]);
   useEffect(() => {
     let active = true;
     setLoading(true); setError(''); setAttempts([]); setDrafts([]);
@@ -45,9 +53,9 @@ export default function QuestionBank() {
   }
   return <main className="learning-page bank-page"><header><Link to={examHomePath(ielts ? 'ielts' : 'toefl')}>← {ielts ? 'IELTS' : 'TOEFL'} Speaking</Link><Link to="/progress">My Progress</Link></header>
     <h1>{type.title}</h1><p className="learning-muted">{sets.length} sets · {sets.reduce((sum, set) => sum + set.questions.length, 0)} {taskType === 'repeat' ? 'sentences' : 'questions'}</p>
-    <div className="bank-controls"><label>Search<input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder={ielts ? "Topic, date or question · 话题搜索" : "Set name, date or question"} /></label>
-      <label>Category<select aria-label="Category" value={category} onChange={e => setCategory(e.target.value)}><option value="all">All categories</option>{categories.map(value => <option key={value}>{value}</option>)}</select></label>
-      <label>Practice status<select aria-label="Practice status" value={filter} onChange={e => setFilter(e.target.value)}><option value="all">All sets</option><option value="unfinished">Not completed</option><option value="in-progress">In progress</option><option value="completed">Completed</option></select></label>
+    <div className="bank-controls"><label>Search<input type="search" value={search} onChange={e => updateFilter('q', e.target.value)} placeholder={ielts ? "Topic, date or question · 话题搜索" : "Set name, date or question"} /></label>
+      <label>Category<select aria-label="Category" value={category} onChange={e => updateFilter('category', e.target.value)}><option value="all">All categories</option>{categories.map(value => <option key={value}>{value}</option>)}</select></label>
+      <label>Practice status<select aria-label="Practice status" value={filter} onChange={e => updateFilter('progress', e.target.value)}><option value="all">All sets</option><option value="unfinished">Not completed</option><option value="in-progress">In progress</option><option value="completed">Completed</option></select></label>
     </div>
     {loading && <p role="status">Loading practice progress…</p>}
     {error && <p role="alert">{error} <button onClick={() => setRevision(n => n + 1)}>Retry progress</button></p>}
@@ -66,7 +74,7 @@ export default function QuestionBank() {
         })}</ol></details>
       </article>;
     })}</div>
-    {!filtered.length && !loading && <p>No matching sets. Change your search or filters.</p>}
+    {!filtered.length && !loading && <div><p>No matching sets.</p><button onClick={() => setParams({}, { replace: true })}>Clear filters</button></div>}
     <details className="bank-source"><summary>Sources and audio</summary>{ielts ? <><p>Practice questions from your two September–December 2026 IELTS PDFs. Exact repeats are merged; wording variants remain available. New and retained labels follow each source.</p><p>Reference answers, when supplied, appear after you answer. Question playback uses generated speech.</p></> : <><p>User-supplied recalled practice, not official ETS questions. Original recordings were not supplied; playback uses browser-generated speech.</p>{taskType === 'interview' && <p>Source reference answers are available after you answer. Set sizes follow the supplied document.</p>}</>}</details>
   </main>;
 }

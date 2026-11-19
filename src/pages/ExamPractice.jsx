@@ -258,13 +258,13 @@ export default function ExamPractice() {
       await take.current?.stop(); await writes.current.catch(() => {});
       await discardPracticeDraft(draftKey, [take.current?.id]);
       void apiJson('/api/membership', { action: 'cancel', id: current.current.id }).catch(() => {});
-      navigate(task.bankTaskType ? questionBankPath(task.bankTaskType) : '/exam', { replace: true });
+      navigate(task.bankTaskType ? questionBankPath(task.bankTaskType) : task.exam === 'ielts' ? '/exam/ielts' : '/exam', { replace: true });
     } catch (issue) { discarding.current = false; setError(issue.message); setPhase('review'); }
   }
   async function exit() {
     if (lock.current || phase === 'saving') return;
     auto.current = false;
-    try { if (capture.current) await stop(); await writes.current; navigate(task.bankTaskType ? questionBankPath(task.bankTaskType) : '/exam'); }
+    try { if (capture.current) await stop(); await writes.current; navigate(task.bankTaskType ? questionBankPath(task.bankTaskType) : task.exam === 'ielts' ? '/exam/ielts' : '/exam'); }
     catch (e) { setError(e.message); }
   }
   if (phase === 'invalid' || !task) return <main className="learning-page"><h1>Task not found</h1><Link to="/exam">Choose a task</Link></main>;

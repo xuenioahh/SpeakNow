@@ -140,3 +140,24 @@ html[data-theme="light"] .membership-page progress::-webkit-progress-bar{backgro
 html[data-theme="light"] .studio-page{background:var(--paper)!important}.studio-page-reading{padding:40px 28px}.studio-page-reading>div:first-child h1{font-size:30px!important;letter-spacing:-.8px;line-height:1.2}.studio-page .impact-setup{border-color:var(--rule);border-radius:10px;background:#fff}.studio-page .impact-eyebrow{color:var(--brand)}
 html[data-theme="light"] .expression-page :is(.expression-panel,.expression-brief,.practice-lab){border-color:var(--rule);border-radius:11px;box-shadow:none}.expression-page :is(button,input,select,textarea){border-radius:7px!important}.expression-page .expression-empty{color:var(--quiet);background:#eef1eb}.expression-page .expression-video:has(.expression-empty){background:#eef1eb}.expression-page .expression-eyebrow{color:var(--quiet);font-size:11px;letter-spacing:.08em}.expression-page .expression-panel>h2{font-size:22px}.expression-page .expression-brief h2{font-size:23px}
 @media(max-width:700px){.studio-page-reading{padding:26px 18px}.studio-page-reading>div:first-child h1{font-size:25px!important}}
+
+.skip-content { position:fixed; top:.5rem; left:.5rem; transform:translateY(-200%); z-index:9999; padding:.7rem 1rem; border-radius:.5rem; background:white; color:#173e35 }
+.skip-content:focus { transform:none }
+#page-content { min-width:0; scroll-margin-top:var(--main-nav-height,70px) }
+#page-content:focus { outline:0 }
+#page-content :where(a,button,input,select,textarea,summary):focus-visible,.app-header a:focus-visible { outline:3px solid #4168ad; outline-offset:3px }
+#page-content :where(input,select,textarea,details,button) { max-width:100% }
+#page-content :where(h1,h2,h3) { text-wrap:balance }
+.pro-term-prices { display:flex; flex-wrap:wrap; list-style:none; gap:.5rem; padding:0; margin:1rem 0 }
+.pro-term-prices li { flex:1 1 4rem; display:grid; gap:.15rem; padding:.65rem; border-radius:.6rem; background:#f1f5fa; color:#273952 }
+.pro-term-prices span { font-size:.8rem }
+.pro-term-prices strong { font-size:1.2rem; font-variant-numeric:tabular-nums }
+.membership-request label { display:grid; gap:.35rem; margin:.75rem 0 }
+.learning-page :where(details>summary) { cursor:pointer; padding-block:.45rem }
+@media(max-width:600px) {
+  .learning-page :where(.learning-actions,footer) { flex-wrap:wrap; row-gap:.5rem }
+  .learning-page :where(.learning-button,footer button,summary) { min-height:42px }
+  .bank-controls label,.progress-filters label,.mock-choice label { min-width:0 }
+  .membership-page .plan-allowances dd { text-align:end }
+}
+#request-pro { scroll-margin-top:calc(var(--main-nav-height,70px) + 1rem) }

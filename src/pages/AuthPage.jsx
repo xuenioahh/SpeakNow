@@ -47,7 +47,9 @@ export default function AuthPage() {
       }
       await checkUserAuth();
       const target=new URLSearchParams(location.search).get('returnTo');
-      navigate(target?.startsWith('/')&&!target.startsWith('//') ? target : '/');
+      const requested = location.pathname === '/auth' ? target : location.pathname + location.search;
+      const next = requested?.startsWith('/') && !requested.startsWith('//') && !requested.includes('\\') ? requested : '/';
+      navigate(next, { replace: true });
     } catch (error) {
       setErrorMessage(error?.message || "Unable to sign in. Please try again.");
     } finally {

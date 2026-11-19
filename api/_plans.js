@@ -1,3 +1,4 @@
+import { proTerms } from '../shared/proTerms.js';
 const enabled = value => /^(true|1)$/i.test(value || '');
 const limit = (name, fallback = null) => {
   const value = process.env[name];
@@ -10,10 +11,10 @@ const limit = (name, fallback = null) => {
 export const paywallEnabled = () => enabled(process.env.SPEAKNOW_PAYWALL_ENABLED) && (process.env.NODE_ENV !== 'production' && !process.env.VERCEL || enabled(process.env.SPEAKNOW_MEMBERSHIP_TEST_MODE) && !process.env.VERCEL);
 export function planConfiguration() {
   return {
-    free: { planType: 'free', monthlyPrice: null, currency: null,
+    free: { planType: 'free', monthlyPrice: 0, currency: 'CNY',
       monthlyLimits: { mock: limit('SPEAKNOW_FREE_MOCK_MONTHLY', 4), drill: limit('SPEAKNOW_FREE_DRILL_MONTHLY', 30), daily: limit('SPEAKNOW_FREE_DAILY_SECONDS', 300), ai: limit('SPEAKNOW_FREE_AI_REQUESTS', 100) },
       featureAccess: { fullQuestionBank: false, feedback: true, insights: 'basic' } },
-    vip: { planType: 'vip', monthlyPrice: null, currency: null,
+    vip: { planType: 'vip', monthlyPrice: proTerms[0].priceCny, currency: 'CNY', terms: proTerms,
       monthlyLimits: { mock: null, drill: null, daily: limit('SPEAKNOW_VIP_DAILY_SECONDS', 10800), ai: limit('SPEAKNOW_VIP_AI_REQUESTS', 600) },
       featureAccess: { fullQuestionBank: true, feedback: true, insights: 'extended' } },
   };

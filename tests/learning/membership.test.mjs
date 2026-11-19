@@ -22,10 +22,10 @@ const req = (id = user(), body = {}, url = '/api/speaking-feedback') => ({ metho
 const res = () => ({ code: 200, headers: {}, chunks: [], headersSent: false, status(code) { this.code = code; return this; }, setHeader(key, value) { this.headers[key] = value; }, json(value) { this.value = value; this.headersSent = true; return this; }, write(chunk) { this.chunks.push(chunk); this.headersSent = true; return true; }, end() { this.headersSent = true; }, on() {}, off() {} });
 const reserve = (request, id = randomUUID(), taskId = 'sample-toefl-repeat', now) => reservePractice(request, { id, taskId, kind: 'exam' }, now);
 
-test('prices remain unconfigured and mock and drill allowances are shared across exams', () => {
+test('Pro prices match the term catalogue and mock and drill allowances are shared across exams', () => {
   const plans = planConfiguration();
   assert.deepEqual([plans.free.monthlyLimits.mock, plans.free.monthlyLimits.drill, plans.free.monthlyLimits.daily], [4, 30, 300]);
-  assert.equal(plans.vip.monthlyPrice, null); assert.equal(plans.vip.monthlyLimits.ai, 600);
+  assert.equal(plans.vip.monthlyPrice, 30); assert.equal(plans.vip.monthlyLimits.ai, 600);
   assert.equal(plans.vip.monthlyLimits.mock, null); assert.equal(plans.vip.monthlyLimits.drill, null);
   assert.equal(billingPeriod(Date.UTC(2026,11,31)).end, '2027-01-01T00:00:00.000Z');
 });
@@ -184,7 +184,7 @@ test('configured VIP allows higher usage, while an enrolled mock survives expiry
 
 test('production cannot enable a hard paywall while payment integration is unavailable',()=>{
  const previous=process.env.NODE_ENV;process.env.NODE_ENV='production';
- try{assert.equal(planConfiguration().vip.monthlyPrice,null);assert.equal(paywallEnabled(),false);}
+ try{assert.equal(planConfiguration().vip.monthlyPrice,30);assert.equal(paywallEnabled(),false);}
  finally{if(previous===undefined)delete process.env.NODE_ENV;else process.env.NODE_ENV=previous;}
 });
 

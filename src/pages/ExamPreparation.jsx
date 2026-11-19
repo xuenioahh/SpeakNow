@@ -19,7 +19,7 @@ export default function ExamPreparation() {
   const questionCount = task.prompts.filter((_, index) => !part || task.steps?.[index]?.part === part).length;
   const parentId = params.get('retry') || null, focus = params.get('focus') || '';
   const title = task.type === 'ielts-mock' ? `IELTS Speaking · ${part ? `Part ${part}` : 'Full Mock Test'}` : task.bankTaskType ? `${task.exam === 'ielts' ? 'IELTS Speaking · ' : ''}${BANK_TASK_TYPES.find(type => type.id === task.bankTaskType).title}` : `${task.exam === 'ielts' ? 'IELTS Speaking' : 'TOEFL Speaking'} · ${task.title.split(' · ')[0]}`;
-  const back = task.type === 'ielts-paired' ? questionBankPath('ielts-part2') : task.bankTaskType ? questionBankPath(task.bankTaskType) : '/exam';
+  const back = task.type === 'ielts-paired' ? questionBankPath('ielts-part2') : task.bankTaskType ? questionBankPath(task.bankTaskType) : task.exam === 'ielts' ? '/exam/ielts' : '/exam';
   const followUp = task.steps?.some(step => step.type === 'part2-followup');
   const related = task.relatedSetId ? getBankTask(task.relatedSetId) : null;
   const repeat = task.type === 'listen-repeat';

@@ -1,3 +1,4 @@
+import { proTerms } from '../shared/proTerms.js';
 import { randomUUID } from 'node:crypto';
 import { readMembership, mutateLedger, readLedger } from './_membershipStore.js';
 import { effectivePlan } from './_plans.js';
@@ -30,11 +31,13 @@ export async function requestVip(req) {
   signedIn(req);
   const requestType = req.body.requestType || 'vip-access';
   if (!['vip-access', 'renewal', 'more-practice'].includes(requestType)) throw problem('Choose a supported VIP request.');
+  const term = requestType === 'more-practice' ? null : proTerms.find(item => item.days === req.body.termDays);
+  if (req.body.termDays !== undefined && !term && requestType !== 'more-practice') throw problem('Choose a listed Pro term.');
   const note = req.body.note;
   if (note !== undefined && (typeof note !== 'string' || note.length > 500)) throw problem('Keep your request under 500 characters.');
   return mutateLedger(req.user.id, ledger => {
     if (ledger.upgradeRequest?.status === 'pending') return ledger.upgradeRequest;
-    ledger.upgradeRequest = { id: randomUUID(), status: 'pending', requestType, paymentStatus: 'not-requested', note: String(note || '').trim(), createdAt: new Date().toISOString() };
+    ledger.upgradeRequest = { id: randomUUID(), status: 'pending', requestType, ...(term ? { termDays: term.days, priceCny: term.priceCny } : {}), paymentStatus: 'not-requested', note: String(note || '').trim(), createdAt: new Date().toISOString() };
     history(ledger, 'vip-requested', req.user.id);
     return ledger.upgradeRequest;
   });
@@ -48,11 +51,13 @@ export async function adminMembership(req) {
   if (action === 'admin-grant' && (!Number.isInteger(days) || days < 1 || days > 366)) throw problem('Choose between 1 and 366 days.');
   const storedMembership = action === 'admin-grant' ? await readMembership(userId) : null;
   return mutateLedger(userId, ledger => {
+    if (req.body.requestId && (ledger.upgradeRequest?.id !== req.body.requestId || ledger.upgradeRequest.status !== 'pending')) throw problem('This request has already changed. Refresh its status.', 409);
     if (action === 'admin-grant') {
+      if (ledger.upgradeRequest?.status === 'pending' && ledger.upgradeRequest.termDays && days !== ledger.upgradeRequest.termDays) throw problem('Grant the term selected in the pending request.', 409);
       const currentMembership = ledger.entitlement || storedMembership;
       const extendFrom = effectivePlan(currentMembership) === 'vip' ? Date.parse(currentMembership.expiresAt || currentMembership.currentPeriodEnd) : Date.now();
       ledger.entitlement = entitlement(days, 'administrator', extendFrom);
-      if (ledger.upgradeRequest) ledger.upgradeRequest = { ...ledger.upgradeRequest, status: 'approved', decidedAt: new Date().toISOString() };
+      if (ledger.upgradeRequest?.status === 'pending') ledger.upgradeRequest = { ...ledger.upgradeRequest, status: 'approved', decidedAt: new Date().toISOString() };
       history(ledger, 'vip-granted', req.user.id, { days, expiresAt: ledger.entitlement.expiresAt });
     } else if (action === 'admin-revoke') {
       ledger.trialUsedAt ||= new Date().toISOString();
