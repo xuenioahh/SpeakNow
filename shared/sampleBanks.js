@@ -17,3 +17,15 @@ export const SAMPLE_SETS = [
   make('ielts-part3', 'ielts', 'part3', 'Learning useful skills · Free practice', ['How has technology changed the way people learn practical skills?', 'Should schools prioritise practical skills or academic knowledge? Why?', 'Who should be responsible for helping adults learn new skills?', 'How can communities help people share practical knowledge?'], { relatedSetId: 'sample-ielts-part2' }),
 ];
 SAMPLE_SETS[3].questions[0].cuePoints = ['What the skill was', 'When and how you learned it', 'Who helped you', 'Why it is useful'];
+
+SAMPLE_SETS.push(
+  make('ielts-travel-part1', 'ielts', 'part1', 'Getting around your town', [
+    'How do you usually travel around your town?', 'What do you enjoy about that way of travelling?', 'Has the way you travel changed since childhood?'
+  ]),
+  make('ielts-travel-part2', 'ielts', 'part2', 'A journey you remember', [
+    'Describe a journey you remember clearly.', 'Would you make the same journey again?'
+  ], { relatedSetId: 'sample-ielts-travel-part3', steps: [{ type: 'part2', preparationSeconds: 60, answerSeconds: 120 }, { type: 'part2-followup', preparationSeconds: 0, answerSeconds: 30 }] }),
+  make('ielts-travel-part3', 'ielts', 'part3', 'How people travel', [
+    'Why do some people choose a longer route when they travel?', 'How could towns make public transport more appealing?', 'Who should decide which transport projects receive funding?'
+  ], { relatedSetId: 'sample-ielts-travel-part2' })
+);

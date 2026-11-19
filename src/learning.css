@@ -28,3 +28,9 @@
 @media(max-width:480px){.recording-quality,.ielts-audio-feedback{padding:16px}.audio-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}}
 
 .review-visual-dimensions dl{margin:0}.review-visual-dimensions dl>div{display:grid;grid-template-columns:minmax(130px,1fr) 2fr;gap:12px;padding:12px 0;border-bottom:1px solid #e1e6ed}.review-visual-dimensions dt{font-weight:600}.review-visual-dimensions dd{margin:0;color:#37465c}.review-visual-dimensions small{display:block;margin-top:4px;color:#596575;font-size:12px}@media(max-width:480px){.review-visual-dimensions dl>div{grid-template-columns:1fr;gap:4px}}
+
+.progress-week .week-bar-track { height:4rem; width:1rem; margin:auto; display:flex; align-items:flex-end; background:#e5edeb; border-radius:4px; overflow:hidden }
+.week-bar-track i { width:100%; background:#247567 }
+.daily-coaching-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr)); gap:1rem; margin:1rem 0 }
+.daily-coaching-grid article,.camera-direction-stat { padding:1rem; border:1px solid #d3e3dc; border-radius:.8rem; background:#fff }
+.camera-direction-stat strong { color:#216858; font-size:2rem }

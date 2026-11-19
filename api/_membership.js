@@ -18,16 +18,23 @@ function sweep(ledger, now) {
     session.status = session.used ? 'completed' : 'cancelled';
   }
 }
-const amounts = (ledger, period, kind) => Object.values(ledger.sessions).filter(session => session.period === period && session.kind === kind && session.status !== 'cancelled').reduce((sum, session) => sum + session.amount, 0);
+function usageKind(session) {
+  if (session.kind === 'ielts') return 'mock';
+  if (session.kind === 'ieltsQuick') return 'drill';
+  if (session.kind === 'toefl') return session.taskId === 'toefl-mock-campus-v1' ? 'mock' : 'drill';
+  return session.kind;
+}
+const amounts = (ledger, period, kind) => Object.values(ledger.sessions).filter(session => session.period === period && usageKind(session) === kind && session.status !== 'cancelled').reduce((sum, session) => sum + session.amount, 0);
 const aiAmount = (ledger, period) => Object.values(ledger.operations).filter(op => op.period === period).reduce((sum, op) => sum + (op.charges || 0), 0);
-function quotaError(kind, period) { return problem(`${kind === 'daily' ? 'Daily Conversation time' : kind === 'ielts' ? 'Full IELTS mock' : kind === 'toefl' ? 'TOEFL practice' : 'AI practice'} allowance used. Resets ${period.end.slice(0, 10)}. Membership information is available.`, 429, 'quota_exhausted', { resetsAt: period.end, usageType: kind, membershipPath: '/membership' }); }
+function quotaError(kind, period) { return problem(`${kind === 'daily' ? 'Daily Conversation time' : kind === 'mock' ? 'Full mock exam' : kind === 'drill' ? 'Question practice' : 'AI practice'} allowance used. Resets ${period.end.slice(0, 10)}. Membership information is available.`, 429, 'quota_exhausted', { resetsAt: period.end, usageType: kind, membershipPath: '/membership' }); }
 function assertLimit(kind, used, amount, plan, period) {
   if (!paywallEnabled() || plan.unlimitedTesting) return;
   const limit = plan.monthlyLimits[kind];
+  if (limit === null && plan.planType === 'vip' && ['mock', 'drill'].includes(kind)) return;
   if (limit === null || limit === undefined) throw problem('VIP usage limits are not configured. Contact the site owner; payment is not available.', 503, 'plan_not_configured');
   if (used + amount > limit) throw quotaError(kind, period);
 }
-export async function reservePractice(req, { id, taskId, kind = 'daily' }, now = Date.now()) {
+export async function reservePractice(req, { id, taskId, kind = 'daily', part, sessionMode }, now = Date.now()) {
   if (kind === 'daily' && taskId || kind !== 'daily' && !taskId) throw problem('Daily practice has no exam task; exam practice needs an authorized task.', 400, 'invalid_session');
   if (!/^[a-zA-Z0-9-]{8,80}$/.test(id || '')) throw problem('Invalid practice session.', 400, 'invalid_session');
   const owner = membershipSubject(req), membership = await readMembership(owner), plan = planConfiguration()[effectivePlan(membership, now)], period = billingPeriod(now);
@@ -35,13 +42,13 @@ export async function reservePractice(req, { id, taskId, kind = 'daily' }, now =
   const previous = (await readLedger(owner)).sessions[id];
   const enrolled = Boolean(previous) && previous.taskId === taskId && ['reserved', 'completed'].includes(previous.status) && previous.expiresAt > now;
   let task = null;
-  if (taskId && kind !== 'daily') { task = enrolled ? getSpeakingTask(taskId) : assertTaskAccess(req, taskId, membership); kind = task.exam === 'toefl' ? 'toefl' : task.type === 'ielts-mock' ? 'ielts' : 'ieltsQuick'; }
-  if (!['daily', 'toefl', 'ielts', 'ieltsQuick'].includes(kind)) throw problem('Unknown usage type.', 400, 'invalid_usage');
+  if (taskId && kind !== 'daily') { task = enrolled ? getSpeakingTask(taskId) : assertTaskAccess(req, taskId, membership); kind = enrolled ? usageKind(previous) : ['mock', 'ielts-mock'].includes(task.type) && !part && sessionMode !== 'practice' ? 'mock' : 'drill'; }
+  if (!['daily', 'mock', 'drill'].includes(kind)) throw problem('Unknown usage type.', 400, 'invalid_usage');
   return mutateLedger(owner, ledger => {
     sweep(ledger, now);
     const existing = ledger.sessions[id];
     if (existing) {
-      if (existing.taskId !== (taskId || null) || existing.kind !== kind) throw problem('Session belongs to a different practice.', 409, 'session_mismatch');
+      if (existing.taskId !== (taskId || null) || usageKind(existing) !== kind) throw problem('Session belongs to a different practice.', 409, 'session_mismatch');
       if (existing.status !== 'cancelled') return existing;
     }
     let amount = kind === 'daily' ? 300 : 1;
@@ -71,7 +78,7 @@ export async function membershipSnapshot(req, now = Date.now()) {
   const unlimitedTesting = localUnlimitedTesting(req, membership);
   return mutateLedger(owner, ledger => {
     sweep(ledger, now);
-    const usage = Object.fromEntries(['toefl', 'ielts', 'ieltsQuick', 'daily'].map(kind => [kind, amounts(ledger, period.key, kind)]));
+    const usage = Object.fromEntries(['mock', 'drill', 'daily'].map(kind => [kind, amounts(ledger, period.key, kind)]));
     usage.ai = aiAmount(ledger, period.key);
     const limits = plans[planType].monthlyLimits;
     const remainingQuota = Object.fromEntries(Object.entries(limits).map(([kind, limit]) => [kind, unlimitedTesting || limit === null ? null : Math.max(0, limit - (usage[kind] || 0))]));
@@ -97,7 +104,7 @@ async function sessionForRequest(req) {
   }
   if (attempt) {
     attempt = validateAttempt(attempt);
-    return reservePractice(req, { id: attempt.id, taskId: attempt.track === 'exam' ? attempt.taskId : null, kind: attempt.track === 'exam' ? 'exam' : 'daily' });
+    return reservePractice(req, { id: attempt.id, taskId: attempt.track === 'exam' ? attempt.taskId : null, kind: attempt.track === 'exam' ? 'exam' : 'daily', part: attempt.part, sessionMode: attempt.sessionMode });
   }
   if (body.taskId && body.sessionId) return reservePractice(req, { id: body.sessionId, taskId: body.taskId, kind: 'exam' });
   if (body.sessionId && !body.text) return reservePractice(req, { id: body.sessionId, kind: 'daily' });

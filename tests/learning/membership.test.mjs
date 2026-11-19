@@ -22,40 +22,41 @@ const req = (id = user(), body = {}, url = '/api/speaking-feedback') => ({ metho
 const res = () => ({ code: 200, headers: {}, chunks: [], headersSent: false, status(code) { this.code = code; return this; }, setHeader(key, value) { this.headers[key] = value; }, json(value) { this.value = value; this.headersSent = true; return this; }, write(chunk) { this.chunks.push(chunk); this.headersSent = true; return true; }, end() { this.headersSent = true; }, on() {}, off() {} });
 const reserve = (request, id = randomUUID(), taskId = 'sample-toefl-repeat', now) => reservePractice(request, { id, taskId, kind: 'exam' }, now);
 
-test('prices remain unconfigured and both plans have finite usable allowances', () => {
+test('prices remain unconfigured and mock and drill allowances are shared across exams', () => {
   const plans = planConfiguration();
-  assert.deepEqual([plans.free.monthlyLimits.toefl, plans.free.monthlyLimits.ielts, plans.free.monthlyLimits.daily], [2, 1, 300]);
+  assert.deepEqual([plans.free.monthlyLimits.mock, plans.free.monthlyLimits.drill, plans.free.monthlyLimits.daily], [4, 30, 300]);
   assert.equal(plans.vip.monthlyPrice, null); assert.equal(plans.vip.monthlyLimits.ai, 600);
-  assert.ok(Object.entries(plans.vip.monthlyLimits).every(([key, value]) => Number.isFinite(value) && value > plans.free.monthlyLimits[key]));
+  assert.equal(plans.vip.monthlyLimits.mock, null); assert.equal(plans.vip.monthlyLimits.drill, null);
   assert.equal(billingPeriod(Date.UTC(2026,11,31)).end, '2027-01-01T00:00:00.000Z');
 });
 test('parallel starts cannot exceed the monthly allowance; repeats reserve one slot', async () => {
   const request = req(), id = randomUUID();
   await Promise.all(Array.from({length: 12}, () => reserve(request, id)));
-  assert.equal((await membershipSnapshot(request)).usage.toefl, 1);
-  const results = await Promise.allSettled(Array.from({length: 10}, () => reserve(request)));
-  assert.equal(results.filter(result => result.status === 'fulfilled').length, 1);
+  assert.equal((await membershipSnapshot(request)).usage.drill, 1);
+  const results = await Promise.allSettled(Array.from({length: 31}, () => reserve(request)));
+  assert.equal(results.filter(result => result.status === 'fulfilled').length, 29);
   assert.ok(results.filter(result => result.status === 'rejected').every(result => result.reason.code === 'quota_exhausted'));
-  assert.equal((await membershipSnapshot(request)).usage.toefl, 2);
+  assert.equal((await membershipSnapshot(request)).usage.drill, 30);
 });
 test('cancelling before any billable success releases a reservation idempotently', async () => {
   const request = req(), id = randomUUID(); await reserve(request, id);
   await finishPractice(request, id, true); await finishPractice(request, id, true);
-  assert.equal((await membershipSnapshot(request)).usage.toefl, 0);
-  await reserve(request, id); assert.equal((await membershipSnapshot(request)).usage.toefl, 1);
+  assert.equal((await membershipSnapshot(request)).usage.drill, 0);
+  await reserve(request, id); assert.equal((await membershipSnapshot(request)).usage.drill, 1);
 });
-test('quick IELTS practice does not consume the one full mock entitlement', async () => {
+test('quick IELTS practice does not consume the shared full mock allowance', async () => {
   const request = req(); await reserve(request, randomUUID(), 'sample-ielts-part1');
   await reserve(request, randomUUID(), 'ielts-full-mock-demo-v1');
   const snapshot = await membershipSnapshot(request);
-  assert.equal(snapshot.usage.ieltsQuick, 1); assert.equal(snapshot.usage.ielts, 1);
+  assert.equal(snapshot.usage.drill, 1); assert.equal(snapshot.usage.mock, 1);
+  for (let index = 0; index < 3; index++) await reserve(request, randomUUID(), 'toefl-mock-campus-v1');
   await assert.rejects(() => reserve(request, randomUUID(), 'ielts-full-mock-demo-v1'), error => error.code === 'quota_exhausted');
 });
 test('month rollover calculates a fresh allowance without deleting history', async () => {
   const request = req(), before = Date.UTC(2026,9,31,23,59), after = Date.UTC(2026,10,1);
   await reserve(request, randomUUID(), 'sample-toefl-repeat', before);
-  assert.equal((await membershipSnapshot(request, before)).usage.toefl, 1);
-  assert.equal((await membershipSnapshot(request, after)).usage.toefl, 0);
+  assert.equal((await membershipSnapshot(request, before)).usage.drill, 1);
+  assert.equal((await membershipSnapshot(request, after)).usage.drill, 0);
   assert.equal(Object.keys((await usageAudit(request.user.id)).sessions).length, 1);
 });
 test('VIP has usable allowances and expiry restores free entitlements', async () => {
@@ -64,7 +65,7 @@ test('VIP has usable allowances and expiry restores free entitlements', async ()
   await provisionMembership(request.user.id, membership);
   assert.equal((await membershipSnapshot(request)).effectivePlan, 'vip');
   await reserve(request);
-  assert.equal((await membershipSnapshot(request)).usage.toefl, 1);
+  assert.equal((await membershipSnapshot(request)).usage.drill, 1);
   assert.equal(effectivePlan(membership, now+60001), 'free');
   assert.equal(effectivePlan({...membership, subscriptionStatus:'cancelled'}, now), 'free');
 });
@@ -149,7 +150,7 @@ test('admitted daily conversations finish past the initial time and AI allowance
 test('shadow mode records overages while payments and the hard paywall stay off', async () => {
   process.env.SPEAKNOW_PAYWALL_ENABLED='false';
   const request=req();await Promise.all([reserve(request),reserve(request),reserve(request)]);
-  const status=await membershipSnapshot(request);assert.equal(status.usage.toefl,3);assert.equal(status.paymentsEnabled,false);assert.equal(status.paywallEnabled,false);
+  const status=await membershipSnapshot(request);assert.equal(status.usage.drill,3);assert.equal(status.paymentsEnabled,false);assert.equal(status.paywallEnabled,false);
   process.env.SPEAKNOW_PAYWALL_ENABLED='true';
 });
 async function call(handler,body,headers={}){const response=res();await handler({method:'POST',url:'/api/test',body,socket:{remoteAddress:'203.0.113.10'},headers:{host:'localhost:5198',origin:'http://localhost:5198','content-type':'application/json',...headers}},response);return response;}
@@ -172,7 +173,7 @@ test('configured VIP allows higher usage, while an enrolled mock survives expiry
   const request=req(),now=Date.now(),membership={planType:'vip',subscriptionStatus:'active',currentPeriodStart:new Date(now-1000).toISOString(),currentPeriodEnd:new Date(now+60000).toISOString(),expiresAt:new Date(now+60000).toISOString()};
   try{
     await provisionMembership(request.user.id,membership);
-    await Promise.all([reserve(request),reserve(request),reserve(request)]);assert.equal((await membershipSnapshot(request)).usage.toefl,3);
+    await Promise.all([reserve(request),reserve(request),reserve(request)]);assert.equal((await membershipSnapshot(request)).usage.drill,3);
     const id=randomUUID();await reserve(request,id,'ielts-full-mock-bank-v1');
     await provisionMembership(request.user.id,{...membership,currentPeriodEnd:new Date(now-1).toISOString(),expiresAt:new Date(now-1).toISOString()});
     const continuation=req(request.user.id,{taskId:'ielts-full-mock-bank-v1',sessionId:id,questionIndex:1},'/api/exam-examiner');

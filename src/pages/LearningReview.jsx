@@ -264,7 +264,7 @@ export default function LearningReview() {
   const clock = seconds => `${Math.floor(seconds/60).toString().padStart(2,'0')}:${Math.floor(seconds%60).toString().padStart(2,'0')}`;
   if(daily)return <DailyFeedbackPage attempt={attempt} parent={parent} user={user} busy={busy} error={error} operation={operation} syncLabel={syncLabel} syncFailed={syncFailed} onSync={sync} onFeedback={feedback} onCancelFeedback={()=>request.current?.abort()} onRetry={retry} onCameraRetry={(exercise,index)=>retry(exercise,index,false,null,true)} onAudioResult={saveAudioAssessment} onDelete={removePractice} improvements={improvements} deliveryImprovements={deliveryImprovements} responses={responseList} compare={compare} onCompare={()=>setCompare(value=>!value)}/>;
   return <main className="learning-page review-page"><header><Link to="/">← SpeakNow</Link><Link to="/progress">My Progress</Link></header>
-    <div className="review-intro"><p className="learning-kicker">{daily ? 'Daily Conversation' : 'Exam Practice'} · Feedback</p><h1>{attempt.title}</h1>
+    <div className="review-intro"><p className="learning-kicker">{attempt.completed === false ? 'Partial practice' : 'Exam Practice'} · Feedback</p><h1>{attempt.title}</h1>
     <p className="learning-muted">{attempt.track === 'exam' && !attempt.title.toLowerCase().includes(attempt.exam) ? `${attempt.exam.toUpperCase()} · ` : ''}{total ? `${answered} of ${total} answered` : `${answered} ${answered === 1 ? 'reply' : 'replies'}`}</p>
     {report?.summary && <p className="review-summary">{report.summary}</p>}</div>
     <div className="review-save"><span role="status">{busy && operation === 'sync' ? 'Syncing…' : syncLabel}</span>

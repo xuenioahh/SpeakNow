@@ -5,6 +5,7 @@ import { learningStore } from '@/lib/learningStore';
 import { apiJson } from '@/api/http';
 import { ALL_QUESTION_SETS, BANK_TASK_TYPES, getBankTask, examPath, setProgress, examHomePath } from '../../shared/questionBank';
 import '@/learning.css';
+import { getSpeakingTask } from '../../shared/speakingTasks';
 import { bankAccess } from '@/lib/bankAccess';
 
 export default function QuestionBank() {
@@ -57,6 +58,7 @@ export default function QuestionBank() {
         <Link className="bank-set-link" to={resumePath(task, draft)} aria-label={`${draft ? 'Continue' : 'Practise set'}: ${set.setTitle}, ${set.sourceDate}`}><h2>{set.setTitle}</h2><p>{set.questions.length} {taskType === 'repeat' ? set.questions.length === 1 ? 'sentence' : 'sentences' : set.questions.length === 1 ? 'question' : 'questions'} · {set.sourceDate}{ielts && ` · ${set.categories.join(" / ")}`}</p>
           <span className="bank-progress">{loading ? 'Loading progress…' : error ? 'Progress unavailable' : `${progress.status} · ${progress.answered}/${progress.total} practised`}{draft && ' · Continue set'}</span>
         </Link>
+        {taskType === 'ielts-part2' && getSpeakingTask('paired-' + set.setId) && <Link className="learning-button primary" to={examPath(getSpeakingTask('paired-' + set.setId))}>Practise Parts 2 &amp; 3 together</Link>}
         {set.relatedSetId && <Link className="bank-related" to={examPath(getBankTask(set.relatedSetId))}>Related {taskType === 'ielts-part2' ? 'Part 3 discussion' : 'Part 2 cue card'} →</Link>}
         <details><summary>Choose a single {taskType === 'repeat' ? 'sentence' : 'question'}</summary><ol>{set.questions.map((question, index) => {
           const singleDraft = progress.drafts.find(item => item.question !== null && item.question !== undefined && Number(item.question) === index);

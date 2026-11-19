@@ -223,17 +223,20 @@ export default function ExamPractice() {
     catch (e) { setError(e.message); setPhase('ready'); }
     finally { lock.current = false; }
   }
-  async function accept(force = false) {
-    if (!alive.current || lock.current || (!force && busy) || !current.current.recordingId) return;
+  async function accept(force = false, finishEarly = false) {
+    if (!alive.current || lock.current || (!force && busy) || (!current.current.recordingId && !(finishEarly && current.current.answers.length))) return;
     lock.current = true; setPhase('saving'); setError('');
     try {
-      const clip = await learningStore.get('recordings', current.current.recordingId);
-      if (!clip?.blob?.size) throw new Error('Recording unavailable. Record again.');
-      const answer = { questionIndex, ...(task.questions?.[questionIndex] ? { questionId: task.questions[questionIndex].questionId, setId: task.setId } : {}), prompt, text: (current.current.text || '').trim(), rawTranscript: current.current.rawTranscript || '',
-        recordingId: current.current.recordingId, inputMode: 'voice', durationSeconds: current.current.durationSeconds || 0, startSeconds: null };
-      const next = { ...current.current, answers: [...current.current.answers, answer], text: '', rawTranscript: '', recordingId: null, prepared: false, heard: false, notes: '', durationSeconds: 0 };
+      let next = current.current;
+      if (current.current.recordingId) {
+        const clip = await learningStore.get('recordings', current.current.recordingId);
+        if (!clip?.blob?.size) throw new Error('Recording unavailable. Record again.');
+        const answer = { questionIndex, ...(task.questions?.[questionIndex] ? { questionId: task.questions[questionIndex].questionId, setId: task.setId } : {}), prompt, text: (current.current.text || '').trim(), rawTranscript: current.current.rawTranscript || '',
+          recordingId: current.current.recordingId, inputMode: 'voice', durationSeconds: current.current.durationSeconds || 0, startSeconds: null };
+        next = { ...current.current, answers: [...current.current.answers, answer], text: '', rawTranscript: '', recordingId: null, prepared: false, heard: false, notes: '', durationSeconds: 0 };
+      }
       await writes.current;
-      if (next.answers.length === indices.length) {
+      if (finishEarly || next.answers.length === indices.length) {
         await saveAttempt(next);
         await apiJson('/api/membership', { action: 'finish', id: next.id }).catch(() => {});
         // Keep the completed session ID in the URL; restoring checks attempts first.
@@ -269,11 +272,11 @@ export default function ExamPractice() {
   if (!draft) return <main className="learning-page"><p role={error ? 'alert' : 'status'}>{error || 'Loading…'}</p>{error && <button onClick={() => window.location.reload()}>Retry loading</button>}</main>;
   const title = task.setTitle || `${task.exam === 'ielts' ? 'IELTS Speaking' : 'TOEFL Speaking'} · ${task.title.split(' · ')[0]}`;
   const canRecord = !busy && phase !== 'preparing' && !(sessionMode === 'exam' && draft.recordingId) && (!preparationSeconds || draft.prepared) && (!(stepType === 'listen-repeat' || isMock) || heard);
-  return <ActiveExamPage title={title} sessionMode={sessionMode} index={index} indices={indices} stepType={stepType} draft={draft} prompt={prompt} task={task} busy={busy} phase={phase} isMock={isMock} heard={heard} playPrompt={playPrompt} preparationSeconds={preparationSeconds} remaining={remaining} setRemaining={setRemaining} setPhase={setPhase} preparing={preparing} deadline={deadline} update={update} finishPreparation={finishPreparation} stop={stop} canRecord={canRecord} start={start} audioUrl={audioUrl} setError={setError} text={text} accept={accept} error={error} exit={exit} discard={discard} auto={auto} />;
+  return <ActiveExamPage title={title} sessionMode={sessionMode} index={index} indices={indices} stepType={stepType} draft={draft} prompt={prompt} task={task} busy={busy} phase={phase} isMock={isMock} heard={heard} playPrompt={playPrompt} preparationSeconds={preparationSeconds} remaining={remaining} setRemaining={setRemaining} setPhase={setPhase} preparing={preparing} deadline={deadline} update={update} finishPreparation={finishPreparation} stop={() => { auto.current = false; return stop(); }} canRecord={canRecord} start={start} audioUrl={audioUrl} setError={setError} text={text} accept={accept} error={error} exit={exit} discard={discard} auto={auto} />;
 }
 
 function ActiveExamPage({ title, sessionMode, index, indices, stepType, draft, prompt, task, busy, phase, isMock, heard, playPrompt, preparationSeconds, remaining, setRemaining, setPhase, preparing, deadline, update, finishPreparation, stop, canRecord, start, audioUrl, setError, text, accept, error, exit, discard, auto }) {
-  return <main className="learning-page exam-page"><header><span>{task.type === 'ielts-mock' ? `IELTS Speaking · Part ${task.steps[indices[index]]?.part}` : title}</span><span>Question {index + 1} / {indices.length}</span></header>
+  return <main className="learning-page exam-page"><header><span>{['ielts-mock','ielts-paired'].includes(task.type) ? `IELTS Speaking · Part ${task.steps[indices[index]]?.part}` : title}</span><span>Question {index + 1} / {indices.length}</span></header>
     <p className="session-mode-label">{sessionMode === 'exam' ? 'Exam mode · one playback, one take' : 'Practice mode'}</p>
     <section className="exam-question"><h1>{stepType === 'listen-repeat' ? 'Listen and Repeat' : prompt}</h1>
       {task.questions?.[indices[index]]?.sourceLanguage === 'zh' && <p className="learning-muted">Answer in English. This source prompt is in Chinese.</p>}
@@ -293,6 +296,6 @@ function ActiveExamPage({ title, sessionMode, index, indices, stepType, draft, p
       {draft.recordingId && !busy && !text.trim() && sessionMode === 'practice' && <p className="learning-muted">Your recording can be checked without a transcript. Add text if you also want language feedback.</p>}
       {draft.recordingId && !busy && <button className="primary" onClick={() => accept()}>{index + 1 === indices.length ? sessionMode === 'exam' ? 'Submit exam' : text.trim() ? 'Finish and get feedback' : 'Finish practice' : 'Next Question'}</button>}
     </section>{error && <p role="alert" className="learning-alert">{error}</p>}
-    <footer><button disabled={phase === 'saving' || phase === 'permission' || phase === 'playing' || phase === 'processing'} onClick={exit}>Save and exit</button><button disabled={phase === 'saving' || phase === 'permission' || phase === 'playing'} onClick={discard}>Exit without saving</button></footer>
+    <footer>{!busy && (draft.answers.length > 0 || draft.recordingId) && index + (draft.recordingId ? 1 : 0) < indices.length && <button onClick={() => accept(false, true)}>Finish early &amp; review answered questions</button>}<button disabled={phase === 'saving' || phase === 'permission' || phase === 'playing' || phase === 'processing'} onClick={exit}>Save and exit</button><button disabled={phase === 'saving' || phase === 'permission' || phase === 'playing'} onClick={discard}>Exit without saving</button></footer>
   </main>;
 }

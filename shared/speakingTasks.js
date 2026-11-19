@@ -70,7 +70,17 @@ export const IELTS_CRITERIA = ['Fluency and Coherence', 'Lexical Resource', 'Gra
 const ownedSnapshots = new Map();
 export function registerTaskSnapshot(task) { if (task?.id && Array.isArray(task.prompts) && task.prompts.length <= 30) ownedSnapshots.set(task.id, task); }
 export function getSpeakingTask(id) {
+  if (id === 'ielts-full-mock-travel-v1') return buildIeltsMock(getBankTask, ALL_QUESTION_SETS, true, 'travel');
   if (id === 'ielts-full-mock-demo-v1' || id === 'ielts-full-mock-bank-v1') return buildIeltsMock(getBankTask, ALL_QUESTION_SETS, id.includes('-demo-')) || ownedSnapshots.get(id) || null;
+  if (typeof id === 'string' && id.startsWith('paired-')) {
+    const cue = getBankTask(id.slice(7));
+    const discussion = cue?.relatedSetId && getBankTask(cue.relatedSetId);
+    if (!cue || cue.type !== 'part2' || discussion?.type !== 'part3' || cue.source.kind !== discussion.source.kind) return ownedSnapshots.get(id) || null;
+    return { ...cue, id, setId: null, bankTaskType: null, relatedSetId: null, type: 'ielts-paired',
+      title: 'IELTS Parts 2 & 3 · ' + cue.setTitle, setTitle: cue.setTitle,
+      prompts: [...cue.prompts, ...discussion.prompts], questions: [...cue.questions, ...discussion.questions],
+      steps: [...cue.steps.map(step => ({ ...step, part: 2 })), ...discussion.steps.map(step => ({ ...step, part: 3 }))] };
+  }
   const bankTask = getBankTask(id);
   if (bankTask) return bankTask;
   if (id === 'toefl-mock-campus-v1') {
@@ -184,6 +194,11 @@ export function validateFeedback(value, attempt) {
       dimensions[key] = { observation: item.observation.slice(0, 800), quote: item.quote.slice(0, 1000), answerIndex: item.answerIndex, suggestion: typeof item.suggestion === 'string' ? item.suggestion.slice(0, 800) : '' };
     }
   }
+  const rating = value.communicationClarity;
+  const communicationClarity = attempt.track === 'daily' && ['unclear', 'understandable', 'clear'].includes(rating?.level)
+    && Number.isInteger(rating.answerIndex) && typeof rating.quote === 'string' && rating.quote.trim()
+    && attempt.answers[rating.answerIndex]?.text.includes(rating.quote) && typeof rating.reason === 'string' && rating.reason.trim()
+    ? { level: rating.level, answerIndex: rating.answerIndex, quote: rating.quote.slice(0, 1000), reason: rating.reason.slice(0, 800) } : null;
   const seenParts = new Set();
   const parts = (Array.isArray(value.parts) ? value.parts : []).flatMap(item => {
     const answer = attempt.answers[item?.answerIndex], part = attempt.taskSnapshot?.steps?.[answer?.questionIndex]?.part;
@@ -193,7 +208,7 @@ export function validateFeedback(value, attempt) {
   const deliveryImprovements = attempt.track === 'daily' ? validateDeliveryFeedback(value.deliveryImprovements, attempt) : [];
   return {
     dimensions, parts,
-    ...(attempt.track === 'daily' ? { deliveryImprovements } : {}),
+    ...(attempt.track === 'daily' ? { deliveryImprovements, communicationClarity } : {}),
     summary: value.summary.slice(0, 2000),
     strengths: Array.isArray(value.strengths) ? value.strengths.filter(item => typeof item === 'string').slice(0, 3).map(item => item.slice(0, 600)) : [],
     improvements,

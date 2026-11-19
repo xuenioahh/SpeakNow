@@ -19,7 +19,7 @@ export default async function membership(req, res) {
     if (action === 'trial') { await startVipTrial(req); return res.status(200).json(await membershipSnapshot(req)); }
     if (action === 'request-upgrade') { await requestVip(req); return res.status(200).json(await membershipSnapshot(req)); }
     if (['admin-status', 'admin-grant', 'admin-revoke', 'admin-decline'].includes(action)) return res.status(200).json(await adminMembership(req));
-    if (action === 'start') return res.status(200).json(await reservePractice(req, { id, taskId, kind }));
+    if (action === 'start') return res.status(200).json(await reservePractice(req, { id, taskId, kind, part: req.body.part, sessionMode: req.body.sessionMode }));
     if (action === 'finish' || action === 'cancel') return res.status(200).json(await finishPractice(req, id, action === 'cancel'));
     return res.status(400).json({ error: 'Unsupported membership action.' });
   } catch (error) { return res.status(error.status || 503).json({ error: error.status ? error.message : 'Membership information is unavailable. Retry before starting practice.', code: error.code || 'membership_unavailable', resetsAt: error.resetsAt, membershipPath: error.membershipPath }); }

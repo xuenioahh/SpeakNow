@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TOEFL_TASK_TYPES, IELTS_TASK_TYPES, questionBankPath } from '../../shared/questionBank';
 import '@/learning.css';
@@ -6,14 +7,16 @@ import { getSpeakingTask } from '../../shared/speakingTasks';
 import { examPath } from '../../shared/questionBank';
 export default function ExamSpeaking({ exam = 'toefl' }) {
   const ielts = exam === 'ielts';
+  const [mockChoice, setMockChoice] = useState('default');
   const types = ielts ? IELTS_TASK_TYPES : TOEFL_TASK_TYPES;
   return <main className="learning-page selection-page"><header><Link to="/">← Home</Link></header>
     <nav className="exam-switch" aria-label="Speaking exam"><Link to="/exam" aria-current={!ielts ? 'page' : undefined}>TOEFL</Link><Link to="/exam/ielts" aria-current={ielts ? 'page' : undefined}>IELTS</Link></nav>
     <h1>{ielts ? 'IELTS Speaking' : 'TOEFL Speaking'}</h1>
     <p className="page-introduction">Take a full test, or spend a few minutes on one part.</p>
     {ielts && <p className="learning-muted exam-season">September–December 2026 · New, retained and familiar topics</p>}
-    {ielts && <section className="mock-choice"><div><p className="learning-kicker">Full IELTS Mock Test</p><h2>Parts 1, 2 and 3</h2><p>Complete the full speaking test, then review your answers.</p></div><Link className="learning-button primary" to={examPath(getSpeakingTask(bankAccess.fullMockTaskId))}>Start Full Mock Test</Link></section>}
-    {ielts && <h2 className="quick-practice-title">Quick Practice</h2>}
+    {ielts && <section className="mock-choice"><div><p className="learning-kicker">Full IELTS Mock Test</p><h2>Parts 1, 2 and 3</h2><label>Mock topic set <select value={mockChoice} onChange={event => setMockChoice(event.target.value)}><option value="default">{bankAccess.fullMockTaskId.includes('demo') ? 'Study, home and useful skills' : 'Studies, home and saving money'}</option><option value="travel">Journeys and public transport</option></select></label></div><Link className="learning-button primary" to={examPath(getSpeakingTask(mockChoice === 'travel' ? 'ielts-full-mock-travel-v1' : bankAccess.fullMockTaskId))}>Start Full Mock Test</Link></section>}
+    {!ielts && <Link className="learning-button" to={examPath(getSpeakingTask('toefl-mock-campus-v1'))}>Start full TOEFL mock</Link>}
+    {ielts && <section><h2 className="quick-practice-title">Choose a topic from the question bank</h2><div className="learning-actions"><Link className="learning-button" to={questionBankPath('ielts-part1')}>Practise Part 1 by topic</Link><Link className="learning-button" to={questionBankPath('ielts-part2')}>Choose a topic for Parts 2 &amp; 3</Link></div></section>}
     <div className={`task-type-grid${ielts ? ' ielts-types' : ''}`}>{types.map(type => <Link className="task-type-card" key={type.id} to={questionBankPath(type.id)}><h2>{type.title}</h2><p>{type.description}</p></Link>)}</div>
   </main>;
 }

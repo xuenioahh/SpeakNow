@@ -19,7 +19,7 @@ export default function ExamPreparation() {
   const questionCount = task.prompts.filter((_, index) => !part || task.steps?.[index]?.part === part).length;
   const parentId = params.get('retry') || null, focus = params.get('focus') || '';
   const title = task.type === 'ielts-mock' ? `IELTS Speaking · ${part ? `Part ${part}` : 'Full Mock Test'}` : task.bankTaskType ? `${task.exam === 'ielts' ? 'IELTS Speaking · ' : ''}${BANK_TASK_TYPES.find(type => type.id === task.bankTaskType).title}` : `${task.exam === 'ielts' ? 'IELTS Speaking' : 'TOEFL Speaking'} · ${task.title.split(' · ')[0]}`;
-  const back = task.bankTaskType ? questionBankPath(task.bankTaskType) : '/exam';
+  const back = task.type === 'ielts-paired' ? questionBankPath('ielts-part2') : task.bankTaskType ? questionBankPath(task.bankTaskType) : '/exam';
   const followUp = task.steps?.some(step => step.type === 'part2-followup');
   const related = task.relatedSetId ? getBankTask(task.relatedSetId) : null;
   const repeat = task.type === 'listen-repeat';
@@ -48,17 +48,17 @@ export default function ExamPreparation() {
         practiceMode: questionIndex !== null ? 'quick' : mock ? 'mock' : 'set',
         ownerId: user?.id || null, createdAt: new Date().toISOString(), stage: 'exam'
       };
-      await apiJson('/api/membership', { action: 'start', id: value.attemptId, taskId: task.id, kind: 'exam' });
+      await apiJson('/api/membership', { action: 'start', id: value.attemptId, taskId: task.id, kind: 'exam', part, sessionMode });
       await learningStore.put('drafts', value);
       const target = examPath(task, { questionIndex, part, parentId, focus, sessionMode, session: value.attemptId, stage: 'practice' });
       navigate(mock ? `${target}&autostart=1` : target, { replace: true });
     } catch (e) { setError(e.message); }
     finally { lock.current = false; setBusy(false); }
   }
-  return <main className="learning-page preparation-page"><header><Link to={back}>← {task.setId ? 'Question bank' : 'Tasks'}</Link></header>
+  return <main className="learning-page preparation-page"><header><Link to={back}>← {task.setId || task.type === 'ielts-paired' ? 'Change topic · Question bank' : 'Tasks'}</Link></header>
     <section className="exam-intro" aria-label="Practice preparation"><h1>{title}</h1>
       <p className="preparation-selection">{task.setTitle || task.title}{' · '}{questionIndex === null ? `${questionCount} ${repeat ? questionCount === 1 ? 'sentence' : 'sentences' : questionCount === 1 ? 'question' : 'questions'}` : `${repeat ? 'Sentence' : 'Question'} ${questionIndex + 1}`}</p>
-      <p>{task.type === 'ielts-mock' ? 'Meet your examiner, answer familiar questions, prepare a cue card, then discuss the same topic in more depth.' : task.type === 'part1' ? 'Answer questions about familiar topics.' : task.type === 'part2' ? followUp ? 'Speak about a topic, then answer a follow-up question.' : 'Prepare your ideas, then speak about the cue card topic.' : task.type === 'part3' ? 'Discuss ideas and give reasons for your views.' : repeat ? 'Listen and repeat each sentence.' : task.type === 'mock' ? 'Complete seven repetitions and four interview answers.' : 'Answer questions about campus life.'}</p>
+      <p>{task.type === 'ielts-mock' ? 'Meet your examiner, answer familiar questions, prepare a cue card, then discuss the same topic in more depth.' : task.type === 'ielts-paired' ? 'Prepare your cue card, give your long answer, then discuss the same topic in Part 3.' : task.type === 'part1' ? 'Answer questions about familiar topics.' : task.type === 'part2' ? followUp ? 'Speak about a topic, then answer a follow-up question.' : 'Prepare your ideas, then speak about the cue card topic.' : task.type === 'part3' ? 'Discuss ideas and give reasons for your views.' : repeat ? 'Listen and repeat each sentence.' : task.type === 'mock' ? 'Complete seven repetitions and four interview answers.' : 'Answer questions about campus life.'}</p>
       <fieldset className="exam-mode-picker"><legend>Session mode</legend><label><input type="radio" name="session-mode" value="practice" checked={sessionMode === 'practice'} onChange={() => setSessionMode('practice')} />Practice <span>Replay audio, review your take, and reveal the reference only when you choose.</span></label><label><input type="radio" name="session-mode" value="exam" checked={sessionMode === 'exam'} onChange={() => setSessionMode('exam')} />Exam <span>One playback and one take. References and transcript review unlock after submission.</span></label></fieldset>
       <p className="learning-muted">{task.type === 'ielts-mock' ? part ? `Part ${part} practice. Recording and transitions follow the selected part.` : 'Part 1 → Part 2 → Part 3. Target 11–14 minutes. Your answers progress after a completed speaking pause; you can also stop an answer manually.' : task.type === 'part2' ? followUp ? '1 minute to prepare, up to 2 minutes to speak; 30-second practice limit for the follow-up.' : '1 minute to prepare, up to 2 minutes to speak.' : task.type === 'mock' ? '8–12 seconds per repetition; 45 seconds per interview answer (practice limits).' : `${task.timing.answerSeconds} seconds per answer (practice limit).`}</p>
       {related && <p className="preparation-related"><Link to={examPath(related)}>Related {related.type === 'part3' ? 'Part 3 discussion' : 'Part 2 cue card'} → {related.setTitle}</Link></p>}

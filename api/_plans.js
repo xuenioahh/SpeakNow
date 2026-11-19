@@ -11,10 +11,10 @@ export const paywallEnabled = () => enabled(process.env.SPEAKNOW_PAYWALL_ENABLED
 export function planConfiguration() {
   return {
     free: { planType: 'free', monthlyPrice: null, currency: null,
-      monthlyLimits: { toefl: limit('SPEAKNOW_FREE_TOEFL_MONTHLY', 2), ielts: limit('SPEAKNOW_FREE_IELTS_MONTHLY', 1), ieltsQuick: limit('SPEAKNOW_FREE_IELTS_QUICK_MONTHLY', 3), daily: limit('SPEAKNOW_FREE_DAILY_SECONDS', 300), ai: limit('SPEAKNOW_FREE_AI_REQUESTS', 100) },
+      monthlyLimits: { mock: limit('SPEAKNOW_FREE_MOCK_MONTHLY', 4), drill: limit('SPEAKNOW_FREE_DRILL_MONTHLY', 30), daily: limit('SPEAKNOW_FREE_DAILY_SECONDS', 300), ai: limit('SPEAKNOW_FREE_AI_REQUESTS', 100) },
       featureAccess: { fullQuestionBank: false, feedback: true, insights: 'basic' } },
     vip: { planType: 'vip', monthlyPrice: null, currency: null,
-      monthlyLimits: { toefl: limit('SPEAKNOW_VIP_TOEFL_MONTHLY', 60), ielts: limit('SPEAKNOW_VIP_IELTS_MONTHLY', 20), ieltsQuick: limit('SPEAKNOW_VIP_IELTS_QUICK_MONTHLY', 100), daily: limit('SPEAKNOW_VIP_DAILY_SECONDS', 10800), ai: limit('SPEAKNOW_VIP_AI_REQUESTS', 600) },
+      monthlyLimits: { mock: null, drill: null, daily: limit('SPEAKNOW_VIP_DAILY_SECONDS', 10800), ai: limit('SPEAKNOW_VIP_AI_REQUESTS', 600) },
       featureAccess: { fullQuestionBank: true, feedback: true, insights: 'extended' } },
   };
 }

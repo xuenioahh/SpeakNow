@@ -30,7 +30,7 @@ export async function handler(req, res) {
       if (JSON.stringify(validateAttempt(existing.report.learning).answers) !== JSON.stringify(attempt.answers) || existing.report?.learning?.taskId !== attempt.taskId || existing.report?.learning?.parentId !== attempt.parentId) throw problem('Saved attempts are immutable; create a retry instead.', 409);
       return res.status(200).json(withStorage(existing.report.learning));
     }
-    if (attempt.track === 'exam') await reservePractice(req, { id: attempt.id, taskId: attempt.taskId, kind: 'exam' });
+    if (attempt.track === 'exam') await reservePractice(req, { id: attempt.id, taskId: attempt.taskId, kind: 'exam', part: attempt.part, sessionMode: attempt.sessionMode });
     if (attempt.parentId) {
       const parent = await getOwned('voiceSessions', owner, attempt.parentId);
       if (!parent?.report?.learning || parent.report.learning.taskId !== attempt.taskId) throw problem('Save the matching original attempt before its retry.', 409);
