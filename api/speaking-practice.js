@@ -92,7 +92,7 @@ export async function handler(req, res) {
     try {
       old = await mediaObject(key);
     } catch (error) {
-      if (!['ENOENT'].includes(error.code) && error.status !== 503) throw error;
+      if (!['ENOENT'].includes(error.code) && ![404, 503].includes(error.status)) throw error;
     }
     if (old) {
       if (digest(old) !== digest(bytes)) throw problem('Saved audio is immutable', 409);

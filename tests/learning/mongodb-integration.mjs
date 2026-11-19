@@ -140,6 +140,24 @@ test('practice API reports MongoDB cloud persistence across save, retry and hist
   assert.equal((await call({ action: 'list' })).length, 1);
 });
 
+test('first recording upload, retry and ownership use the practice API', async () => {
+  const owner = 'upload-owner', id = randomUUID(), recordingId = randomUUID();
+  const call = async (body, user = owner) => {
+    const res = { status(code) { this.code = code; return this; }, json(value) { this.value = value; return this; } };
+    await practiceHandler({ method: 'POST', user: { id: user }, body }, res);
+    assert.equal(res.code, 200); return res.value;
+  };
+  await call({ action: 'save', attempt: { id, track: 'daily', taskId: 'daily', createdAt: new Date().toISOString(), answers: [{ text: 'Recording fixture', questionIndex: 0, inputMode: 'voice', recordingId }] } });
+  const data = Buffer.from([0x1a, 0x45, 0xdf, 0xa3, 1, 2, 3]).toString('base64');
+  const upload = { action: 'upload', id, recordingId, mime: 'audio/webm', data };
+  assert.equal((await call(upload)).ok, true);
+  assert.equal((await call(upload)).ok, true);
+  assert.equal((await call({ action: 'media', id, recordingId })).data, data);
+  await assert.rejects(() => call({ ...upload, data: Buffer.from([0x1a, 0x45, 0xdf, 0xa3, 9]).toString('base64') }), error => error.status === 409);
+  await assert.rejects(() => call({ action: 'media', id, recordingId }, 'other-owner'), error => error.status === 404);
+  await call({ action: 'delete', id });
+});
+
 test('administrator analytics use MongoDB and preflight checks actual read/write', async () => {
   await appendAdminEvent({ type: 'test', user: { id: 'admin-report-user', email: 'report@example.invalid' }, payload: { fixture: true } });
   const report = await listAdminData();
