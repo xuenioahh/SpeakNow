@@ -184,7 +184,10 @@ export function validateFeedback(value, attempt) {
     if (fields.some(key => typeof item[key] !== 'string' || !item[key].trim() || item[key].length > 1800)) throw new Error('Feedback was missing a concrete improvement');
     if (!attempt.answers[item.answerIndex].text.includes(item.quote)) throw new Error('Feedback evidence did not match your words. Try again.');
     const answer = attempt.answers[item.answerIndex];
-    return { ...Object.fromEntries(['answerIndex', ...fields].map(key => [key, item[key]])),
+    const type = attempt.taskSnapshot?.steps?.[answer.questionIndex]?.type || attempt.type;
+    const rewrite = attempt.track === 'exam' && type !== 'listen-repeat' && typeof item.exampleRewrite === 'string'
+      && item.exampleRewrite.trim().length <= 600 ? item.exampleRewrite.trim() : '';
+    return { ...(rewrite ? { exampleRewrite: rewrite } : {}), ...Object.fromEntries(['answerIndex', ...fields].map(key => [key, item[key]])),
       evidence: { quote: item.quote, utteranceId: `answer-${item.answerIndex}`, startMs: answer.startSeconds === null ? null : Math.round(answer.startSeconds * 1000), endMs: answer.startSeconds === null || !answer.durationSeconds ? null : Math.round((answer.startSeconds + answer.durationSeconds) * 1000) } };
   });
   const dimensions = {};

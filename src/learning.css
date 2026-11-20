@@ -45,3 +45,10 @@
 .repeat-take-tools { border-top:1px solid #e4e6ed; padding-top:.35rem }
 .repeat-take-tools audio { width:100%; margin-block:.5rem }
 .repeat-take-tools label { display:grid; gap:.3rem }
+.academic-focus { margin-block:1rem; scroll-margin-top:calc(var(--main-nav-height,70px) + 1rem) }
+.academic-coaching-card,.academic-retry-change { padding:clamp(1rem,3vw,1.5rem); border:1px solid #ddd9eb; border-radius:14px; background:#faf9fd; overflow-wrap:anywhere }
+.academic-focus dl { display:grid; gap:.2rem; margin:.8rem 0; }
+.academic-focus dt { font-size:.82rem; font-weight:650; color:#514669 }
+.academic-focus dd { margin:0 0 .6rem; max-width:65ch }
+.academic-focus .coaching-prompt { color:#535b68; margin:.2rem 0 .8rem }
+.academic-focus details { margin-top:.75rem }
