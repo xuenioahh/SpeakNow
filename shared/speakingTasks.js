@@ -1,3 +1,4 @@
+import { examRubric, criterionKey } from './examRubrics.js';
 import { validateVisualEvidence } from './visualEvidence.js';
 import { validateDailyEvidence, validateDeliveryFeedback } from './dailyEvidence.js';
 import { getBankTask, ALL_QUESTION_SETS } from './questionBank.js';
@@ -187,7 +188,9 @@ export function validateFeedback(value, attempt) {
     const type = attempt.taskSnapshot?.steps?.[answer.questionIndex]?.type || attempt.type;
     const rewrite = attempt.track === 'exam' && type !== 'listen-repeat' && typeof item.exampleRewrite === 'string'
       && item.exampleRewrite.trim().length <= 600 ? item.exampleRewrite.trim() : '';
-    return { ...(rewrite ? { exampleRewrite: rewrite } : {}), ...Object.fromEntries(['answerIndex', ...fields].map(key => [key, item[key]])),
+    const rubric = attempt.track === 'exam' ? examRubric(attempt.exam, type) : null;
+    const criterion = criterionKey(rubric, item.criterion);
+    return { ...(criterion ? { criterion } : {}), ...(rewrite ? { exampleRewrite: rewrite } : {}), ...Object.fromEntries(['answerIndex', ...fields].map(key => [key, item[key]])),
       evidence: { quote: item.quote, utteranceId: `answer-${item.answerIndex}`, startMs: answer.startSeconds === null ? null : Math.round(answer.startSeconds * 1000), endMs: answer.startSeconds === null || !answer.durationSeconds ? null : Math.round((answer.startSeconds + answer.durationSeconds) * 1000) } };
   });
   const dimensions = {};

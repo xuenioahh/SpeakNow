@@ -1,3 +1,5 @@
+import { examRubric, transcriptCriterion } from '../../shared/examRubrics';
+import ExamRubricGuide from './ExamRubricGuide';
 import { useEffect, useRef, useState } from 'react';
 import { apiJson } from '@/api/http';
 import { compareRepeat } from '../../shared/speakingTasks';
@@ -18,8 +20,9 @@ export function RepeatWords({ reference, transcript }) {
   </div>;
 }
 
-export default function AnswerFeedback({ attempt }) {
+export default function AnswerFeedback({ attempt, task }) {
   const [result, setResult] = useState(null), [busy, setBusy] = useState(false), [error, setError] = useState('');
+  const rubric = examRubric(task?.exam, task?.steps?.[attempt.answers[0].questionIndex]?.type || task?.type);
   const controller = useRef(null);
   useEffect(() => () => controller.current?.abort(), []);
   async function review() {
@@ -35,6 +38,7 @@ export default function AnswerFeedback({ attempt }) {
   return <section className="answer-feedback" aria-label="Single-answer feedback"><h3>This answer · one focus</h3>
     {!result && <button disabled={busy || !attempt.answers[0].text.trim()} onClick={review}>{busy ? 'Reading your answer…' : error ? 'Retry this feedback' : 'Review this answer'}</button>}
     {error && <p role="alert">{error}</p>}
-    {result && <><p>{result.summary}</p>{result.improvements.slice(0, 1).map((item, index) => <div key={index}><blockquote>{item.quote}</blockquote><p>{item.reason}</p><p>{item.suggestion}</p>{item.exampleRewrite && <p><strong>One way to say it</strong> · <q>{item.exampleRewrite}</q></p>}<p><strong>Try this:</strong> {item.exercise}</p></div>)}</>}
+    {result && <><p>{result.summary}</p>{result.improvements.slice(0, 1).map((item, index) => <div key={index}>{transcriptCriterion(rubric, item.criterion) && <strong className="criterion-label">{rubric.criteria[item.criterion]}</strong>}<blockquote>{item.quote}</blockquote><p>{item.reason}</p><p>{item.suggestion}</p>{item.exampleRewrite && <p><strong>One way to say it</strong> · <q>{item.exampleRewrite}</q></p>}<p><strong>Try this:</strong> {item.exercise}</p></div>)}</>}
+    <ExamRubricGuide rubric={rubric} />
   </section>;
 }

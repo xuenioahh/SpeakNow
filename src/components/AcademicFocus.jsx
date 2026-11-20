@@ -1,3 +1,5 @@
+import { examRubric, transcriptCriterion } from '../../shared/examRubrics';
+import ExamRubricGuide from './ExamRubricGuide';
 import { compareRepeat } from '../../shared/speakingTasks';
 import { examQuestionLabel } from '../../shared/academicCoaching';
 
@@ -11,10 +13,13 @@ export default function AcademicFocus({ attempt, task, improvements, change, bus
     return [{ answer, answerIndex, edits, diff }];
   });
   const repeat = !improvements.length && repeats.filter(item => item.edits).sort((a,b) => b.edits - a.edits)[0];
+  const guideFor = answer => examRubric(attempt.exam, task?.steps?.[answer.questionIndex]?.type || attempt.type);
+  const guides = [...new Set(attempt.answers.map(guideFor).filter(Boolean))];
   function focusCard(item, index) {
     const answer = attempt.answers[item.answerIndex];
+    const criterion = transcriptCriterion(guideFor(answer), item.criterion);
     return <article key={index} id={`improvement-${item.answerIndex}-${index}`} className="academic-coaching-card">
-      <header><strong>{examQuestionLabel(task, answer)}</strong></header>
+      <header><strong>{examQuestionLabel(task, answer)}</strong>{criterion && <span className="criterion-label">{criterion}</span>}</header>
       <p className="coaching-prompt">{answer.prompt}</p>
       <dl><dt>Your words</dt><dd><q>{item.quote}</q></dd>
         <dt>What to work on</dt><dd>{item.reason}</dd>
@@ -35,5 +40,6 @@ export default function AcademicFocus({ attempt, task, improvements, change, bus
       <dl><dt>Before</dt><dd><q>{change.beforeQuote}</q></dd><dt>This time</dt><dd><q>{change.afterQuote}</q></dd></dl><p>{change.observation}</p></article>}
     {improvements.length > 0 && <><h3>Your practice focus</h3>{focusCard(improvements[0], 0)}
       {improvements.length > 1 && <details><summary>More coaching notes ({improvements.length - 1})</summary>{improvements.slice(1).map((item, i) => focusCard(item, i + 1))}</details>}</>}
+    {guides.map(guide => <ExamRubricGuide key={guide.title} rubric={guide} />)}
   </section>;
 }

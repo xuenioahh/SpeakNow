@@ -1,3 +1,4 @@
+import { examRubric, transcriptCriterion } from '../shared/examRubrics.js';
 import { trialApi } from './_trialGuard.js';
 import { requestStructuredLlm } from './_llm.js';
 import { getSpeakingTask, IELTS_CRITERIA, validateAttempt, validateFeedback, compareRepeat } from '../shared/speakingTasks.js';
@@ -49,7 +50,17 @@ export async function handler(req, res) {
         : req.body.previousAttempt;
     }
     const pairs = retryPairs(attempt, previous);
-    const academicInstructions = academic ? `Act as the tutor for this exact question and the learner's intended meaning. In the summary name their actual idea and the strongest next move. Rank improvements by impact on THIS task. For IELTS Part 1 favour a direct personal answer with a relevant detail; Part 2 a sustained story with a concrete event; Part 3 a supported generalisation or contrast. For TOEFL interviews connect the learner's position with a reason or example. Do not demand length or complex vocabulary when their answer already communicates well. For each open-answer improvement give one short exampleRewrite the learner could actually say, using only ideas already in the answer. If more evidence or detail is needed, give a targeted follow-up question as the exercise rather than inventing a personal fact. Distinguish optional refinements from errors. For repetition, use only supplied word differences and omit exampleRewrite. Prioritise the selected retryFocus when supported. If retryPairs show a meaningful change relevant to that focus, return one retryChange citing different exact excerpts from both takes for the same answerIndex; explain what became clearer or what remains to work on. Do not assume every change is an improvement. Omit retryChange when not supported.` : '';
+    const rubrics = {};
+    if (academic) {
+      for (const answer of attempt.answers) {
+        const type = task?.steps?.[answer.questionIndex]?.type || attempt.type;
+        const guide = examRubric(attempt.exam, type);
+        if (!guide || rubrics[type]) continue;
+        rubrics[type] = { criteria: Object.fromEntries(Object.entries(guide.criteria).filter(([key]) => transcriptCriterion(guide, key))), benchmarks: guide.benchmarks };
+      }
+    }
+    const allowedCriteria = [...new Set(Object.values(rubrics).flatMap(guide => Object.keys(guide.criteria)))];
+    const academicInstructions = academic ? `Act as the tutor for this exact question and the learner's intended meaning. In the summary name their actual idea and the strongest next move. Rank improvements by impact on THIS task. For each improvement select one criterion key from the supplied rubric for its answer type. In the reason explain specifically how the quoted wording affects that criterion. Benchmarks guide your interpretation internally. Never assign a band, task score or section estimate. For IELTS Part 1 favour a direct personal answer with a relevant detail; Part 2 a sustained story with a concrete event; Part 3 a supported generalisation or contrast. For TOEFL interviews connect the learner's position with a reason or example. Do not demand length or complex vocabulary when their answer already communicates well. For each open-answer improvement give one short exampleRewrite the learner could actually say, using only ideas already in the answer. If more evidence or detail is needed, give a targeted follow-up question as the exercise rather than inventing a personal fact. Distinguish optional refinements from errors. For repetition, use only supplied word differences and omit exampleRewrite. Prioritise the selected retryFocus when supported. If retryPairs show a meaningful change relevant to that focus, return one retryChange citing different exact excerpts from both takes for the same answerIndex; explain what became clearer or what remains to work on. Do not assume every change is an improvement. Omit retryChange when not supported.` : '';
     const feedbackStarted = performance.now();
     const {
       parsed,
@@ -76,7 +87,7 @@ export async function handler(req, res) {
           reason: 'string',
           suggestion: 'string',
           exercise: 'concrete next action',
-          ...(academic ? { exampleRewrite: 'one possible phrasing, or null' } : {})
+          ...(academic ? { criterion: allowedCriteria.join(' | '), exampleRewrite: 'one possible phrasing, or null' } : {})
         }],
         ...(pairs.length ? { retryChange: { answerIndex: 0, beforeQuote: 'exact previous excerpt', afterQuote: 'exact current excerpt', observation: 'specific change relevant to the task' } } : {}),
         ...(attempt.track === 'daily' ? { communicationClarity: { level: 'unclear | understandable | clear', answerIndex: 0, quote: 'exact learner words', reason: 'how the reply communicated its meaning in context' }, deliveryImprovements: [{ evidenceIds: ['exact ID from supplied multimodalEvidence'], suggestion: 'practical suggestion limited to the cited observation', exercise: 'one concrete retry task' }] } : {})
@@ -85,7 +96,7 @@ export async function handler(req, res) {
       userText: JSON.stringify({
         feedbackScope: feedbackScope(attempt),
         task: academic ? { title: task?.title, exam: attempt.exam, type: attempt.type, criteria } : task,
-        ...(academic ? { retryFocus: attempt.focus || null, retryPairs: pairs } : {}),
+        ...(academic ? { rubrics, retryFocus: attempt.focus || null, retryPairs: pairs } : {}),
         attempt: { id: attempt.id, track: attempt.track, title: attempt.title, context: attempt.context, ...(attempt.track==='daily'?conversationReviewContext(attempt):{answers:attempt.answers.map((a, answerIndex) => ({ answerIndex, questionNumber: a.questionIndex + 1,
           prompt: a.prompt, text: a.text.slice(0, Math.min(5000, Math.floor(17500 / attempt.answers.length))), part: a.part || null, type: task?.steps?.[a.questionIndex]?.type || attempt.type }))}) },
         repeatDifferences,

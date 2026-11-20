@@ -26,3 +26,19 @@ test('open speaking can suggest phrasing while repetition uses its source wordin
   assert.equal(validateFeedback(result,current).improvements[0].exampleRewrite,result.improvements[0].exampleRewrite);
   assert.equal(validateFeedback(result,{...current,type:'listen-repeat'}).improvements[0].exampleRewrite,undefined);
 });
+
+test('feedback tags use the rubric for the original question in a mixed TOEFL mock', () => {
+  const attempt = {...current, exam:'toefl', type:'full-mock', taskSnapshot:{steps:[{type:'listen-repeat'}, {}, {type:'interview'}]}};
+  const item = {answerIndex:0,quote:'I take the train',reason:'A relevant reason helps the listener.',suggestion:'Link the reason to the choice.',exercise:'Try again with one reason.'};
+  const criterionFor = (value, criterion) => validateFeedback({summary:'You explained your choice.',improvements:[{...item,criterion}]},value).improvements[0].criterion;
+  assert.equal(criterionFor(attempt,'development'),'development');
+  assert.equal(criterionFor(attempt,'Vocabulary and Grammar'),'language');
+  assert.equal(criterionFor(attempt,'wording'),undefined);
+  assert.equal(criterionFor(attempt,'delivery'),undefined);
+  const firstQuestion = {...attempt, answers:[{...attempt.answers[0],questionIndex:0}]};
+  assert.equal(criterionFor(firstQuestion,'wording'),'wording');
+  assert.equal(criterionFor(firstQuestion,'development'),undefined);
+  assert.equal(criterionFor({...attempt,exam:'ielts'},'grammar'),'grammar');
+  assert.equal(criterionFor({...attempt,exam:'ielts'},'pronunciation'),undefined);
+  assert.equal(criterionFor({...attempt,track:'daily'},'language'),undefined);
+});

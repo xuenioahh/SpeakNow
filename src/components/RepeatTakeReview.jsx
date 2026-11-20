@@ -1,3 +1,5 @@
+import { examRubric } from '../../shared/examRubrics';
+import ExamRubricGuide from './ExamRubricGuide';
 import { useState } from 'react';
 import { RepeatWords } from './AnswerFeedback';
 import RecordingQuality from './RecordingQuality';
@@ -11,6 +13,7 @@ export default function RepeatTakeReview({ prompt, text, onEdit, recordingId, au
       <RepeatWords reference={prompt} transcript={text} />
       <dl className="repeat-lines"><div><dt>Reference</dt><dd>{prompt}</dd></div>
         <div><dt>Your transcript</dt><dd>{text || 'No transcript captured.'}</dd></div></dl>
+      <ExamRubricGuide rubric={examRubric('toefl', 'listen-repeat')} />
     </>}
     <div className="repeat-replay-actions"><button disabled={replaying} onClick={onListen}>Listen again</button>
       <button disabled={!canRecord} onClick={onRetry}>Try again</button></div>
